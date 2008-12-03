@@ -23,13 +23,13 @@ public final class BoardPanelResources
      * Tile images pre-rendered for the graphic device currently used. The first dimension
      * is the cell's index (type), the second dimension contains frame data.
      */
-    public final EnumMap<Cell, BufferedImage []> cell_images = 
-        new EnumMap<Cell, BufferedImage []>(Cell.class);
+    public final EnumMap<CellType, BufferedImage []> cell_images = 
+        new EnumMap<CellType, BufferedImage []>(CellType.class);
 
     /**
      * Information about cells, their shapes and images.
      */
-    public final EnumMap<Cell, CellInfo> cell_infos;
+    public final EnumMap<CellType, CellInfo> cell_infos;
 
     /**
      * Each cell's width and height.
@@ -39,7 +39,7 @@ public final class BoardPanelResources
     /*
      *
      */
-    public BoardPanelResources(GraphicsConfiguration conf, EnumMap<Cell, CellInfo> mapping, int gridSize)
+    public BoardPanelResources(GraphicsConfiguration conf, EnumMap<CellType, CellInfo> mapping, int gridSize)
         throws IOException
     {
         this.conf = conf;
@@ -50,7 +50,7 @@ public final class BoardPanelResources
          * Prebuffer images for cells.
          */
         final HashMap<String, BufferedImage> cache = Maps.newHashMap();
-        for (Cell c : mapping.keySet())
+        for (CellType c : mapping.keySet())
         {
             final TileInfo [] ti = mapping.get(c).tiles;
             final BufferedImage [] tileImages = new BufferedImage [ti.length];

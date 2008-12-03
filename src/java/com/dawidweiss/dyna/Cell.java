@@ -1,53 +1,24 @@
 package com.dawidweiss.dyna;
 
 /**
- * Additional specification for a single cell on the {@link Board}.
+ * A single cell in the board's grid.
  */
-public enum Cell
+public final class Cell
 {
-    CELL_EMPTY((byte) ' '),
-
-    CELL_WALL((byte) '#'),
-
-    CELL_CRATE((byte) 'X'),
-    CELL_CRATE_OUT((byte) 'x'),
-
-    CELL_BOMB((byte) 'b');
+    /* */
+    public final CellType type;
 
     /**
-     * Byte code for the cell.
+     * A counter associated with each cell. This controls, among other things, animation
+     * sequences.
      */
-    public final byte code;
-
-    /**
-     * A static mapping between codes and enum constants.
-     * 
-     * @see #valueOf(byte)
-     */
-    private final static Cell [] cells;
-    static
-    {
-        cells = new Cell [256];
-        for (Cell c : Cell.values())
-        {
-            cells[c.code] = c;
-        }
-    }
+    public int counter;
 
     /*
      * 
      */
-    private Cell(byte code)
+    public Cell(CellType type)
     {
-        this.code = code;
-    }
-
-    /**
-     * @return Return an enum instance for a cell's character code.
-     * @throws IllegalArgumentException If the code does not exist.
-     */
-    public static Cell valueOf(byte code)
-    {
-        return cells[code];
+        this.type = type;
     }
 }

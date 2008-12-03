@@ -21,15 +21,9 @@ public final class Board
     public final int height;
 
     /**
-     * An array of board cells. We store a single-dimensional array because it simplifies
-     * serialization of board's state between players. An (x,y) position is at offset
-     * <code>x + y * width</code>.
-     * <p>
-     * Each cell is a composition of the low-order byte (<code>0x00ff</code>)
-     * indicating the cell's index (type) and the high-order byte indicating the animation
-     * frame number, in case the cell allows it.
+     * The grid of board cells.
      */
-    public final short [] cells;
+    public final Cell [][] cells;
 
     /**
      * Default player positions on the board.
@@ -39,7 +33,7 @@ public final class Board
     /*
      * 
      */
-    public Board(int width, int height, short [] cells, Point [] playerPositions)
+    public Board(int width, int height, Cell [][] cells, Point [] playerPositions)
     {
         assert width > 0 && height > 0 && cells.length == (width * height);
 
@@ -79,19 +73,31 @@ public final class Board
                         width = Math.max(width, s.length());
                     }
 
-                    final short [] cells = new short [width * height];
+                    final Cell [][] cells = new Cell [width][];
+                    for (int col = 0; col < width; col++)
+                    {
+                        cells[col] = new Cell [height];                        
+                    }
+
                     for (int row = 0; row < stack.size(); row++)
                     {
-                        for (int col = 0; col < stack.get(row).length(); col++)
+                        for (int col = 0; col < width; col++)
                         {
-                            short code = (short) stack.get(row).charAt(col);
-                            if (code > '0' && code < '9')
+                            if (col >= stack.get(row).length())
                             {
-                                playerPositions.add(new Point(col, row));
-                                code = ' ';
+                                cells[col][row] = new Cell(CellType.CELL_EMPTY);
                             }
+                            else
+                            {
+                                byte code = (byte) stack.get(row).charAt(col);
+                                if (code > '0' && code < '9')
+                                {
+                                    playerPositions.add(new Point(col, row));
+                                    code = ' ';
+                                }
 
-                            cells[row * width + col] = code;
+                                cells[col][row] = new Cell(CellType.valueOf(code));
+                            }
                         }
                     }
 

@@ -88,50 +88,43 @@ public final class BoardPanel extends JPanel
     {
         final Graphics2D g = background.createGraphics();
         
-        final BufferedImage backgroundImage = resources.cell_images.get(Cell.CELL_EMPTY)[0];
+        final BufferedImage backgroundImage = resources.cell_images.get(CellType.CELL_EMPTY)[0];
         final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
 
         synchronized (exclusiveLock)
         {
             /*
              * TODO: Possible optimization, update only those cells that changed from the
-             * previous state. This is easy, keep track of changes in board.cells.
+             * previous state?
              */
             final int GRID_SIZE = resources.gridSize;
-            final short [] cells = board.cells;
-            for (int offset = cells.length - 1; offset >= 0; offset--)
+            final Cell [][] cells = board.cells;
+            for (int y = board.height - 1; y >= 0; y--)
             {
-                final int y = offset / board.width;
-                final int x = offset - (y * board.width);
-
-                final short cell = board.cells[offset];
-                final byte code = (byte) (cell & 0x00ff);
-                final int frame = (cell >>> 8);
-                
-                final Cell c = Cell.valueOf(code);
-
-                final BufferedImage [] frames = resources.cell_images.get(c);
-
-                if (frames == null)
+                for (int x = board.width - 1; x >= 0; x--)
                 {
-                    logger.warning("There is no image for this cell: " + code);
-                    continue;
-                }
+                    final Cell cell = cells[x][y];
+                    final CellType type = cell.type;
 
-                if (frames.length <= frame)
-                {
-                    logger.warning("There is no frame " + frame + " for this cell: " + c);
-                    continue;
-                }
+                    final BufferedImage [] frames = resources.cell_images.get(type);
+                    if (frames == null)
+                    {
+                        logger.warning("There is no image for this cell: " + cell.type);
+                        continue;
+                    }
 
-                /*
-                 * We could fill entire background with a solid color at one go, but
-                 * then we wouldn't have the optimization possibility of redrawing only
-                 * those cells that have changed.
-                 */
-                g.setColor(backgroundColor);
-                g.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-                g.drawImage(frames[frame], null, x * GRID_SIZE, y * GRID_SIZE);
+                    final int advanceRate = resources.cell_infos.get(type).advanceRate;
+                    final int frame = (cell.counter / advanceRate) % frames.length;
+
+                    /*
+                     * We could fill entire background with a solid color at one go, but
+                     * then we wouldn't have the optimization possibility of redrawing only
+                     * those cells that have changed.
+                     */
+                    g.setColor(backgroundColor);
+                    g.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                    g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y * GRID_SIZE);
+                }
             }
         }
         g.dispose();
@@ -147,6 +140,7 @@ public final class BoardPanel extends JPanel
         {
             final Graphics2D g2d = (Graphics2D) g; 
             g2d.drawImage(background, null, 0, 0);
+            g2d.drawString("Frame: " + frame, 0, 15);
         }
     }
 
