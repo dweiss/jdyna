@@ -1,40 +1,25 @@
 package com.dawidweiss.dyna;
 
-import java.util.Collection;
-import java.util.EnumMap;
 
 /**
  * Mapping of {@link Cell} types to graphic files and their sub-tiles.
  */
 public final class CellInfo
 {
-    /**
-     * Each cell's dimensions (width, height) in pixels.
-     */
-    public final int GRID_SIZE;
+    /** */
+    public final TileInfo [] tiles;
 
-    /* */
-    private final EnumMap<Cell, TileInfo[]> tiles; 
+    /** How many frames it takes to advance to the next tile? */
+    public final int advanceRate;
 
-    CellInfo(EnumMap<Cell, TileInfo[]> tiles, int gridSize)
+    CellInfo(TileInfo [] tiles, int advanceRate)
     {
         this.tiles = tiles;
-        this.GRID_SIZE = gridSize;
+        this.advanceRate = advanceRate;
     }
 
-    /**
-     * @return Return the set of {@link Cell}s this mapping has information for.
-     */
-    public Collection<Cell> getCells()
+    CellInfo(TileInfo [] tiles)
     {
-        return tiles.keySet();
-    }
-
-    /**
-     * Return tile images for a given cell. 
-     */
-    public TileInfo [] getTileInfo(Cell c)
-    {
-        return tiles.get(c);
+        this(tiles, 1);
     }
 }

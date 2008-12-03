@@ -29,24 +29,30 @@ public final class BoardPanelResources
     /**
      * Information about cells, their shapes and images.
      */
-    public final CellInfo cell_info;
+    public final EnumMap<Cell, CellInfo> cell_infos;
+
+    /**
+     * Each cell's width and height.
+     */
+    public final int gridSize;
 
     /*
      *
      */
-    public BoardPanelResources(GraphicsConfiguration conf, CellInfo mapping)
+    public BoardPanelResources(GraphicsConfiguration conf, EnumMap<Cell, CellInfo> mapping, int gridSize)
         throws IOException
     {
         this.conf = conf;
-        this.cell_info = mapping;
+        this.cell_infos = mapping;
+        this.gridSize = gridSize;
 
         /*
          * Prebuffer images for cells.
          */
         final HashMap<String, BufferedImage> cache = Maps.newHashMap();
-        for (Cell c : mapping.getCells())
+        for (Cell c : mapping.keySet())
         {
-            final TileInfo [] ti = mapping.getTileInfo(c);
+            final TileInfo [] ti = mapping.get(c).tiles;
             final BufferedImage [] tileImages = new BufferedImage [ti.length];
 
             for (int i = 0; i < ti.length; i++)

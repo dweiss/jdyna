@@ -6,9 +6,13 @@ package com.dawidweiss.dyna;
 public enum Cell
 {
     CELL_EMPTY((byte) ' '),
+
     CELL_WALL((byte) '#'),
+
     CELL_CRATE((byte) 'X'),
-    CELL_CRATE_OUT((byte) 'x');
+    CELL_CRATE_OUT((byte) 'x'),
+
+    CELL_BOMB((byte) 'b');
 
     /**
      * Byte code for the cell.

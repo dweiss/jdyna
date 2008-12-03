@@ -32,16 +32,30 @@ public final class Main
          */
 
         final GraphicsConfiguration conf = ImageUtilities.getGraphicsConfiguration();
-        final CellInfo mapping = CellInfoFactory.DYNA_CLASSIC;
-        final BoardPanelResources resources = new BoardPanelResources(conf, mapping);
+        final BoardPanelResources resources = BoardPanelResourceFactory.getDynaClassic(conf);
+
+        /*
+         * Set up a single game between two players. 
+         */
+        final Board board = boards.get(0);
+        final Player p1 = new Player("Flip");
+        final Player p2 = new Player("Flap");
+
+        final Game game = new Game(board, resources, p1, p2);
+        game.setFrameRate(10);
+
+        /* 
+         * Create and attach a view to the game.
+         */
 
         final JFrame frame = new JFrame();
-        final BoardPanel gamePanel = new BoardPanel(resources, boards.get(0));
+        final BoardPanel gamePanel = new BoardPanel(resources, game);
         frame.getContentPane().add(gamePanel);
         frame.pack();
         frame.setLocationByPlatform(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         frame.setVisible(true);
+
+        game.run();
     }
 }
