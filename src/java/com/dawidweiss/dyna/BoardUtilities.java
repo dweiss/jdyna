@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
  * could be part of the {@link Board} class, but they take much space and are logically
  * together, so they are refactored into a separate class. 
  */
-public final class BoardUtilities
+final class BoardUtilities
 {
     private BoardUtilities()
     {

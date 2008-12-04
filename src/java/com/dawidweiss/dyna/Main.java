@@ -39,10 +39,11 @@ public final class Main
          * Set up a single game between two players. 
          */
         final Board board = boards.get(0);
-        final Player p1 = new Player("Flip",
-            new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT));
-
-        final Game game = new Game(board, resources, p1);
+        final IController c1 = new KeyboardController(
+                KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT);
+        final Player p1 = new Player("1", c1);
+        final Game game = new Game(board, resources, p1,
+            new Player("2", c1), new Player("3", c1), new Player("4", c1));
         game.setFrameRate(10);
 
         /* 
