@@ -1,6 +1,7 @@
 package com.dawidweiss.dyna;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -32,16 +33,16 @@ public final class Main
          */
 
         final GraphicsConfiguration conf = ImageUtilities.getGraphicsConfiguration();
-        final BoardPanelResources resources = BoardPanelResourceFactory.getDynaClassic(conf);
+        final BoardData resources = BoardDataFactory.getDynaClassic(conf);
 
         /*
          * Set up a single game between two players. 
          */
         final Board board = boards.get(0);
-        final Player p1 = new Player("Flip");
-        final Player p2 = new Player("Flap");
+        final Player p1 = new Player("Flip",
+            new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT));
 
-        final Game game = new Game(board, resources, p1, p2);
+        final Game game = new Game(board, resources, p1);
         game.setFrameRate(10);
 
         /* 

@@ -23,7 +23,7 @@ public final class BoardPanel extends JPanel
     /**
      * Static image resources.
      */
-    private BoardPanelResources resources;
+    private BoardData resources;
 
     /**
      * The board we're painting.
@@ -58,7 +58,7 @@ public final class BoardPanel extends JPanel
     /**
      * 
      */
-    public BoardPanel(BoardPanelResources resources, final Game game)
+    public BoardPanel(BoardData resources, final Game game)
     {
         this.resources = resources;
         this.board = game.board;
@@ -95,7 +95,8 @@ public final class BoardPanel extends JPanel
         {
             /*
              * TODO: Possible optimization, update only those cells that changed from the
-             * previous state?
+             * previous state? If so, we would have to move drawing sprites
+             * to either paint() or a separate buffer.
              */
             final int GRID_SIZE = resources.gridSize;
             final Cell [][] cells = board.cells;
@@ -125,6 +126,15 @@ public final class BoardPanel extends JPanel
                     g.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
                     g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y * GRID_SIZE);
                 }
+            }
+            
+            /*
+             * Paint sprites.
+             */
+            for (ISprite sprite : board.sprites)
+            {
+                final Point p = sprite.getPosition();
+                g.drawImage(sprite.getImage(), null, p.x, p.y);
             }
         }
         g.dispose();

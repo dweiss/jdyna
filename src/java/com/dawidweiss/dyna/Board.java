@@ -11,6 +11,9 @@ import com.google.common.collect.Lists;
  * dynamic in the sense that cells are statically positioned on the grid, but their values
  * may change (i.e., when a bomb is placed on the board or when a crate is destroyed
  * during an explosion).
+ * <p>
+ * The board additionally includes information about {@link ISprite} objects (overlays
+ * over the cell area).
  */
 public final class Board
 {
@@ -29,6 +32,11 @@ public final class Board
      * Default player positions on the board.
      */
     public final Point [] defaultPlayerPositions;
+
+    /**
+     * A list of sprites.
+     */
+    public final List<ISprite> sprites = Lists.newArrayList();
 
     /*
      * 
@@ -73,10 +81,10 @@ public final class Board
                         width = Math.max(width, s.length());
                     }
 
-                    final Cell [][] cells = new Cell [width][];
+                    final Cell [][] cells = new Cell [width] [];
                     for (int col = 0; col < width; col++)
                     {
-                        cells[col] = new Cell [height];                        
+                        cells[col] = new Cell [height];
                     }
 
                     for (int row = 0; row < stack.size(); row++)
@@ -101,8 +109,8 @@ public final class Board
                         }
                     }
 
-                    boards.add(new Board(width, height, cells, 
-                        playerPositions.toArray(new Point [playerPositions.size()])));
+                    boards.add(new Board(width, height, cells, playerPositions
+                        .toArray(new Point [playerPositions.size()])));
                     stack.clear();
                 }
                 else
