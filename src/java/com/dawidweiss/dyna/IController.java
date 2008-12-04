@@ -15,4 +15,10 @@ public interface IController
      * @return Current direction or <code>null</code> if none.
      */
     public Direction getCurrent();
+
+    /**
+     * @return Return <code>true</code> if player has activated
+     * bomb-dropping facility.
+     */
+    public boolean dropsBomb();
 }

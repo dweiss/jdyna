@@ -21,7 +21,7 @@ final class BoardUtilities
      * All {@link CellType}s that denote explosions.
      */
     public final static EnumSet<CellType> EXPLOSION_CELLS = EnumSet.of(
-        CellType.CELL_BOMB, CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
+        CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
         CellType.CELL_BOOM_Y, CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX,
         CellType.CELL_BOOM_RX, CellType.CELL_BOOM_XY);
 

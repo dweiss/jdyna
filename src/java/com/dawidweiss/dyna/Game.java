@@ -47,15 +47,12 @@ public final class Game
     }
 
     /**
-     * Run the game.
+     * Starts the main game loop and runs the whole thing.
      */
     public void run()
     {
         setupPlayers();
 
-        /*
-         * Main game loop.
-         */
         int frame = 0;
         while (true)
         {
@@ -73,14 +70,7 @@ public final class Game
      */
     public void setFrameRate(double framesPerSecond)
     {
-        if (framesPerSecond == 0)
-        {
-            framePeriod = 0;
-        }
-        else
-        {
-            framePeriod = (int) (1000 / framesPerSecond);
-        }
+        framePeriod = (framesPerSecond == 0 ? 0 : (int) (1000 / framesPerSecond));
     }
 
     /*
@@ -100,7 +90,7 @@ public final class Game
     }
 
     /**
-     * Fire next frame event to listeners.
+     * Fire "next frame" event to listeners.
      */
     private void fireNextFrameEvent(int frame)
     {
@@ -127,6 +117,23 @@ public final class Game
             {
                 movePlayer(pi, signal);
             }
+
+            if (c.dropsBomb())
+            {
+                dropBomb(pi);
+            }
+        }
+    }
+
+    /**
+     * Drop a bomb at the given location.
+     */
+    private void dropBomb(PlayerInfo pi)
+    {
+        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        if (board.cellAt(xy).type == CellType.CELL_EMPTY)
+        {
+            board.cells[xy.x][xy.y] = new Cell(CellType.CELL_BOMB);
         }
     }
 
@@ -174,7 +181,7 @@ public final class Game
 
         if (max(abs(rx), abs(ry)) <= boardData.gridSize)
         {
-            if (!canWalkOn(txy))
+            if (!canWalkOn(pi, txy))
             {
                 /*
                  * We try to perform 'easing', that is moving
@@ -238,16 +245,16 @@ public final class Game
         final int easeMargin = boardData.gridSize / 3;
         
         if (o > boardData.gridSize - easeMargin
-            && canWalkOn(new Point(xy.x + x1, xy.y + x2)) 
-            && canWalkOn(new Point(xy.x + x2, xy.y + y2)))
+            && canWalkOn(pi, new Point(xy.x + x1, xy.y + x2)) 
+            && canWalkOn(pi, new Point(xy.x + x2, xy.y + y2)))
         {
             movePlayer(pi, d1);
             return true;
         }
 
         if (o < easeMargin
-            && canWalkOn(new Point(xy.x + x3, xy.y + y3)) 
-            && canWalkOn(new Point(xy.x + x4, xy.y + y4)))
+            && canWalkOn(pi, new Point(xy.x + x3, xy.y + y3)) 
+            && canWalkOn(pi, new Point(xy.x + x4, xy.y + y4)))
         {
             movePlayer(pi, d2);
             return true;
@@ -256,10 +263,12 @@ public final class Game
         return false;
     }
 
-    /*
-     * 
+    /**
+     * Returns <code>true</code> if a player can walk on the grid's
+     * given coordinates.
      */
-    private boolean canWalkOn(Point txy)
+    @SuppressWarnings("unused")
+    private boolean canWalkOn(PlayerInfo pi, Point txy)
     {
         return board.cellAt(txy).type == CellType.CELL_EMPTY;        
     }
@@ -276,15 +285,13 @@ public final class Game
             throw new RuntimeException("The board has fewer positions than players: "
                 + defaults.length + " < " + pi.length);
         }
-    
+
         final PlayerImageData [] images = boardData.player_images;
-        final int GRID_SIZE = boardData.gridSize;
         for (int i = 0; i < players.length; i++)
         {
             pi[i] = new PlayerInfo(images[i % images.length]);
-            pi[i].location.x = defaults[i].x * GRID_SIZE + (GRID_SIZE / 2);
-            pi[i].location.y = defaults[i].y * GRID_SIZE + (GRID_SIZE / 2);
-    
+            pi[i].location.setLocation(
+                BoardUtilities.gridToPixel(boardData, defaults[i]));
             board.sprites.add(pi[i]);
         }
     
@@ -338,7 +345,7 @@ public final class Game
                 final Cell cell = cells[x][y];
                 final CellType type = cell.type;
 
-                if (type == CellType.CELL_BOMB && cell.counter == 10)
+                if (type == CellType.CELL_BOMB && cell.counter == 100)
                 {
                     final int range = 3;
                     BoardUtilities.explode(board, crates, x, y, range);
