@@ -1,9 +1,10 @@
 package com.dawidweiss.dyna;
 
+import static java.lang.Math.*;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.EnumSet;
 
+import com.dawidweiss.dyna.IController.Direction;
 import com.google.common.collect.Lists;
 
 /**
@@ -68,57 +69,6 @@ public final class Game
     }
 
     /**
-     * Move players according to their controller signals.
-     */
-    private void processPlayers()
-    {
-        for (int i = 0; i < players.length; i++)
-        {
-            final PlayerInfo pi = playerInfos[i];
-            final IController c = players[i].controller;
-
-            final EnumSet<IController.Direction> signals = c.getCurrent();
-
-            int dx = 0;
-            int dy = 0;
-            if (signals.contains(IController.Direction.LEFT)) dx -= pi.speed.x;
-            if (signals.contains(IController.Direction.RIGHT)) dx += pi.speed.x;
-            if (signals.contains(IController.Direction.UP)) dy -= pi.speed.y;
-            if (signals.contains(IController.Direction.DOWN)) dy += pi.speed.y;
-
-            pi.controllerState(signals);
-            pi.location.translate(dx, dy);
-        }
-    }
-
-    /**
-     * Assign players to their default board positions.
-     */
-    private void setupPlayers()
-    {
-        final PlayerInfo [] pi = new PlayerInfo [players.length];
-        final Point [] defaults = board.defaultPlayerPositions;
-        if (defaults.length < pi.length)
-        {
-            throw new RuntimeException("The board has fewer positions than players: "
-                + defaults.length + " < " + pi.length);
-        }
-
-        final PlayerImageData [] images = boardData.player_images;
-        final int GRID_SIZE = boardData.gridSize;
-        for (int i = 0; i < players.length; i++)
-        {
-            pi[i] = new PlayerInfo(images[i % images.length]);
-            pi[i].location.x = defaults[i].x * GRID_SIZE + (GRID_SIZE / 2);
-            pi[i].location.y = defaults[i].y * GRID_SIZE + (GRID_SIZE / 2);
-
-            board.sprites.add(pi[i]);
-        }
-
-        this.playerInfos = pi;
-    }
-
-    /**
      * Set the frame rate. Zero means no delays.
      */
     public void setFrameRate(double framesPerSecond)
@@ -158,6 +108,187 @@ public final class Game
         {
             gl.onNextFrame(frame);
         }
+    }
+
+    /**
+     * Move players according to their controller signals.
+     */
+    private void processPlayers()
+    {
+        for (int i = 0; i < players.length; i++)
+        {
+            final PlayerInfo pi = playerInfos[i];
+            final IController c = players[i].controller;
+
+            final IController.Direction signal = c.getCurrent();
+            pi.controllerState(signal);
+
+            if (signal != null)
+            {
+                movePlayer(pi, signal);
+            }
+        }
+    }
+
+    /**
+     * The movement-constraint code below has been engineered
+     * by trial and error by looking at the behavior of the original
+     * Dyna Blaster game. The basic logic is that we attempt
+     * to figure out the "target" cell towards which the player 
+     * is heading and "guide" the player's coordinates towards
+     * the target. This way there is a possibility to run on
+     * diagonals (crosscut along the edge of a cell).
+     */
+    private void movePlayer(PlayerInfo pi, Direction signal)
+    {
+        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        final Point txy;
+
+        switch (signal)
+        {
+            case LEFT:
+                txy = new Point(xy.x - 1, xy.y);
+                break;
+            case RIGHT:
+                txy = new Point(xy.x + 1, xy.y);
+                break;
+            case UP:
+                txy = new Point(xy.x, xy.y - 1);
+                break;
+            case DOWN:
+                txy = new Point(xy.x, xy.y + 1);
+                break;
+            default:
+                throw new RuntimeException(/* Unreachable. */);
+        }
+
+        final Point p = BoardUtilities.gridToPixel(boardData, txy);
+
+        // Relative distance between the target cell and current position.
+        final int rx = p.x - pi.location.x;
+        final int ry = p.y - pi.location.y;
+
+        // Steps towards the target.
+        int dx = (rx < 0 ? -1 : 1) * min(pi.speed.x, abs(rx));
+        int dy = (ry < 0 ? -1 : 1) * min(pi.speed.y, abs(ry));
+
+        if (max(abs(rx), abs(ry)) <= boardData.gridSize)
+        {
+            if (!canWalkOn(txy))
+            {
+                /*
+                 * We try to perform 'easing', that is moving
+                 * the player towards the cell from which he or she will
+                 * be able to move further.
+                 */
+                final Point offset = 
+                    BoardUtilities.pixelToGridOffset(boardData, pi.location);
+
+                final boolean easingApplied;
+                switch (signal)
+                {
+                    case LEFT:
+                        easingApplied = ease(pi, xy, offset.y, 
+                            0, 1, -1, 1, Direction.DOWN, 0, -1, -1, -1, Direction.UP);
+                        break;
+
+                    case RIGHT:
+                        easingApplied = ease(pi, xy, offset.y, 
+                            0, 1, 1, 1, Direction.DOWN, 0, -1, 1, -1, Direction.UP);
+                        break;
+
+                    case DOWN:
+                        easingApplied = ease(pi, xy, offset.x, 
+                            1, 0, 1, 1, Direction.RIGHT, -1, 1, -1, 1, Direction.LEFT);
+                        break;
+                       
+                    case UP:
+                        easingApplied = ease(pi, xy, offset.x, 
+                            1, 1, 1, -1, Direction.RIGHT, -1, 1, -1, -1, Direction.LEFT);
+                        break;
+
+                    default:
+                        throw new RuntimeException(/* unreachable */);
+                }
+
+                if (easingApplied) return;
+
+                /*
+                 * We can't step over a cell that has contents,
+                 * no easing.
+                 */
+                dx = 0;
+                dy = 0;
+            }
+        }
+
+        pi.location.translate(dx, dy);
+    }
+
+    /**
+     * A helper function that tests if we can apply easing in one 
+     * of the directions. This is generalized for all the possibilities,
+     * so it may be vague a bit.
+     */
+    private boolean ease(
+        PlayerInfo pi, Point xy, int o,
+        int x1, int y1, int x2, int y2, Direction d1,
+        int x3, int y3, int x4, int y4, Direction d2)
+    {
+        final int easeMargin = boardData.gridSize / 3;
+        
+        if (o > boardData.gridSize - easeMargin
+            && canWalkOn(new Point(xy.x + x1, xy.y + x2)) 
+            && canWalkOn(new Point(xy.x + x2, xy.y + y2)))
+        {
+            movePlayer(pi, d1);
+            return true;
+        }
+
+        if (o < easeMargin
+            && canWalkOn(new Point(xy.x + x3, xy.y + y3)) 
+            && canWalkOn(new Point(xy.x + x4, xy.y + y4)))
+        {
+            movePlayer(pi, d2);
+            return true;
+        }
+        
+        return false;
+    }
+
+    /*
+     * 
+     */
+    private boolean canWalkOn(Point txy)
+    {
+        return board.cellAt(txy).type == CellType.CELL_EMPTY;        
+    }
+
+    /**
+     * Assign players to their default board positions.
+     */
+    private void setupPlayers()
+    {
+        final PlayerInfo [] pi = new PlayerInfo [players.length];
+        final Point [] defaults = board.defaultPlayerPositions;
+        if (defaults.length < pi.length)
+        {
+            throw new RuntimeException("The board has fewer positions than players: "
+                + defaults.length + " < " + pi.length);
+        }
+    
+        final PlayerImageData [] images = boardData.player_images;
+        final int GRID_SIZE = boardData.gridSize;
+        for (int i = 0; i < players.length; i++)
+        {
+            pi[i] = new PlayerInfo(images[i % images.length]);
+            pi[i].location.x = defaults[i].x * GRID_SIZE + (GRID_SIZE / 2);
+            pi[i].location.y = defaults[i].y * GRID_SIZE + (GRID_SIZE / 2);
+    
+            board.sprites.add(pi[i]);
+        }
+    
+        this.playerInfos = pi;
     }
 
     /**
@@ -214,14 +345,10 @@ public final class Game
                 }
             }
         }
-        removeCrates(crates);
-    }
 
-    /**
-     * Remove the crates that have been bombed out.
-     */
-    private void removeCrates(ArrayList<Point> crates)
-    {
+        /*
+         * Remove the crates that have been bombed out.
+         */
         for (Point p : crates)
         {
             board.cells[p.x][p.y] = new Cell(CellType.CELL_CRATE_OUT);

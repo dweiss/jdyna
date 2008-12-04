@@ -174,4 +174,38 @@ public final class BoardUtilities
 
         return new Cell(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
     }
+
+    /**
+     * Convert pixel coordinates to grid cell coordinates.
+     */
+    public static Point pixelToGrid(BoardData boardData, Point location)
+    {
+        final int GRID_SIZE = boardData.gridSize;
+        return new Point(
+            location.x / GRID_SIZE, 
+            location.y / GRID_SIZE);
+    }
+
+    /**
+     * Convert pixel coordinates to grid cell coordinates.
+     */
+    public static Point pixelToGridOffset(BoardData boardData, Point location)
+    {
+        final int GRID_SIZE = boardData.gridSize;
+        return new Point(
+            location.x % GRID_SIZE, 
+            location.y % GRID_SIZE);
+    }
+
+    /**
+     * Convert from grid coordinates to pixel data. The result
+     * is the centerpoint of the grid's cell.
+     */
+    public static Point gridToPixel(BoardData boardData, Point location)
+    {
+        final int GRID_SIZE = boardData.gridSize;
+        return new Point(
+            location.x * GRID_SIZE + GRID_SIZE / 2, 
+            location.y * GRID_SIZE + GRID_SIZE / 2);
+    }
 }

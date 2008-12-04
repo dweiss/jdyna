@@ -3,7 +3,6 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.EnumSet;
 
 import com.dawidweiss.dyna.IController.Direction;
 
@@ -66,30 +65,42 @@ final class PlayerInfo implements ISprite
     }
 
     /**
-     * Update internal state with the controller's.
+     * Update internal frame state with the controller's.
+     * 
+     * @see #frame
      */
-    public void controllerState(EnumSet<Direction> signals)
+    public void controllerState(Direction signal)
     {
-        final Player.State prev = state;
-
-        if (signals.contains(IController.Direction.LEFT)) state = Player.State.LEFT;
-        else if (signals.contains(IController.Direction.RIGHT)) state = Player.State.RIGHT;
-        else if (signals.contains(IController.Direction.UP)) state = Player.State.UP;
-        else if (signals.contains(IController.Direction.DOWN)) state = Player.State.DOWN;
-        else
+        if (signal == null)
         {
             // No movement at all. Reset to the first frame in the current state.
             frame = 0;
-            return;
-        }
-
-        if (state != prev)
-        {
-            frame = 0;
         }
         else
         {
-            frame ++;
+            final Player.State prev = state;
+            switch (signal)
+            {
+                case LEFT:
+                    state = Player.State.LEFT; break;
+                case RIGHT:
+                    state = Player.State.RIGHT; break;
+                case UP:
+                    state = Player.State.UP; break;
+                case DOWN:
+                    state = Player.State.DOWN; break;
+                default:
+                    throw new RuntimeException(/* unreachable */);
+            }
+
+            if (state != prev)
+            {
+                frame = 0;
+            }
+            else
+            {
+                frame ++;
+            }
         }
     }
 }

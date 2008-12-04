@@ -132,4 +132,12 @@ public final class Board
             wrapped.close();
         }
     }
+
+    /**
+     * Same as <code>{@link #cells}[p.x][p.y]</code>.
+     */
+    public Cell cellAt(Point p)
+    {
+        return cells[p.x][p.y];
+    }
 }

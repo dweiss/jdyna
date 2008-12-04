@@ -1,6 +1,5 @@
 package com.dawidweiss.dyna;
 
-import java.util.EnumSet;
 
 /**
  * A controller for the game.
@@ -12,5 +11,8 @@ public interface IController
         LEFT, RIGHT, UP, DOWN
     }
 
-    public EnumSet<Direction> getCurrent();
+    /**
+     * @return Current direction or <code>null</code> if none.
+     */
+    public Direction getCurrent();
 }

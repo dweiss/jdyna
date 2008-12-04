@@ -3,10 +3,9 @@ package com.dawidweiss.dyna;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.ArrayList;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 /**
  * {@link IController} based on keyboard events.
@@ -14,11 +13,11 @@ import com.google.common.collect.Sets;
 public class KeyboardController implements IController
 {
     /**
-     * All the pressed (and unreleased) key codes. This set is shared by all
-     * implementations of this class.
+     * All the pressed (and unreleased) key codes, the most
+     * recently pressed codes appear at the end of the list.
      */
-    private static HashSet<Integer> pressedCodes = Sets.newHashSet();
-
+    private static ArrayList<Integer> pressedCodes = Lists.newArrayList();
+    
     /**
      * Hook into events manager.
      */
@@ -36,12 +35,6 @@ public class KeyboardController implements IController
     private final Integer vk_up;
     private final Integer vk_down;
 
-    /**
-     * Current set of signals.
-     */
-    private final EnumSet<IController.Direction> signals = EnumSet
-        .noneOf(IController.Direction.class);
-
     /*
      * 
      */
@@ -53,18 +46,22 @@ public class KeyboardController implements IController
         this.vk_down = vk_down;
     }
 
-    public EnumSet<Direction> getCurrent()
+    public Direction getCurrent()
     {
         synchronized (pressedCodes)
         {
-            signals.clear();
-            if (pressedCodes.contains(vk_left)) signals.add(Direction.LEFT);
-            if (pressedCodes.contains(vk_right)) signals.add(Direction.RIGHT);
-            if (pressedCodes.contains(vk_up)) signals.add(Direction.UP);
-            if (pressedCodes.contains(vk_down)) signals.add(Direction.DOWN);
+            for (int index = pressedCodes.size() - 1; index >= 0; index--)
+            {
+                final int i = pressedCodes.get(index);
+
+                if (i == vk_left) return Direction.LEFT;
+                if (i == vk_right) return Direction.RIGHT;
+                if (i == vk_down) return Direction.DOWN;
+                if (i == vk_up) return Direction.UP;
+            }
         }
 
-        return signals;
+        return null;
     }
 
     /*
@@ -79,13 +76,16 @@ public class KeyboardController implements IController
         {
             public boolean dispatchKeyEvent(KeyEvent e)
             {
-                final int code = e.getKeyCode();
+                final Integer code = e.getKeyCode();
                 synchronized (pressedCodes)
                 {
                     switch (e.getID())
                     {
                         case KeyEvent.KEY_PRESSED:
-                            pressedCodes.add(code);
+                            if (!pressedCodes.contains(code))
+                            {
+                                pressedCodes.add(code);
+                            }
                             break;
 
                         case KeyEvent.KEY_RELEASED:
