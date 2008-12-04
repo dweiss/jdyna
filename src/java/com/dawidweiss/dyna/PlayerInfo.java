@@ -20,7 +20,7 @@ final class PlayerInfo implements ISprite
     /**
      * Movement speed in each state.
      */
-    public final Point speed = new Point(4, 4);
+    public final Point speed = new Point(2, 2);
 
     /**
      * Image data for the player.
@@ -31,6 +31,11 @@ final class PlayerInfo implements ISprite
      * If walking anywhere, an increasing counter of frames.
      */
     private int frame;
+
+    /**
+     * Slowdown rate for the animation.
+     */
+    private final int frameRate = 4;
 
     /**
      * Walking state or <code>null</code>. 
@@ -50,7 +55,7 @@ final class PlayerInfo implements ISprite
      */
     public BufferedImage getImage()
     {
-        return images.get(state, frame);
+        return images.get(state, frame / frameRate);
     }
 
     /*
@@ -99,7 +104,14 @@ final class PlayerInfo implements ISprite
             }
             else
             {
-                frame ++;
+                if (frame == 0) 
+                {
+                    frame = frameRate;
+                }
+                else
+                {
+                    frame++;
+                }
             }
         }
     }
