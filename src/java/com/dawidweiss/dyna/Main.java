@@ -24,7 +24,7 @@ public final class Main
          * Load board configurations.
          */
         final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        final List<Board> boards = Board.readBoards(new InputStreamReader(cl
+        final List<Board> boards = BoardIO.readBoards(new InputStreamReader(cl
             .getResourceAsStream("boards.conf"), "UTF-8"));
 
         /*
@@ -45,23 +45,27 @@ public final class Main
                 KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
                 KeyEvent.VK_CONTROL);
 
+        final IController c2 = new KeyboardController(
+            KeyEvent.VK_R, KeyEvent.VK_F, KeyEvent.VK_D, KeyEvent.VK_G,
+            KeyEvent.VK_Z);
+
         final Player p1 = new Player("Player 1", c1);
-        final Player p2 = new Player("Player 2", c1);
-        final Player p3 = new Player("Player 3", c1);
-        final Player p4 = new Player("Player 4", c1);
-        final Game game = new Game(board, resources, p1, p2, p3, p4);
+        final Player p2 = new Player("Player 2", c2);
+        final Game game = new Game(board, resources, p1, p2);
         game.setFrameRate(25);
 
         /*
          * Create and attach a view to the game.
          */
 
-        final JFrame frame = new JFrame();
+        final JFrame frame = new JFrame(conf);
         final BoardPanel gamePanel = new BoardPanel(resources, game);
         frame.getContentPane().add(gamePanel);
-        frame.pack();
         frame.setLocationByPlatform(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setIgnoreRepaint(true);
+        frame.pack();
+        frame.setFocusTraversalKeysEnabled(false);
         frame.setVisible(true);
 
         GameResult result = game.run();

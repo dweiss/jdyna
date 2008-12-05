@@ -57,7 +57,7 @@ final class ImageUtilities
     {
         final BufferedImage sub = source.getSubimage(r.x, r.y, r.width, r.height);
         final BufferedImage tile = conf.createCompatibleImage(r.width, r.height,
-            Transparency.TRANSLUCENT);
+            Transparency.BITMASK);
 
         final Graphics2D g = (Graphics2D) tile.getGraphics();
         g.drawImage(sub, null, 0, 0);
