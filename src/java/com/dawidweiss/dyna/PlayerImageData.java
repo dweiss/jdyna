@@ -39,4 +39,13 @@ final class PlayerImageData
         final BufferedImage [] directionImages = images.get(direction);
         return directionImages[frame % directionImages.length];
     }
+
+    /**
+     * Return the number of frames assigned for a given state.
+     */
+    public int getFrameCount(Player.State direction)
+    {
+        final BufferedImage [] directionImages = images.get(direction);
+        return directionImages.length;
+    }
 }

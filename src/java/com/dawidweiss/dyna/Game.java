@@ -1,9 +1,12 @@
 package com.dawidweiss.dyna;
 
 import static java.lang.Math.*;
+
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.dawidweiss.dyna.GameResult.Standing;
 import com.dawidweiss.dyna.IController.Direction;
 import com.google.common.collect.Lists;
 
@@ -27,6 +30,11 @@ public final class Game
      */
     private PlayerInfo [] playerInfos;
 
+    /**
+     * A list of killed players. 
+     */
+    private final ArrayList<GameResult.Standing> standings = Lists.newArrayList();
+
     /** Single frame delay, in milliseconds. */
     private int framePeriod;
 
@@ -49,12 +57,13 @@ public final class Game
     /**
      * Starts the main game loop and runs the whole thing.
      */
-    public void run()
+    public GameResult run()
     {
         setupPlayers();
 
         int frame = 0;
-        while (true)
+        GameResult result = null;
+        do
         {
             waitForFrame();
             processBoardCells();
@@ -62,7 +71,53 @@ public final class Game
 
             fireNextFrameEvent(frame);
             frame++;
+
+            result = checkGameOver();
+        } while (result == null);
+        
+        return result;
+    }
+
+    /**
+     * Check game over conditions.
+     */
+    private GameResult checkGameOver()
+    {
+        Player winner = null;
+        int dead = 0;
+        int alive = 0;
+        for (PlayerInfo pi : playerInfos)
+        {
+            if (pi.isDead())
+            {
+                dead++;
+            }
+            else if (!pi.isKilled()) 
+            {
+                alive++;
+                winner = pi.player;
+            }
         }
+        final int all = playerInfos.length;
+
+        /*
+         * There is one alive player, everyone else is dead. 
+         */
+        if (alive == 1 && dead == all - 1)
+        {
+            standings.add(0, new Standing(winner, 0));
+            return new GameResult(winner, standings);
+        }
+
+        /*
+         * Everyone is dead (draw).
+         */
+        if (dead == all)
+        {
+            return new GameResult(null, standings);
+        }
+
+        return null;
     }
 
     /**
@@ -101,27 +156,78 @@ public final class Game
     }
 
     /**
-     * Move players according to their controller signals.
+     * Move players according to their controller signals, drop bombs,
+     * check collisions.
      */
     private void processPlayers()
     {
+        final ArrayList<PlayerInfo> killed = Lists.newArrayList();
+
         for (int i = 0; i < players.length; i++)
         {
+            /*
+             * Process controller direction signals.
+             */
             final PlayerInfo pi = playerInfos[i];
             final IController c = players[i].controller;
 
             final IController.Direction signal = c.getCurrent();
             pi.controllerState(signal);
 
+            /*
+             * Dead can't dance.
+             */
+            if (pi.isKilled())
+            {
+                continue;
+            }
+
             if (signal != null)
             {
                 movePlayer(pi, signal);
             }
 
-            if (c.dropsBomb())
+            if (c.dropsBomb() && pi.bombCount > 0)
             {
                 dropBomb(pi);
             }
+
+            /*
+             * check collisions against bombs and other active cells.
+             */
+            checkCollisions(killed, pi);
+        }
+        
+        /*
+         * Update standings. Assign <b>the same</b> victim number to all the people
+         * killed in the same round.
+         */
+        if (killed.size() > 0)
+        {
+            final int victimNumber = players.length - standings.size() - 1;
+            for (PlayerInfo pi : killed)
+            {
+                standings.add(0, new Standing(pi.player, victimNumber));
+            }
+        }
+    }
+
+    /**
+     * Check collisions against bombs and other active cells.
+     */
+    private void checkCollisions(List<PlayerInfo> kills, PlayerInfo pi)
+    {
+        /*
+         * Check collisions against grid cells. We only care about the cell directly 
+         * under the player.
+         */
+        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        final Cell c = board.cellAt(xy);
+        if (CellType.isLethal(c.type))
+        {
+            // For whom the bell tolls...
+            pi.kill();
+            kills.add(pi);
         }
     }
 
@@ -274,7 +380,11 @@ public final class Game
     @SuppressWarnings("unused")
     private boolean canWalkOn(PlayerInfo pi, Point txy)
     {
-        return board.cellAt(txy).type == CellType.CELL_EMPTY;        
+        /*
+         * Leave player info as an argument, we may want to add a 'god mode' in the future so
+         * that certain players (or at given period of times) can walk on bombs.
+         */
+        return CellType.isWalkable(board.cellAt(txy).type);        
     }
 
     /**
@@ -293,7 +403,7 @@ public final class Game
         final PlayerImageData [] images = boardData.player_images;
         for (int i = 0; i < players.length; i++)
         {
-            pi[i] = new PlayerInfo(images[i % images.length]);
+            pi[i] = new PlayerInfo(players[i], images[i % images.length]);
             pi[i].location.setLocation(
                 BoardUtilities.gridToPixel(boardData, defaults[i]));
             board.sprites.add(pi[i]);

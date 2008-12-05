@@ -11,6 +11,9 @@ import com.dawidweiss.dyna.IController.Direction;
  */
 final class PlayerInfo implements ISprite
 {
+    /* */
+    public final Player player;
+
     /**
      * Coordinates of this player (it's centerpoint). The rectangle actually taken by the
      * player and the position of the sprite is determined by the player's implementation.
@@ -55,8 +58,9 @@ final class PlayerInfo implements ISprite
     /*
      * 
      */
-    public PlayerInfo(PlayerImageData playerImageData)
+    public PlayerInfo(Player player, PlayerImageData playerImageData)
     {
+        this.player = player;
         this.images = playerImageData;
     }
 
@@ -65,6 +69,11 @@ final class PlayerInfo implements ISprite
      */
     public BufferedImage getImage()
     {
+        if (state == Player.State.DEAD)
+        {
+            return null;
+        }
+
         return images.get(state, frame / frameRate);
     }
 
@@ -86,6 +95,22 @@ final class PlayerInfo implements ISprite
      */
     public void controllerState(Direction signal)
     {
+        /*
+         * Keep on advancing frame counter until dead. 
+         */
+        if (state == Player.State.DEAD)
+            return;
+
+        if (state == Player.State.DYING)
+        {
+            if ((frame + 1) / frameRate == images.getFrameCount(state))
+            {
+                state = Player.State.DEAD;
+            }
+            frame++;
+            return;
+        }
+
         if (signal == null)
         {
             // No movement at all. Reset to the first frame in the current state.
@@ -116,6 +141,7 @@ final class PlayerInfo implements ISprite
             {
                 if (frame == 0) 
                 {
+                    // If changed the mode, start from the first 'active' frame.
                     frame = frameRate;
                 }
                 else
@@ -124,5 +150,30 @@ final class PlayerInfo implements ISprite
                 }
             }
         }
+    }
+
+    /**
+     * Kills the player, initiating the death state's animation. 
+     */
+    public void kill()
+    {
+        this.state = Player.State.DYING;
+        this.frame = 0;
+    }
+
+    /**
+     * @return Returns <code>true</code> if the player is dead (dying sequence is finished).
+     */
+    public boolean isDead()
+    {
+        return state == Player.State.DEAD;
+    }
+    
+    /**
+     * @return Returns <code>true</code> if the player is either dying or dead.
+     */
+    public boolean isKilled()
+    {
+        return state == Player.State.DEAD || state == Player.State.DYING;
     }
 }

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  * The <b>Dyna Blaster</b> game. Oh, yes.
@@ -36,7 +37,7 @@ public final class Main
         final BoardData resources = BoardDataFactory.getDynaClassic(conf);
 
         /*
-         * Set up a single game between two players. 
+         * Set up a single game between two players.
          */
         final Board board = boards.get(0);
 
@@ -44,12 +45,14 @@ public final class Main
                 KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
                 KeyEvent.VK_CONTROL);
 
-        final Player p1 = new Player("1", c1);
-        final Game game = new Game(board, resources, p1,
-            new Player("1", c1), new Player("1", c1), new Player("1", c1));
+        final Player p1 = new Player("Player 1", c1);
+        final Player p2 = new Player("Player 2", c1);
+        final Player p3 = new Player("Player 3", c1);
+        final Player p4 = new Player("Player 4", c1);
+        final Game game = new Game(board, resources, p1, p2, p3, p4);
         game.setFrameRate(25);
 
-        /* 
+        /*
          * Create and attach a view to the game.
          */
 
@@ -61,6 +64,14 @@ public final class Main
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        game.run();
+        GameResult result = game.run();
+
+        System.out.println(result);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                frame.dispose();
+            }
+        });
     }
 }

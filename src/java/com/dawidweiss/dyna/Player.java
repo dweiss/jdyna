@@ -14,6 +14,7 @@ public final class Player
         RIGHT,
         UP,
         DOWN,
+        DYING,
         DEAD
     }
 

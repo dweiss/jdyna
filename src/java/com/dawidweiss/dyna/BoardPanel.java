@@ -127,14 +127,18 @@ public final class BoardPanel extends JPanel
                     g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y * GRID_SIZE);
                 }
             }
-            
+
             /*
              * Paint sprites.
              */
             for (ISprite sprite : board.sprites)
             {
                 final Point p = sprite.getPosition();
-                g.drawImage(sprite.getImage(), null, p.x, p.y);
+                final BufferedImage image = sprite.getImage();
+                if (image != null)
+                {
+                    g.drawImage(image, null, p.x, p.y);
+                }
             }
         }
         g.dispose();

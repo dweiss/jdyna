@@ -137,10 +137,11 @@ final class BoardDataFactory
         result.put(Player.State.UP, tb.tile(new int [][] {
             {9, 0}, {10, 0}, {9, 0}, {11, 0}
         }));
-        result.put(Player.State.DEAD, tb.tile(new int [][] {
+        result.put(Player.State.DYING, tb.tile(new int [][] {
             {12, 0}, {0, 1}, {1, 1}, {2, 1}, {3, 1},
             {4, 1}, {5, 1}, {6, 1}
         }));
+        result.put(Player.State.DEAD, new TileInfo [] {});
 
         return result;
     }
@@ -169,10 +170,11 @@ final class BoardDataFactory
         result.put(Player.State.UP, tb.tile(new int [][] {
             {3, 2}, {4, 2}, {3, 2}, {5, 2}
         }));
-        result.put(Player.State.DEAD, tb.tile(new int [][] {
+        result.put(Player.State.DYING, tb.tile(new int [][] {
             {6, 2}, {7, 2}, {8, 2}, {9, 2}, {10, 2},
             {11, 2}, {12, 2}, {0, 3}
         }));
+        result.put(Player.State.DEAD, new TileInfo [] {});
 
         return result;
     }
@@ -201,10 +203,11 @@ final class BoardDataFactory
         result.put(Player.State.UP, tb.tile(new int [][] {
             {10, 3}, {11, 3}, {10, 3}, {12, 3}
         }));
-        result.put(Player.State.DEAD, tb.tile(new int [][] {
+        result.put(Player.State.DYING, tb.tile(new int [][] {
             {0, 4}, {1, 4}, {2, 4}, {3, 4}, {4, 4},
             {5, 4}, {6, 4}, {7, 4}
         }));
+        result.put(Player.State.DEAD, new TileInfo [] {});
 
         return result;
     }
@@ -233,10 +236,11 @@ final class BoardDataFactory
         result.put(Player.State.UP, tb.tile(new int [][] {
             {4, 5}, {5, 5}, {4, 5}, {6, 5}
         }));
-        result.put(Player.State.DEAD, tb.tile(new int [][] {
+        result.put(Player.State.DYING, tb.tile(new int [][] {
             {7, 5}, {8, 5}, {9, 5}, {10, 5}, {11, 5},
             {12, 5}, {11, 6}, {12, 6}
         }));
+        result.put(Player.State.DEAD, new TileInfo [] {});
 
         return result;
     }
