@@ -7,7 +7,7 @@ import java.util.EnumMap;
 /**
  * Image data for a {@link Player}.
  */
-public final class PlayerImageData
+final class PlayerImageData
 {
     private final EnumMap<Player.State, BufferedImage []> images;
 

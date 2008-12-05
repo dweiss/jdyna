@@ -11,7 +11,7 @@ import com.google.common.collect.Maps;
 /**
  * Hardcoded resource factory.
  */
-public final class BoardDataFactory
+final class BoardDataFactory
 {
     /**
      * Helper class for building {@link TileInfo}s.

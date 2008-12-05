@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 /**
  * {@link IController} based on keyboard events. 
  */
-public class KeyboardController implements IController
+public final class KeyboardController implements IController
 {
     /**
      * Global lock for accessing static data structures.

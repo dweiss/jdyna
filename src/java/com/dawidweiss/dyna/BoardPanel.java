@@ -58,7 +58,7 @@ public final class BoardPanel extends JPanel
     /**
      * 
      */
-    public BoardPanel(BoardData resources, final Game game)
+    public BoardPanel(BoardData resources, Game game)
     {
         this.resources = resources;
         this.board = game.board;

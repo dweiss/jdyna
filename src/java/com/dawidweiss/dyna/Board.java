@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
  * The board additionally includes information about {@link ISprite} objects (overlays
  * over the cell area).
  */
-public final class Board
+final class Board
 {
     /** Board's width in cells. */
     public final int width;

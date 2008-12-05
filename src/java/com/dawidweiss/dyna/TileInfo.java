@@ -1,9 +1,9 @@
 package com.dawidweiss.dyna;
 
 /**
- * A tile is a slice of an image.
+ * A tile is a slice of a resource image.
  */
-public class TileInfo
+final class TileInfo
 {
     /**
      * Resource name of the tiles image this tile is contained in.
@@ -15,6 +15,9 @@ public class TileInfo
      */
     public final int x, y, w, h;
 
+    /*
+     * 
+     */
     public TileInfo(String imageName, int x, int y, int w, int h)
     {
         this.x = x;
