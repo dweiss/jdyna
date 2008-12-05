@@ -57,7 +57,7 @@ public final class Game
         while (true)
         {
             waitForFrame();
-            processCells();
+            processBoardCells();
             processPlayers();
 
             fireNextFrameEvent(frame);
@@ -126,25 +126,29 @@ public final class Game
     }
 
     /**
-     * Drop a bomb at the given location.
+     * Attempt to drop a bomb at the given location (if the player has any bombs left
+     * and the cell under its feet is empty).
      */
     private void dropBomb(PlayerInfo pi)
     {
         final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
-        if (board.cellAt(xy).type == CellType.CELL_EMPTY)
+        if (board.cellAt(xy).type == CellType.CELL_EMPTY && pi.bombCount > 0)
         {
-            board.cells[xy.x][xy.y] = new Cell(CellType.CELL_BOMB);
+            pi.bombCount--;
+
+            final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
+            bomb.player = pi;
+            bomb.range = pi.bombRange;
+            board.cells[xy.x][xy.y] = bomb;
         }
     }
 
     /**
-     * The movement-constraint code below has been engineered
-     * by trial and error by looking at the behavior of the original
-     * Dyna Blaster game. The basic logic is that we attempt
-     * to figure out the "target" cell towards which the player 
-     * is heading and "guide" the player's coordinates towards
-     * the target. This way there is a possibility to run on
-     * diagonals (crosscut along the edge of a cell).
+     * The movement-constraint code below has been engineered by trial and error by
+     * looking at the behavior of the original Dyna Blaster game. The basic logic is that
+     * we attempt to figure out the "target" cell towards which the player is heading and
+     * "guide" the player's coordinates towards the target. This way there is a
+     * possibility to run on diagonals (crosscut along the edge of a cell).
      */
     private void movePlayer(PlayerInfo pi, Direction signal)
     {
@@ -302,9 +306,13 @@ public final class Game
      * Advance each cell's frame number, if they contain animations of some sort (bombs,
      * explosions).
      */
-    private void processCells()
+    private void processBoardCells()
     {
         final Cell [][] cells = board.cells;
+
+        /*
+         * Advance animation cells.
+         */
         for (int y = board.height - 1; y >= 0; y--)
         {
             for (int x = board.width - 1; x >= 0; x--)
@@ -313,7 +321,7 @@ public final class Game
                 final CellType type = cell.type;
 
                 /*
-                 * Advance counter frame for cells that use it.
+                 * Advance counter frame on cells that use it.
                  */
                 cell.counter++;
 
@@ -327,7 +335,7 @@ public final class Game
 
                     if (cell.counter == maxFrames)
                     {
-                        cells[x][y] = new Cell(CellType.CELL_EMPTY);
+                        cells[x][y] = Cell.getInstance(CellType.CELL_EMPTY);
                         continue;
                     }
                 }
@@ -338,6 +346,7 @@ public final class Game
          * Detect and propagate explosions.
          */
         final ArrayList<Point> crates = Lists.newArrayList();
+        final ArrayList<BombCell> bombs = Lists.newArrayList();
         for (int y = board.height - 1; y >= 0; y--)
         {
             for (int x = board.width - 1; x >= 0; x--)
@@ -345,10 +354,13 @@ public final class Game
                 final Cell cell = cells[x][y];
                 final CellType type = cell.type;
 
-                if (type == CellType.CELL_BOMB && cell.counter == 100)
+                if (type == CellType.CELL_BOMB)
                 {
-                    final int range = 3;
-                    BoardUtilities.explode(board, crates, x, y, range);
+                    final BombCell bomb = (BombCell) cell;
+                    if (bomb.fuseCounter-- <= 0)
+                    {
+                        BoardUtilities.explode(board, bombs, crates, x, y, bomb.range);
+                    }
                 }
             }
         }
@@ -358,7 +370,18 @@ public final class Game
          */
         for (Point p : crates)
         {
-            board.cells[p.x][p.y] = new Cell(CellType.CELL_CRATE_OUT);
+            board.cells[p.x][p.y] = Cell.getInstance(CellType.CELL_CRATE_OUT);
+        }
+        
+        /*
+         * Update player bomb counters.
+         */
+        for (BombCell bomb : bombs)
+        {
+            if (bomb.player != null)
+            {
+                bomb.player.bombCount++;
+            }
         }
     }
 

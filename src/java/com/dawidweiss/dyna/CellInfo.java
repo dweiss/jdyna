@@ -1,16 +1,15 @@
 package com.dawidweiss.dyna;
 
 /**
- * Additional information about a {@link CellType}, its graphical properties for example.
+ * Additional information about a {@link CellType}.
  */
-public final class CellInfo
+final class CellInfo
 {
     /** */
     public final TileInfo [] tiles;
 
     /**
-     * How many frames it takes to advance to the cell's counter? This is related to
-     * animation, but also to things like explosions.
+     * How many frames it takes to advance to the cell's counter?
      */
     public final int advanceRate;
 

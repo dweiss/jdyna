@@ -93,18 +93,18 @@ public final class Board
                         {
                             if (col >= stack.get(row).length())
                             {
-                                cells[col][row] = new Cell(CellType.CELL_EMPTY);
+                                cells[col][row] = Cell.getInstance(CellType.CELL_EMPTY);
                             }
                             else
                             {
-                                byte code = (byte) stack.get(row).charAt(col);
+                                char code = stack.get(row).charAt(col);
                                 if (code > '0' && code < '9')
                                 {
                                     playerPositions.add(new Point(col, row));
                                     code = ' ';
                                 }
 
-                                cells[col][row] = new Cell(CellType.valueOf(code));
+                                cells[col][row] = Cell.getInstance(CellType.valueOf(code));
                             }
                         }
                     }

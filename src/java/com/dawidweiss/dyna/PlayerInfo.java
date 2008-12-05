@@ -42,6 +42,16 @@ final class PlayerInfo implements ISprite
      */
     private Player.State state = Player.State.DOWN;
 
+    /**
+     * Current arsenal to use (bomb count).
+     */
+    public int bombCount = Globals.DEFAULT_BOMB_COUNT;
+
+    /**
+     * Bomb range for this player. Assigned to {@link BombCell#range}.
+     */
+    public int bombRange = Globals.DEFAULT_BOMB_RANGE;
+
     /*
      * 
      */

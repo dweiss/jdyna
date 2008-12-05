@@ -45,7 +45,8 @@ public final class Main
                 KeyEvent.VK_CONTROL);
 
         final Player p1 = new Player("1", c1);
-        final Game game = new Game(board, resources, p1);
+        final Game game = new Game(board, resources, p1,
+            new Player("1", c1), new Player("1", c1), new Player("1", c1));
         game.setFrameRate(25);
 
         /* 

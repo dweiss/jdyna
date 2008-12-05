@@ -1,40 +1,43 @@
 package com.dawidweiss.dyna;
 
 /**
- * Additional specification for a single cell on the {@link Board}.
+ * A cell type contains the cell's numeric code. An enum is basically the same as
+ * integer-coded constant and efficient to use in sets and maps.
  */
 public enum CellType
 {
-    CELL_EMPTY((byte) ' '),
+    /* Empty cell. */
+    CELL_EMPTY(' '),
 
-    CELL_WALL((byte) '#'),
+    /* Simple wall. */
+    CELL_WALL('#'),
 
-    CELL_CRATE((byte) 'X'),
-    CELL_CRATE_OUT((byte) 'x'),
+    /* Crates (destroyable). */
+    CELL_CRATE('X'), CELL_CRATE_OUT('x'),
 
-    CELL_BOMB((byte) 'o'), 
-    CELL_BOOM_LX((byte) '<'),
-    CELL_BOOM_RX((byte) '>'),
-    CELL_BOOM_X((byte) '-'),
-    CELL_BOOM_TY((byte) '^'),
-    CELL_BOOM_BY((byte) 'v'),
-    CELL_BOOM_Y((byte) '|'),
-    CELL_BOOM_XY((byte) '+');
+    /* Bomb. */
+    CELL_BOMB('o'),
+
+    /* Explosions. */
+    CELL_BOOM_LX('<'), CELL_BOOM_RX('>'), CELL_BOOM_X('-'), CELL_BOOM_TY('^'), CELL_BOOM_BY('v'),
+    CELL_BOOM_Y('|'), CELL_BOOM_XY('+');
 
     /**
-     * Byte code for the cell.
+     * Character code for the cell (16 bits).
      */
-    public final byte code;
+    public final char code;
 
     /**
-     * A static mapping between codes and enum constants.
+     * A static mapping between codes and enum constants. 64k is not
+     * a problem with today's architecture, huh? (we don't care
+     * about code points).
      * 
-     * @see #valueOf(byte)
+     * @see #valueOf(char)
      */
     private final static CellType [] cells;
     static
     {
-        cells = new CellType [256];
+        cells = new CellType [Character.MAX_VALUE];
         for (CellType c : CellType.values())
         {
             cells[c.code] = c;
@@ -44,7 +47,7 @@ public enum CellType
     /*
      * 
      */
-    private CellType(byte code)
+    private CellType(char code)
     {
         this.code = code;
     }
@@ -53,7 +56,7 @@ public enum CellType
      * @return Return an enum instance for a cell's character code.
      * @throws IllegalArgumentException If the code does not exist.
      */
-    public static CellType valueOf(byte code)
+    public static CellType valueOf(char code)
     {
         return cells[code];
     }

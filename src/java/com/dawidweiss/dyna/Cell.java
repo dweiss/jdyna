@@ -3,9 +3,11 @@ package com.dawidweiss.dyna;
 /**
  * A single cell in the board's grid.
  */
-public final class Cell
+public class Cell
 {
-    /* */
+    /**
+     * Cell type constant.
+     */
     public final CellType type;
 
     /**
@@ -15,10 +17,25 @@ public final class Cell
     public int counter;
 
     /*
-     * 
+     * Only create instances from within the package.
      */
-    public Cell(CellType type)
+    protected Cell(CellType type)
     {
         this.type = type;
+    }
+    
+    /**
+     * Create and return an instance of a cell of given type.
+     */
+    final static Cell getInstance(CellType type)
+    {
+        switch (type)
+        {
+            case CELL_BOMB:
+                return new BombCell();
+
+            default:
+                return new Cell(type);
+        }
     }
 }

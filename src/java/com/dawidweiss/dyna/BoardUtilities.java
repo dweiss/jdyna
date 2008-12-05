@@ -95,8 +95,12 @@ final class BoardUtilities
     /**
      * Explode <code>range</code> cells around (x,y), recursively propagating if other
      * bombs are found in the range.
+     * 
+     * @param bombs A list of bombs that exploded during this call.
+     * @param crates A list of crate positions that should be removed as part of this explosion. 
      */
-    static void explode(Board board, List<Point> crates, int x, int y, int range)
+    static void explode(Board board, List<BombCell> bombs, List<Point> crates, 
+        int x, int y, int range)
     {
         // Horizontal mode.
         final int xmin = Math.max(0, x - range);
@@ -104,17 +108,21 @@ final class BoardUtilities
         final int ymin = Math.max(0, y - range);
         final int ymax = Math.min(board.height - 1, y + range);
 
-        // Mark centerpoint right away.
-        board.cells[x][y] = new Cell(CellType.CELL_BOOM_XY);
+        // Push the bomb on the list of exploded bombs and mark it as the centerpoint.
+        if (board.cells[x][y].type == CellType.CELL_BOMB)
+        {
+            bombs.add((BombCell) board.cells[x][y]);
+        }
+        board.cells[x][y] = Cell.getInstance(CellType.CELL_BOOM_XY);
 
         // Propagate in all directions from the centerpoint.
-        explode0(board, crates, range, x - 1, xmin, -1, x, y, true,  
+        explode0(board, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX);
-        explode0(board, crates, range, x + 1, xmax, +1, x, y, true,  
+        explode0(board, bombs, crates, range, x + 1, xmax, +1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_RX);
-        explode0(board, crates, range, y - 1, ymin, -1, x, y, false, 
+        explode0(board, bombs, crates, range, y - 1, ymin, -1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_TY);
-        explode0(board, crates, range, y + 1, ymax, +1, x, y, false, 
+        explode0(board, bombs, crates, range, y + 1, ymax, +1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_BY);
     }
 
@@ -123,8 +131,8 @@ final class BoardUtilities
      * of the explosion. 
      */
     private static void explode0(
-        Board board,
-        List<Point> crates, int range,
+        Board board, List<BombCell> bombs, List<Point> crates,
+        int range,
         int from, int to, int step,
         final int x, final int y,
         boolean horizontal, CellType during, CellType last)
@@ -148,12 +156,12 @@ final class BoardUtilities
                      * Recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
-                    explode(board, crates, lx, ly, range);
+                    explode(board, bombs, crates, lx, ly, range);
                     break;
             }
 
             board.cells[lx][ly] =
-                overlap(board.cells[lx][ly], new Cell(((i == to) ? last : during)));        
+                overlap(board.cells[lx][ly], Cell.getInstance(((i == to) ? last : during)));        
         }
     }
 
@@ -171,8 +179,16 @@ final class BoardUtilities
         {
             return cell;
         }
+        
+        /*
+         * We don't want to overlap with previous explosions, because it looks odd.
+         */
+        if (cell.counter > 0)
+        {
+            return explosion;
+        }
 
-        return new Cell(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
+        return Cell.getInstance(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
     }
 
     /**
