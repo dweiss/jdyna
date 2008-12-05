@@ -1,8 +1,7 @@
 package com.dawidweiss.dyna;
 
 import java.awt.Point;
-import java.io.*;
-import java.util.*;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 
