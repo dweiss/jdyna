@@ -98,13 +98,23 @@ final class Board
                             else
                             {
                                 char code = stack.get(row).charAt(col);
+
                                 if (code > '0' && code < '9')
                                 {
                                     playerPositions.add(new Point(col, row));
                                     code = ' ';
                                 }
 
-                                cells[col][row] = Cell.getInstance(CellType.valueOf(code));
+                                if (code == 'B')
+                                {
+                                    // Special bomb with very large fuse limit.
+                                    cells[col][row] = Cell.getInstance(CellType.CELL_BOMB);
+                                    ((BombCell) cells[col][row]).fuseCounter = Integer.MAX_VALUE; 
+                                }
+                                else
+                                {
+                                    cells[col][row] = Cell.getInstance(CellType.valueOf(code));
+                                }
                             }
                         }
                     }

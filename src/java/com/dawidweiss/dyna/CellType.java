@@ -18,7 +18,7 @@ public enum CellType
     CELL_CRATE('X'), CELL_CRATE_OUT('x'),
 
     /* Bomb. */
-    CELL_BOMB('o'),
+    CELL_BOMB('b'),
 
     /* Explosions. */
     CELL_BOOM_LX('<'), CELL_BOOM_RX('>'), CELL_BOOM_X('-'), CELL_BOOM_TY('^'), CELL_BOOM_BY(
@@ -59,6 +59,13 @@ public enum CellType
      */
     public static CellType valueOf(char code)
     {
+        final CellType c = cells[code];
+        if (c == null)
+        {
+            throw new RuntimeException("No cell with code: " + (int) code + " ('" + code
+                + "')");
+        }
+
         return cells[code];
     }
 
@@ -79,7 +86,8 @@ public enum CellType
     }
 
     /**
-     * @return Returns <code>true</code> if this cell type is empty (players can walk on it).
+     * @return Returns <code>true</code> if this cell type is empty (players can walk on
+     *         it).
      */
     public static boolean isWalkable(CellType type)
     {
