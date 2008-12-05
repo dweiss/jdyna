@@ -142,7 +142,8 @@ final class BoardUtilities
             final int lx = (horizontal ? i : x);
             final int ly = (horizontal ? y : i);
 
-            switch (board.cells[lx][ly].type)
+            final Cell cell = board.cells[lx][ly];
+            switch (cell.type)
             {
                 case CELL_CRATE:
                     crates.add(new Point(lx, ly));
@@ -152,8 +153,17 @@ final class BoardUtilities
                     return;
 
                 case CELL_BOMB:
+                    if (Globals.DELAYED_BOMB_EXPLOSIONS)
+                    {
+                        /*
+                         * Don't explode bombs immediately, just speed up their explosion.
+                         */
+                        ((BombCell) cell).fuseCounter = Math.min(5, ((BombCell) cell).fuseCounter);
+                        return;
+                    }
+
                     /*
-                     * Recursively explode the bomb at lx, ly, but still
+                     * Default Dyna behavior: recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
                     explode(board, bombs, crates, lx, ly, range);
@@ -179,7 +189,7 @@ final class BoardUtilities
         {
             return cell;
         }
-        
+
         /*
          * We don't want to overlap with previous explosions, because it looks odd.
          */

@@ -133,12 +133,7 @@ public final class BoardPanel extends JPanel
              */
             for (ISprite sprite : board.sprites)
             {
-                final Point p = sprite.getPosition();
-                final BufferedImage image = sprite.getImage();
-                if (image != null)
-                {
-                    g.drawImage(image, null, p.x, p.y);
-                }
+                sprite.paint(g);
             }
         }
         g.dispose();
@@ -154,7 +149,6 @@ public final class BoardPanel extends JPanel
         {
             final Graphics2D g2d = (Graphics2D) g; 
             g2d.drawImage(background, null, 0, 0);
-            g2d.drawString("Frame: " + frame, 0, 15);
         }
     }
 

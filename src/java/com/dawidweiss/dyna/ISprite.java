@@ -1,7 +1,6 @@
 package com.dawidweiss.dyna;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 
 /**
  * A sprite is an object that is superimposed on top of {@link Board}'s cells. The name
@@ -10,12 +9,7 @@ import java.awt.image.BufferedImage;
 interface ISprite
 {
     /**
-     * Upper left corner of the sprite.
+     * Paint the sprite on the graphic context.
      */
-    public Point getPosition();
-
-    /**
-     * Image to be drawn.  
-     */
-    public BufferedImage getImage();
+    public void paint(Graphics2D g);
 }

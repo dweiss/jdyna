@@ -1,7 +1,6 @@
 package com.dawidweiss.dyna;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import com.dawidweiss.dyna.IController.Direction;
@@ -65,27 +64,20 @@ final class PlayerInfo implements ISprite
     }
 
     /*
-     * @see ISprite 
+     * @see ISprite
      */
-    public BufferedImage getImage()
+    public void paint(Graphics2D g)
     {
         if (state == Player.State.DEAD)
         {
-            return null;
+            return;
         }
 
-        return images.get(state, frame / frameRate);
-    }
-
-    /*
-     * @see ISprite 
-     */
-    public Point getPosition()
-    {
+        final BufferedImage image = images.get(state, frame / frameRate);
         final Rectangle envelope = images.envelope;
         final Point p = new Point(location);
         p.translate(-envelope.width / 2, -envelope.height / 2);
-        return p;
+        g.drawImage(image, null, p.x, p.y);
     }
 
     /**
