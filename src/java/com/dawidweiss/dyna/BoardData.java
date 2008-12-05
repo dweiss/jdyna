@@ -22,8 +22,7 @@ public final class BoardData
      * Tile images pre-rendered for the graphic device currently used. The first dimension
      * is the cell's index (type), the second dimension contains frame data.
      */
-    public final EnumMap<CellType, BufferedImage []> cell_images = new EnumMap<CellType, BufferedImage []>(
-        CellType.class);
+    public final EnumMap<CellType, BufferedImage []> cell_images = Maps.newEnumMap(CellType.class);
 
     /**
      * Information about cells, their shapes and images.

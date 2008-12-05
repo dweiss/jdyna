@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.dawidweiss.dyna.GameResult.Standing;
 import com.dawidweiss.dyna.IController.Direction;
+import com.dawidweiss.dyna.view.swing.BoardInfo;
 import com.google.common.collect.Lists;
 
 /**
@@ -18,9 +19,6 @@ public final class Game
 {
     /* */
     public final Board board;
-
-    /* */
-    public final BoardData boardData;
 
     /* */
     private Player [] players;
@@ -44,13 +42,16 @@ public final class Game
     /** Game listeners. */
     private final ArrayList<IGameListener> listeners = Lists.newArrayList();
 
+    /** Board dimensions. */
+    private BoardInfo boardData;
+
     /**
      * Creates a single game.
      */
-    public Game(Board board, BoardData resources, Player... players)
+    public Game(Board board, BoardInfo boardInfo, Player... players)
     {
         this.board = board;
-        this.boardData = resources;
+        this.boardData = boardInfo;
         this.players = players;
     }
 
@@ -151,7 +152,7 @@ public final class Game
     {
         for (IGameListener gl : listeners)
         {
-            gl.onNextFrame(frame);
+            gl.onNextFrame(frame, null);
         }
     }
 
@@ -221,7 +222,7 @@ public final class Game
          * Check collisions against grid cells. We only care about the cell directly 
          * under the player.
          */
-        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        final Point xy = boardData.pixelToGrid(pi.location);
         final Cell c = board.cellAt(xy);
         if (CellType.isLethal(c.type))
         {
@@ -237,7 +238,7 @@ public final class Game
      */
     private void dropBomb(PlayerInfo pi)
     {
-        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        final Point xy = boardData.pixelToGrid(pi.location);
         if (board.cellAt(xy).type == CellType.CELL_EMPTY && pi.bombCount > 0)
         {
             pi.bombCount--;
@@ -258,7 +259,7 @@ public final class Game
      */
     private void movePlayer(PlayerInfo pi, Direction signal)
     {
-        final Point xy = BoardUtilities.pixelToGrid(boardData, pi.location);
+        final Point xy = boardData.pixelToGrid(pi.location);
         final Point txy;
 
         switch (signal)
@@ -279,7 +280,7 @@ public final class Game
                 throw new RuntimeException(/* Unreachable. */);
         }
 
-        final Point p = BoardUtilities.gridToPixel(boardData, txy);
+        final Point p = boardData.gridToPixel(txy);
 
         // Relative distance between the target cell and current position.
         final int rx = p.x - pi.location.x;
@@ -289,7 +290,7 @@ public final class Game
         int dx = (rx < 0 ? -1 : 1) * min(pi.speed.x, abs(rx));
         int dy = (ry < 0 ? -1 : 1) * min(pi.speed.y, abs(ry));
 
-        if (max(abs(rx), abs(ry)) <= boardData.gridSize)
+        if (max(abs(rx), abs(ry)) <= boardData.cellSize)
         {
             if (!canWalkOn(pi, txy))
             {
@@ -298,8 +299,7 @@ public final class Game
                  * the player towards the cell from which he or she will
                  * be able to move further.
                  */
-                final Point offset = 
-                    BoardUtilities.pixelToGridOffset(boardData, pi.location);
+                final Point offset = boardData.pixelToGridOffset(pi.location); 
 
                 final boolean easingApplied;
                 switch (signal)
@@ -352,9 +352,9 @@ public final class Game
         int x1, int y1, int x2, int y2, Direction d1,
         int x3, int y3, int x4, int y4, Direction d2)
     {
-        final int easeMargin = boardData.gridSize / 3;
-        
-        if (o > boardData.gridSize - easeMargin
+        final int easeMargin = boardData.cellSize / 3;
+
+        if (o > boardData.cellSize - easeMargin
             && canWalkOn(pi, new Point(xy.x + x1, xy.y + y1)) 
             && canWalkOn(pi, new Point(xy.x + x2, xy.y + y2)))
         {
@@ -400,12 +400,11 @@ public final class Game
                 + defaults.length + " < " + pi.length);
         }
 
-        final PlayerImageData [] images = boardData.player_images;
+        final PlayerImageData [] images = player_images;
         for (int i = 0; i < players.length; i++)
         {
             pi[i] = new PlayerInfo(players[i], images[i % images.length]);
-            pi[i].location.setLocation(
-                BoardUtilities.gridToPixel(boardData, defaults[i]));
+            pi[i].location.setLocation(boardData.gridToPixel(defaults[i]));
             board.sprites.add(pi[i]);
         }
     
@@ -432,22 +431,15 @@ public final class Game
 
                 /*
                  * Advance counter frame on cells that use it.
+                 * Clean up cells that have finished animating.
                  */
                 cell.counter++;
 
-                /*
-                 * Clean up cells that have finished animating.
-                 */
-                if (BoardUtilities.ANIMATING_CELLS.contains(type))
+                final int removeAt = CellType.getRemoveAtCounter(type);
+                if (removeAt > 0 && cell.counter == removeAt)
                 {
-                    final int maxFrames = boardData.cell_infos.get(type).advanceRate
-                        * boardData.cell_images.get(type).length;
-
-                    if (cell.counter == maxFrames)
-                    {
-                        cells[x][y] = Cell.getInstance(CellType.CELL_EMPTY);
-                        continue;
-                    }
+                    cells[x][y] = Cell.getInstance(CellType.CELL_EMPTY);
+                    continue;
                 }
             }
         }

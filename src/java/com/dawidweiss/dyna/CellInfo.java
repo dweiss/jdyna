@@ -9,7 +9,7 @@ final class CellInfo
     public final TileInfo [] tiles;
 
     /**
-     * How many frames it takes to advance to the cell's counter?
+     * How many frames it takes to advance the cell's counter?
      */
     public final int advanceRate;
 

@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.view.swing;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -6,8 +6,11 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import com.dawidweiss.dyna.*;
+
 /**
- * Swing's {link JPanel} that displays the state and changes to a {@link Board}.
+ * Swing's {@link JPanel} that displays the state and changes on the playfield during the
+ * game.
  */
 @SuppressWarnings("serial")
 public final class BoardPanel extends JPanel
@@ -21,36 +24,23 @@ public final class BoardPanel extends JPanel
     private final Object exclusiveLock = new Object();
 
     /**
-     * Static image resources.
-     */
-    private BoardData resources;
-
-    /**
-     * The board we're painting.
-     */
-    private Board board;
-
-    /**
      * The latest board's background state.
      */
     private final BufferedImage background;
-    
-    /**
-     * Last frame received by {@link #gameListener}.
+
+    /*
+     * Board information.
      */
-    @SuppressWarnings("unused")
-    private volatile int frame;
+    private BoardInfo boardInfo;
 
     /**
      * Update board state.
      */
     private IGameListener gameListener = new IGameListener()
     {
-        public void onNextFrame(int frame)
+        public void onNextFrame(int frame, IBoardSnapshot snapshot)
         {
-            updateBoard();
-
-            BoardPanel.this.frame = frame;
+            updateBoard(snapshot);
             BoardPanel.this.repaint();
         }
     };
@@ -58,13 +48,12 @@ public final class BoardPanel extends JPanel
     /**
      * 
      */
-    public BoardPanel(BoardData resources, Game game)
+    public BoardPanel(BoardInfo boardInfo, GraphicsConfiguration conf)
     {
-        this.resources = resources;
-        this.board = game.board;
+        this.boardInfo = boardInfo;
 
         /*
-         * Use double buffering, although we will draw off-screen anyway.
+         * TODO: correct buffering strategy.
          */
         this.setDoubleBuffered(false);
 
@@ -72,33 +61,22 @@ public final class BoardPanel extends JPanel
          * Initial board update.
          */
         final Dimension size = getPreferredSize();
-        background = resources.conf.createCompatibleImage(size.width, size.height);
-
-        /*
-         * Update board, attach a listener.
-         */
-        updateBoard();
-        game.addListener(gameListener);
+        background = conf.createCompatibleImage(size.width, size.height);
     }
 
     /**
      * Update {@link #background} because the board changed.
      */
-    public void updateBoard()
+    public void updateBoard(IBoardSnapshot snapshot)
     {
         final Graphics2D g = background.createGraphics();
-        
-        final BufferedImage backgroundImage = resources.cell_images.get(CellType.CELL_EMPTY)[0];
+
+        final BufferedImage backgroundImage = resources.cell_images
+            .get(CellType.CELL_EMPTY)[0];
         final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
 
         synchronized (exclusiveLock)
         {
-            /*
-             * TODO: Possible optimization, update only those cells that changed from the
-             * previous state? If so, we would have to move drawing sprites
-             * to either paint() or a separate buffer.
-             */
-            final int GRID_SIZE = resources.gridSize;
             final Cell [][] cells = board.cells;
             for (int y = board.height - 1; y >= 0; y--)
             {
@@ -119,12 +97,13 @@ public final class BoardPanel extends JPanel
 
                     /*
                      * We could fill entire background with a solid color at one go, but
-                     * then we wouldn't have the optimization possibility of redrawing only
-                     * those cells that have changed.
+                     * then we wouldn't have the optimization possibility of redrawing
+                     * only those cells that have changed.
                      */
                     g.setColor(backgroundColor);
                     g.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-                    g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y * GRID_SIZE);
+                    g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y
+                        * GRID_SIZE);
                 }
             }
 
@@ -147,7 +126,7 @@ public final class BoardPanel extends JPanel
     {
         synchronized (exclusiveLock)
         {
-            final Graphics2D g2d = (Graphics2D) g; 
+            final Graphics2D g2d = (Graphics2D) g;
             g2d.drawImage(background, null, 0, 0);
         }
     }

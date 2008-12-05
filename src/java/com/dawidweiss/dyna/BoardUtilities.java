@@ -18,25 +18,6 @@ final class BoardUtilities
     }
 
     /**
-     * All {@link CellType}s that denote explosions.
-     */
-    public final static EnumSet<CellType> EXPLOSION_CELLS = EnumSet.of(
-        CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
-        CellType.CELL_BOOM_Y, CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX,
-        CellType.CELL_BOOM_RX, CellType.CELL_BOOM_XY);
-
-    /**
-     * All cells that are animated and should be replaced with {@link CellType#CELL_EMPTY}
-     * at the end of the animation sequence.
-     */
-    public final static EnumSet<CellType> ANIMATING_CELLS;
-    static
-    {
-        ANIMATING_CELLS = EnumSet.copyOf(EXPLOSION_CELLS);
-        ANIMATING_CELLS.addAll(EnumSet.of(CellType.CELL_CRATE_OUT));
-    }
-
-    /**
      * A grid of resulting {@link CellType}s when two explosions overlap.
      * 
      * @see #overlap(Cell, Cell)
@@ -180,7 +161,7 @@ final class BoardUtilities
      */
     private static Cell overlap(Cell cell, Cell explosion)
     {
-        if (!EXPLOSION_CELLS.contains(cell.type))
+        if (!CellType.isExplosion(cell.type))
         {
             return explosion;
         }
@@ -199,39 +180,5 @@ final class BoardUtilities
         }
 
         return Cell.getInstance(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
-    }
-
-    /**
-     * Convert pixel coordinates to grid cell coordinates.
-     */
-    public static Point pixelToGrid(BoardData boardData, Point location)
-    {
-        final int GRID_SIZE = boardData.gridSize;
-        return new Point(
-            location.x / GRID_SIZE, 
-            location.y / GRID_SIZE);
-    }
-
-    /**
-     * Convert pixel coordinates to grid cell coordinates.
-     */
-    public static Point pixelToGridOffset(BoardData boardData, Point location)
-    {
-        final int GRID_SIZE = boardData.gridSize;
-        return new Point(
-            location.x % GRID_SIZE, 
-            location.y % GRID_SIZE);
-    }
-
-    /**
-     * Convert from grid coordinates to pixel data. The result
-     * is the centerpoint of the grid's cell.
-     */
-    public static Point gridToPixel(BoardData boardData, Point location)
-    {
-        final int GRID_SIZE = boardData.gridSize;
-        return new Point(
-            location.x * GRID_SIZE + GRID_SIZE / 2, 
-            location.y * GRID_SIZE + GRID_SIZE / 2);
     }
 }

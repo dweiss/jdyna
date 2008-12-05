@@ -9,6 +9,8 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.dawidweiss.dyna.view.swing.BoardPanel;
+
 /**
  * The <b>Dyna Blaster</b> game. Oh, yes.
  * <p>
