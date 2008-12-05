@@ -206,12 +206,12 @@ public final class Game
 
                     case DOWN:
                         easingApplied = ease(pi, xy, offset.x, 
-                            1, 0, 1, 1, Direction.RIGHT, -1, 1, -1, 1, Direction.LEFT);
+                            1, 0, 1, 1, Direction.RIGHT, -1, 0, -1, 1, Direction.LEFT);
                         break;
-                       
+
                     case UP:
                         easingApplied = ease(pi, xy, offset.x, 
-                            1, 1, 1, -1, Direction.RIGHT, -1, 1, -1, -1, Direction.LEFT);
+                            1, 0, 1, -1, Direction.RIGHT, -1, 0, -1, -1, Direction.LEFT);
                         break;
 
                     default:
@@ -245,7 +245,7 @@ public final class Game
         final int easeMargin = boardData.gridSize / 3;
         
         if (o > boardData.gridSize - easeMargin
-            && canWalkOn(pi, new Point(xy.x + x1, xy.y + x2)) 
+            && canWalkOn(pi, new Point(xy.x + x1, xy.y + y1)) 
             && canWalkOn(pi, new Point(xy.x + x2, xy.y + y2)))
         {
             movePlayer(pi, d1);

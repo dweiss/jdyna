@@ -46,7 +46,7 @@ public final class Main
 
         final Player p1 = new Player("1", c1);
         final Game game = new Game(board, resources, p1);
-        game.setFrameRate(20);
+        game.setFrameRate(25);
 
         /* 
          * Create and attach a view to the game.
