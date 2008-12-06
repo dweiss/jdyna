@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.view.resources;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 /**
  * Image I/O utilities.
  */
-final class ImageUtilities
+public final class ImageUtilities
 {
     private ImageUtilities()
     {
@@ -27,20 +27,33 @@ final class ImageUtilities
     public static BufferedImage loadResourceImage(String resourcePath,
         GraphicsConfiguration conf) throws IOException
     {
+        return convert(loadResourceImage(resourcePath), conf);
+    }
+
+    /**
+     * Convert an image to graphic configuration mode.
+     */
+    public static BufferedImage convert(BufferedImage image, GraphicsConfiguration conf)
+    {
+        final BufferedImage converted = conf.createCompatibleImage(image.getWidth(),
+            image.getHeight(), Transparency.TRANSLUCENT);
+        final Graphics graphics = converted.getGraphics();
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+        return converted;
+    }
+
+    /**
+     * Load an image in the original raster and color mode.
+     */
+    public static BufferedImage loadResourceImage(String resourcePath) throws IOException
+    {
         final ClassLoader cl = Thread.currentThread().getContextClassLoader();
         final InputStream is = cl.getResourceAsStream(resourcePath);
         if (is == null) throw new IOException("Resource not found: " + resourcePath);
         try
         {
-            final BufferedImage image = ImageIO.read(is);
-
-            final BufferedImage converted = conf.createCompatibleImage(image.getWidth(),
-                image.getHeight(), Transparency.TRANSLUCENT);
-            final Graphics graphics = converted.getGraphics();
-            graphics.drawImage(image, 0, 0, null);
-            graphics.dispose();
-
-            return converted;
+            return ImageIO.read(is);
         }
         finally
         {
@@ -79,8 +92,8 @@ final class ImageUtilities
      * Same as {@link #cell(GraphicsConfiguration, BufferedImage, int, int, int[]...)} but
      * for single-frame cells.
      */
-    public static BufferedImage cell(GraphicsConfiguration conf, BufferedImage bricks, int w,
-        int h, int x, int y) throws IOException
+    public static BufferedImage cell(GraphicsConfiguration conf, BufferedImage bricks,
+        int w, int h, int x, int y) throws IOException
     {
         return cell(conf, bricks, w, h, new int [] []
         {

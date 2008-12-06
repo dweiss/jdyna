@@ -1,9 +1,7 @@
-package com.dawidweiss.dyna.view.swing;
+package com.dawidweiss.dyna.view;
 
 import java.awt.Dimension;
 import java.awt.Point;
-
-import com.dawidweiss.dyna.CellType;
 
 /**
  * Static board information.

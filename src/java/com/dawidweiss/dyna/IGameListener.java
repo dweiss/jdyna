@@ -1,6 +1,6 @@
 package com.dawidweiss.dyna;
 
-import com.dawidweiss.dyna.view.swing.IBoardSnapshot;
+import com.dawidweiss.dyna.view.IBoardSnapshot;
 
 /**
  * Events from {@link Game}.

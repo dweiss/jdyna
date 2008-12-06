@@ -1,6 +1,8 @@
 package com.dawidweiss.dyna;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -8,7 +10,9 @@ import java.util.List;
 
 import com.dawidweiss.dyna.GameResult.Standing;
 import com.dawidweiss.dyna.IController.Direction;
-import com.dawidweiss.dyna.view.swing.BoardInfo;
+import com.dawidweiss.dyna.view.BoardInfo;
+import com.dawidweiss.dyna.view.IBoardSnapshot;
+import com.dawidweiss.dyna.view.IPlayer;
 import com.google.common.collect.Lists;
 
 /**
@@ -20,13 +24,20 @@ public final class Game
     /* */
     public final Board board;
 
-    /* */
+    /**
+     * Static player information. 
+     */
     private Player [] players;
 
     /**
-     * Information about player positions and other attributes.
+     * Dynamic information about players involved in the game.
      */
     private PlayerInfo [] playerInfos;
+    
+    /**
+     * Player views for listeners.
+     */
+    private IPlayer [] playerViews;
 
     /**
      * A list of killed players. 
@@ -44,6 +55,22 @@ public final class Game
 
     /** Board dimensions. */
     private BoardInfo boardData;
+
+    /**
+     * Static board view for listeners. 
+     */
+    private IBoardSnapshot boardSnapshot = new IBoardSnapshot() {
+        public Cell [][] getCells()
+        {
+            // TODO: This should be a 'safe' copy of the actual board cell structure.
+            return board.cells;
+        }
+
+        public IPlayer [] getPlayers()
+        {
+            return playerViews;
+        }
+    };
 
     /**
      * Creates a single game.
@@ -93,7 +120,7 @@ public final class Game
             {
                 dead++;
             }
-            else if (!pi.isKilled()) 
+            else
             {
                 alive++;
                 winner = pi.player;
@@ -152,7 +179,7 @@ public final class Game
     {
         for (IGameListener gl : listeners)
         {
-            gl.onNextFrame(frame, null);
+            gl.onNextFrame(frame, boardSnapshot);
         }
     }
 
@@ -173,12 +200,12 @@ public final class Game
             final IController c = players[i].controller;
 
             final IController.Direction signal = c.getCurrent();
-            pi.controllerState(signal);
+            pi.updateState(signal);
 
             /*
              * Dead can't dance.
              */
-            if (pi.isKilled())
+            if (pi.isDead())
             {
                 continue;
             }
@@ -377,7 +404,6 @@ public final class Game
      * Returns <code>true</code> if a player can walk on the grid's
      * given coordinates.
      */
-    @SuppressWarnings("unused")
     private boolean canWalkOn(PlayerInfo pi, Point txy)
     {
         /*
@@ -393,6 +419,7 @@ public final class Game
     private void setupPlayers()
     {
         final PlayerInfo [] pi = new PlayerInfo [players.length];
+        final IPlayer [] pv = new IPlayer [players.length];
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < pi.length)
         {
@@ -400,15 +427,16 @@ public final class Game
                 + defaults.length + " < " + pi.length);
         }
 
-        final PlayerImageData [] images = player_images;
         for (int i = 0; i < players.length; i++)
         {
-            pi[i] = new PlayerInfo(players[i], images[i % images.length]);
-            pi[i].location.setLocation(boardData.gridToPixel(defaults[i]));
-            board.sprites.add(pi[i]);
+            pi[i] = new PlayerInfo(players[i], i);
+            pv[i] = pi[i];
+            pi[i].location.setLocation(
+                boardData.gridToPixel(defaults[i]));
         }
-    
+
         this.playerInfos = pi;
+        this.playerViews = pv;
     }
 
     /**

@@ -1,14 +1,20 @@
 package com.dawidweiss.dyna;
 
+import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.dawidweiss.dyna.view.BoardInfo;
+import com.dawidweiss.dyna.view.resources.ImageUtilities;
+import com.dawidweiss.dyna.view.resources.Images;
+import com.dawidweiss.dyna.view.resources.ImagesFactory;
 import com.dawidweiss.dyna.view.swing.BoardPanel;
 
 /**
@@ -30,38 +36,32 @@ public final class Main
             .getResourceAsStream("boards.conf"), "UTF-8"));
 
         /*
-         * Load resources required for visualization and start board visualization. The
-         * graphics is pretty much the original Dyna Blaster files, converted from Amiga
-         * IFF to PNG and with manually set translucent color index.
-         */
-
-        final GraphicsConfiguration conf = ImageUtilities.getGraphicsConfiguration();
-        final BoardData resources = BoardDataFactory.getDynaClassic(conf);
-
-        /*
          * Set up a single game between two players.
          */
         final Board board = boards.get(0);
 
-        final IController c1 = new KeyboardController(
-                KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
-                KeyEvent.VK_CONTROL);
+        final IController c1 = new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
+            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
 
-        final IController c2 = new KeyboardController(
-            KeyEvent.VK_R, KeyEvent.VK_F, KeyEvent.VK_D, KeyEvent.VK_G,
-            KeyEvent.VK_Z);
+        final IController c2 = new KeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
+            KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
 
+        final BoardInfo boardInfo = new BoardInfo(
+            new Dimension(board.width, board.height), 16);
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        final Game game = new Game(board, resources, p1, p2);
+        final Game game = new Game(board, boardInfo, p1, p2);
         game.setFrameRate(25);
 
         /*
          * Create and attach a view to the game.
          */
 
+        final GraphicsConfiguration conf = ImageUtilities.getGraphicsConfiguration();
+        final Images images = ImagesFactory.DYNA_CLASSIC;
         final JFrame frame = new JFrame(conf);
-        final BoardPanel gamePanel = new BoardPanel(resources, game);
+        final BoardPanel gamePanel = new BoardPanel(boardInfo, images, conf);
+        game.addListener(gamePanel);
         frame.getContentPane().add(gamePanel);
         frame.setLocationByPlatform(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,10 +70,11 @@ public final class Main
         frame.setFocusTraversalKeysEnabled(false);
         frame.setVisible(true);
 
-        GameResult result = game.run();
+        final GameResult result = game.run();
+        Logger.getAnonymousLogger().info(result.toString());
 
-        System.out.println(result);
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable()
+        {
             public void run()
             {
                 frame.dispose();

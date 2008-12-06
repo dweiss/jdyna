@@ -1,23 +1,30 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.Cell;
+import com.dawidweiss.dyna.CellType;
+import com.dawidweiss.dyna.IGameListener;
+import com.dawidweiss.dyna.view.BoardInfo;
+import com.dawidweiss.dyna.view.IBoardSnapshot;
+import com.dawidweiss.dyna.view.ISprite;
+import com.dawidweiss.dyna.view.resources.Images;
 
 /**
  * Swing's {@link JPanel} that displays the state and changes on the playfield during the
  * game.
  */
 @SuppressWarnings("serial")
-public final class BoardPanel extends JPanel
+public final class BoardPanel extends JPanel implements IGameListener
 {
-    /* */
-    private final Logger logger = Logger.getAnonymousLogger();
-
     /**
      * Exclusive lock so that drawing and updating does not take place at the same time.
      */
@@ -34,23 +41,17 @@ public final class BoardPanel extends JPanel
     private BoardInfo boardInfo;
 
     /**
-     * Update board state.
+     * A set of required images.
      */
-    private IGameListener gameListener = new IGameListener()
-    {
-        public void onNextFrame(int frame, IBoardSnapshot snapshot)
-        {
-            updateBoard(snapshot);
-            BoardPanel.this.repaint();
-        }
-    };
+    private Images images;
 
     /**
      * 
      */
-    public BoardPanel(BoardInfo boardInfo, GraphicsConfiguration conf)
+    public BoardPanel(BoardInfo boardInfo, Images images, GraphicsConfiguration conf)
     {
         this.boardInfo = boardInfo;
+        this.images = images.createCompatible(conf);
 
         /*
          * TODO: correct buffering strategy.
@@ -71,51 +72,84 @@ public final class BoardPanel extends JPanel
     {
         final Graphics2D g = background.createGraphics();
 
-        final BufferedImage backgroundImage = resources.cell_images
-            .get(CellType.CELL_EMPTY)[0];
+        final BufferedImage backgroundImage = getCellImage(CellType.CELL_EMPTY, 0);
         final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
 
         synchronized (exclusiveLock)
         {
-            final Cell [][] cells = board.cells;
-            for (int y = board.height - 1; y >= 0; y--)
+            /*
+             * Erase the background with approximated background color.
+             */
+            g.setColor(backgroundColor);
+            g.fillRect(0, 0, boardInfo.pixelSize.width, boardInfo.pixelSize.height);
+
+            /*
+             * Paint grid cells.
+             */
+            final Cell [][] cells = snapshot.getCells();
+            final int cellSize = boardInfo.cellSize;
+            for (int y = boardInfo.gridSize.height - 1; y >= 0; y--)
             {
-                for (int x = board.width - 1; x >= 0; x--)
+                for (int x = boardInfo.gridSize.width - 1; x >= 0; x--)
                 {
                     final Cell cell = cells[x][y];
                     final CellType type = cell.type;
 
-                    final BufferedImage [] frames = resources.cell_images.get(type);
-                    if (frames == null)
+                    final BufferedImage image = getCellImage(type, cell.counter);
+                    if (image != null)
                     {
-                        logger.warning("There is no image for this cell: " + cell.type);
-                        continue;
+                        g.drawImage(image, null, x * cellSize, y * cellSize);
                     }
-
-                    final int advanceRate = resources.cell_infos.get(type).advanceRate;
-                    final int frame = (cell.counter / advanceRate) % frames.length;
-
-                    /*
-                     * We could fill entire background with a solid color at one go, but
-                     * then we wouldn't have the optimization possibility of redrawing
-                     * only those cells that have changed.
-                     */
-                    g.setColor(backgroundColor);
-                    g.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-                    g.drawImage(frames[frame % frames.length], null, x * GRID_SIZE, y
-                        * GRID_SIZE);
                 }
             }
 
             /*
              * Paint sprites.
              */
-            for (ISprite sprite : board.sprites)
+            for (ISprite sprite : snapshot.getPlayers())
             {
-                sprite.paint(g);
+                final int state = sprite.getAnimationState();
+                final int frame = sprite.getAnimationFrame();
+
+                final BufferedImage image = 
+                    images.getSpriteImage(sprite.getType(), state, frame);
+
+                if (image != null)
+                {
+                    Point p = new Point(sprite.getPosition());
+                    Point offset = images.getSpriteOffset(sprite.getType(), state, frame);
+                    p.translate(offset.x, offset.y);
+                    g.drawImage(image, null, p.x, p.y);
+                }
             }
         }
         g.dispose();
+    }
+
+    /**
+     * @see IGameListener
+     */
+    public void onNextFrame(int frame, IBoardSnapshot snapshot)
+    {
+        updateBoard(snapshot);
+        BoardPanel.this.repaint();
+    }
+
+    /**
+     * Return an image for a given cell at the given counter.
+     */
+    private BufferedImage getCellImage(CellType cell, int cellCounter)
+    {
+        BufferedImage [] cellImages = images.getCellImage(cell);
+        final int advanceRate = images.getCellAdvanceCounter(cell);
+
+        if (cellImages == null || cellImages.length == 0)
+        {
+            return null;
+        }
+
+        final int frame = cellCounter / advanceRate;
+        return cellImages[frame % cellImages.length];
     }
 
     /*
@@ -146,7 +180,6 @@ public final class BoardPanel extends JPanel
     @Override
     public Dimension getPreferredSize()
     {
-        final int gs = resources.gridSize;
-        return new Dimension(board.width * gs, board.height * gs);
+        return new Dimension(boardInfo.pixelSize);
     }
 }

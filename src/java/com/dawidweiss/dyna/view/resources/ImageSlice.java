@@ -1,9 +1,9 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.view.resources;
 
 /**
- * A tile is a slice of a resource image.
+ * Specification of a slice of a source image.
  */
-final class TileInfo
+final class ImageSlice
 {
     /**
      * Resource name of the tiles image this tile is contained in.
@@ -18,7 +18,7 @@ final class TileInfo
     /*
      * 
      */
-    public TileInfo(String imageName, int x, int y, int w, int h)
+    public ImageSlice(String imageName, int x, int y, int w, int h)
     {
         this.x = x;
         this.y = y;

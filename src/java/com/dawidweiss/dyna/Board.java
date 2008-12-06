@@ -3,6 +3,7 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 import java.util.List;
 
+import com.dawidweiss.dyna.view.ISprite;
 import com.google.common.collect.Lists;
 
 /**

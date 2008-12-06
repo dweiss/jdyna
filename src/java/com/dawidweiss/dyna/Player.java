@@ -6,23 +6,19 @@ package com.dawidweiss.dyna;
 public final class Player
 {
     /**
-     * The player can be in the following states (possibly a combination of these at the same time).
+     * The player can be in the following states (possibly a combination of these at the
+     * same time).
      */
     public static enum State
     {
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN,
-        DYING,
-        DEAD
+        LEFT, RIGHT, UP, DOWN, DEAD, DYING
     }
 
     /**
      * The player's unique identifier.
      */
     public final String name;
-    
+
     /**
      * Movement controller for this player.
      */

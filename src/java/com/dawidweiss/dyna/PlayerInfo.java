@@ -1,17 +1,21 @@
 package com.dawidweiss.dyna;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Point;
 
 import com.dawidweiss.dyna.IController.Direction;
+import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.SpriteType;
 
 /**
  * Extra {@link Player} information for the {@link Game}.
  */
-final class PlayerInfo implements ISprite
+final class PlayerInfo implements IPlayer
 {
     /* */
     public final Player player;
+    
+    /* */
+    public final int playerIndex;
 
     /**
      * Coordinates of this player (it's centerpoint). The rectangle actually taken by the
@@ -20,29 +24,19 @@ final class PlayerInfo implements ISprite
     public final Point location = new Point();
 
     /**
-     * Movement speed in each state.
+     * Movement speed in each direction.
      */
     public final Point speed = new Point(2, 2);
 
     /**
-     * Image data for the player.
+     * An increasing counter of frames if the player is in walking state.
      */
-    public final PlayerImageData images;
+    public int frame;
 
     /**
-     * If walking anywhere, an increasing counter of frames.
+     * Current walking state. 
      */
-    private int frame;
-
-    /**
-     * Slowdown rate for the animation.
-     */
-    private final int frameRate = 4;
-
-    /**
-     * Walking state or <code>null</code>. 
-     */
-    private Player.State state = Player.State.DOWN;
+    public Player.State state = Player.State.DOWN;
 
     /**
      * Current arsenal to use (bomb count).
@@ -57,27 +51,10 @@ final class PlayerInfo implements ISprite
     /*
      * 
      */
-    public PlayerInfo(Player player, PlayerImageData playerImageData)
+    public PlayerInfo(Player player, int playerIndex)
     {
         this.player = player;
-        this.images = playerImageData;
-    }
-
-    /*
-     * @see ISprite
-     */
-    public void paint(Graphics2D g)
-    {
-        if (state == Player.State.DEAD)
-        {
-            return;
-        }
-
-        final BufferedImage image = images.get(state, frame / frameRate);
-        final Rectangle envelope = images.envelope;
-        final Point p = new Point(location);
-        p.translate(-envelope.width / 2, -envelope.height / 2);
-        g.drawImage(image, null, p.x, p.y);
+        this.playerIndex = playerIndex;
     }
 
     /**
@@ -85,23 +62,13 @@ final class PlayerInfo implements ISprite
      * 
      * @see #frame
      */
-    public void controllerState(Direction signal)
+    public void updateState(Direction signal)
     {
         /*
          * Keep on advancing frame counter until dead. 
          */
         if (state == Player.State.DEAD)
             return;
-
-        if (state == Player.State.DYING)
-        {
-            if ((frame + 1) / frameRate == images.getFrameCount(state))
-            {
-                state = Player.State.DEAD;
-            }
-            frame++;
-            return;
-        }
 
         if (signal == null)
         {
@@ -133,8 +100,11 @@ final class PlayerInfo implements ISprite
             {
                 if (frame == 0) 
                 {
-                    // If changed the mode, start from the first 'active' frame.
-                    frame = frameRate;
+                    /* 
+                     * If changed the mode, start from the first 'active' frame
+                     * in the animation sequence.
+                     */
+                    frame = 1;
                 }
                 else
                 {
@@ -149,7 +119,7 @@ final class PlayerInfo implements ISprite
      */
     public void kill()
     {
-        this.state = Player.State.DYING;
+        this.state = Player.State.DEAD;
         this.frame = 0;
     }
 
@@ -160,12 +130,41 @@ final class PlayerInfo implements ISprite
     {
         return state == Player.State.DEAD;
     }
-    
+
     /**
-     * @return Returns <code>true</code> if the player is either dying or dead.
+     * @see IPlayer
      */
-    public boolean isKilled()
+    @Override
+    public int getAnimationFrame()
     {
-        return state == Player.State.DEAD || state == Player.State.DYING;
+        return this.frame;
+    }
+
+    /**
+     * @see IPlayer
+     */
+    @Override
+    public int getAnimationState()
+    {
+        return this.state.ordinal();
+    }
+
+    /**
+     * @see IPlayer
+     */
+    @Override
+    public SpriteType getType()
+    {
+        final SpriteType [] playerSprites = SpriteType.getPlayerSprites();
+        return playerSprites[playerIndex % playerSprites.length];
+    }
+
+    /**
+     * @see IPlayer
+     */
+    @Override
+    public Point getPosition()
+    {
+        return new Point(location);
     }
 }

@@ -33,6 +33,14 @@ public enum CellType
      */
     public final char code;
 
+    /*
+     * 
+     */
+    private CellType(char code)
+    {
+        this.code = code;
+    }
+
     /**
      * A static mapping between codes and enum constants. 64k is not a problem with
      * today's architecture, huh? (we don't care about code points).
@@ -47,14 +55,6 @@ public enum CellType
         {
             cells[c.code] = c;
         }
-    }
-
-    /*
-     * 
-     */
-    private CellType(char code)
-    {
-        this.code = code;
     }
 
     /**
@@ -116,14 +116,20 @@ public enum CellType
     public final static EnumMap<CellType, Integer> ANIMATING_CELLS = Maps.newEnumMap(CellType.class);
     static
     {
+        /*
+         * Number of frames * frameRate. These values should be image-independent,
+         * but we hardcode the constants used in classic dyna.
+         */
+        final int explosionFrameCount = 7 * 2;
+        final int crateFrameCount = 7 * 2;
+
         for (CellType c : EXPLOSION_CELLS)
         {
-            ANIMATING_CELLS.put(c, 50);
+            ANIMATING_CELLS.put(c, explosionFrameCount);
         }
-
-        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, 50);
+        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
     }    
-    
+
     /**
      * Return the frame counter after which the cell should be replaced with
      * {@link #CELL_EMPTY}. If zero, the cell should not be removed at all.
