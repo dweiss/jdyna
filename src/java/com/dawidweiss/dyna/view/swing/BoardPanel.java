@@ -7,16 +7,19 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 
 import com.dawidweiss.dyna.Cell;
 import com.dawidweiss.dyna.CellType;
 import com.dawidweiss.dyna.IGameListener;
+import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.ISprite;
+import com.dawidweiss.dyna.view.IPlayer;
 import com.dawidweiss.dyna.view.resources.Images;
+import com.google.common.collect.Maps;
 
 /**
  * Swing's {@link JPanel} that displays the state and changes on the playfield during the
@@ -44,6 +47,16 @@ public final class BoardPanel extends JPanel implements IGameListener
      * A set of required images.
      */
     private Images images;
+    
+    /**
+     * When a player dies we need to display its 'dying' state sequence. This is not
+     * propagated from the controller because the controller does not know how many
+     * frames it would take to display such sequence.
+     * <p>
+     * This map stores the index of a given player and its 'dead' status frame count.
+     * If the frame count equals -1, the player is dead.
+     */
+    private HashMap<Integer,Integer> dyingPlayers = Maps.newHashMap();
 
     /**
      * 
@@ -104,20 +117,45 @@ public final class BoardPanel extends JPanel implements IGameListener
             }
 
             /*
-             * Paint sprites.
+             * Paint players.
              */
-            for (ISprite sprite : snapshot.getPlayers())
+            final IPlayer [] players = snapshot.getPlayers();
+            for (int playerIndex = 0; playerIndex < players.length; playerIndex++)
             {
-                final int state = sprite.getAnimationState();
-                final int frame = sprite.getAnimationFrame();
+                final IPlayer player = players[playerIndex];
+                int state = player.getAnimationState();
+                int frame = player.getAnimationFrame();
 
+                /*
+                 * Special handing of the 'dying' state.
+                 */
+                final int deadState = Player.State.DEAD.ordinal();
+                final int dyingState = Player.State.DYING.ordinal();
+                if (state == deadState)
+                {
+                    Integer f = dyingPlayers.get(playerIndex);
+                    f = (f == null ? 0 : f);
+
+                    final int max = images.getMaxSpriteImageFrame(
+                        player.getType(), dyingState);
+                    if (f < max)
+                    {
+                        state = dyingState;
+                        frame = f;
+                        dyingPlayers.put(playerIndex, f + 1);
+                    }
+                }
+
+                /*
+                 * Paint the player. 
+                 */
                 final BufferedImage image = 
-                    images.getSpriteImage(sprite.getType(), state, frame);
+                    images.getSpriteImage(player.getType(), state, frame);
 
                 if (image != null)
                 {
-                    Point p = new Point(sprite.getPosition());
-                    Point offset = images.getSpriteOffset(sprite.getType(), state, frame);
+                    Point p = new Point(player.getPosition());
+                    Point offset = images.getSpriteOffset(player.getType(), state, frame);
                     p.translate(offset.x, offset.y);
                     g.drawImage(image, null, p.x, p.y);
                 }

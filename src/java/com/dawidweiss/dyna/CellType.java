@@ -106,8 +106,16 @@ public enum CellType
      */
     public static boolean isWalkable(CellType type)
     {
-        return type == CellType.CELL_EMPTY;
+        return WALKABLES.contains(type);
     }
+    
+    private final static EnumSet<CellType> WALKABLES;
+    static
+    {
+        WALKABLES = EnumSet.of(CellType.CELL_EMPTY);
+        WALKABLES.addAll(EXPLOSION_CELLS);
+    }
+    
 
     /**
      * All cells that are animated and should be replaced with {@link CellType#CELL_EMPTY}

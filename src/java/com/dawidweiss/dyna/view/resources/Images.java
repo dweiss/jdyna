@@ -110,6 +110,21 @@ public final class Images
         return data.offsets[state][frame % frames];
     }
 
+    /**
+     * Return the frame number that is available for a given sprite in the given state. 
+     */
+    public int getMaxSpriteImageFrame(SpriteType type, int state)
+    {
+        final SpriteData data = sprites.get(type);
+        if (data == null)
+            return 0;
+
+        if (state >= data.frames.length || data.frames[state].length == 0)
+            return 0;
+
+        return data.frames[state].length * data.frameAdvanceRate;
+    }
+
     /*
      * 
      */

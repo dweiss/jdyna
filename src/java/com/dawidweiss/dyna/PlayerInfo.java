@@ -167,4 +167,13 @@ final class PlayerInfo implements IPlayer
     {
         return new Point(location);
     }
+    
+    /**
+     * @see IPlayer
+     */
+    @Override
+    public String getName()
+    {
+        return player.name;
+    }
 }

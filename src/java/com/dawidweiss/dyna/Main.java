@@ -50,7 +50,9 @@ public final class Main
             new Dimension(board.width, board.height), 16);
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        final Game game = new Game(board, boardInfo, p1, p2);
+        final Player p3 = new Player("Player 2", c2);
+        final Player p4 = new Player("Player 2", c2);
+        final Game game = new Game(board, boardInfo, p1, p2, p3, p4);
         game.setFrameRate(25);
 
         /*
