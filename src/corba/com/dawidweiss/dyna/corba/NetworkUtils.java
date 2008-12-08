@@ -3,6 +3,7 @@ package com.dawidweiss.dyna.corba;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
@@ -21,9 +22,11 @@ public final class NetworkUtils
     /*
      * 
      */
-    public static void expose(final String ior, int port) throws IOException
+    public static void expose(final String ior, String host, int port) throws IOException
     {
-        final ServerSocket socket = new ServerSocket(port);
+        final ServerSocket socket = new ServerSocket();
+        socket.bind(new InetSocketAddress(host, port));
+
         final Thread t = new Thread("IOR provider")
         {
             public void run()

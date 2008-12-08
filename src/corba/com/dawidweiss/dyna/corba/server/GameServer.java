@@ -26,6 +26,9 @@ public class GameServer
     @Option(name = "-port", required = true, usage = "The port to bind to.")
     private int port;
 
+    @Option(name = "-host", required = true, metaVar = "addr")
+    private String host;
+
     @Argument(metaVar = "ORB params", required = false)
     private List<String> args = new ArrayList<String>();
 
@@ -58,7 +61,7 @@ public class GameServer
             ICGameServerHelper.narrow(rootPOA.servant_to_reference(servant));
 
         final String ior = orb.object_to_string(gameServer);
-        NetworkUtils.expose(ior, port);
+        NetworkUtils.expose(ior, host, port);
 
         /*
          * Start the ORB and run it in an infinite loop.
