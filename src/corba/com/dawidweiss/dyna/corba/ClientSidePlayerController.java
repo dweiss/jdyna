@@ -63,7 +63,7 @@ public class ClientSidePlayerController extends ICPlayerControllerPOA
     }
 
     @Override
-    public synchronized void onEnd(CStanding [] standings)
+    public synchronized void onEnd(CPlayer winner, CStanding [] standings)
     {
         logger.info("Game finished.");
         view.dispose();

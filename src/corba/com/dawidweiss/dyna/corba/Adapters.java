@@ -2,10 +2,12 @@ package com.dawidweiss.dyna.corba;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.List;
 
 import com.dawidweiss.dyna.Cell;
 import com.dawidweiss.dyna.CellType;
 import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.Standing;
 import com.dawidweiss.dyna.IController.Direction;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
@@ -15,6 +17,7 @@ import com.dawidweiss.dyna.corba.bindings.CDirection;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.CPlayerState;
 import com.dawidweiss.dyna.corba.bindings.CPoint;
+import com.dawidweiss.dyna.corba.bindings.CStanding;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.IPlayer;

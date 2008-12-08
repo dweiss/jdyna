@@ -114,7 +114,10 @@ module bindings {
 	     */
 	    void run();
 
+        /** Add an extra game listener. */
 	    void add(in ICGameListener listener);
+
+        /** Remove an extra game listener. */
 	    void remove(in ICGameListener listener);
 	};
 
@@ -136,7 +139,7 @@ module bindings {
 	   /**
 	    * Game over event.
 	    */
-	   oneway void onEnd(in CStandingSeq standings);
+	   oneway void onEnd(in CPlayer winner, in CStandingSeq standings);
 	};
 
 	/**

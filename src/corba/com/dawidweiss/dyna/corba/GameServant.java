@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 import com.dawidweiss.dyna.Board;
 import com.dawidweiss.dyna.BoardIO;
 import com.dawidweiss.dyna.Game;
+import com.dawidweiss.dyna.GameResult;
 import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.Player;
+import com.dawidweiss.dyna.Standing;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
@@ -121,13 +123,21 @@ class GameServant extends ICGamePOA
             final Game game = new Game(board, boardInfo, parray);
             game.setFrameRate(frameRate);
             game.addListener(gameListener);
-            game.run();
+            final GameResult result = game.run();
 
             /*
              * Fire game end.
-             * TODO: Propagate the results (winner, standings).
              */
-            fireGameEnd(new CStanding [0]);
+            final CPlayer winner = lookup(result.winner.name);
+            final List<Standing> standings = result.standings;
+            final CStanding [] results = new CStanding[standings.size()];
+            for (int i = 0; i < standings.size(); i++)
+            {
+                final CPlayer p = lookup(standings.get(i).player.name);
+                results[i] = new CStanding(p.id, standings.get(i).victimNumber);
+            }
+
+            fireGameEnd(winner, results);
         }
         catch (Throwable t)
         {
@@ -155,6 +165,24 @@ class GameServant extends ICGamePOA
         }
     }
 
+    /**
+     * Lookup player by his or her name.
+     */
+    private CPlayer lookup(String name)
+    {;
+        CPlayer player = null;
+        for (PlayerData pd : this.players)
+        {
+            if (pd.info.name.equals(name))
+            {
+                player = pd.info;
+                break;
+            }   
+        }
+
+        return player;
+    }
+
     private void fireGameStart(CBoardInfo bi, CPlayer [] players)
     {
         for (ICGameListener l : listeners)
@@ -163,11 +191,11 @@ class GameServant extends ICGamePOA
         }
     }
 
-    private void fireGameEnd(CStanding [] standings)
+    private void fireGameEnd(CPlayer winner, CStanding [] standings)
     {
         for (ICGameListener l : listeners)
         {
-            l.onEnd(standings);
+            l.onEnd(winner, standings);
         }
     }
 
