@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.server;
 
 import java.awt.Dimension;
 import java.io.InputStreamReader;
@@ -14,6 +14,7 @@ import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.Standing;
+import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;

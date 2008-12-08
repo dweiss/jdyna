@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.server;
 
 import java.util.ArrayList;
 import java.util.List;

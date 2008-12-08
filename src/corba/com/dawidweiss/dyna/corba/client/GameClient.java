@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.client;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import org.omg.PortableServer.POAHelper;
 
 import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;

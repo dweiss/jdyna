@@ -15,15 +15,15 @@ IF "%COMMAND%" == "game" GOTO GAME
 GOTO HELP
 
 :SERVER
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameServer %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.server.GameServer %ARGS%
 	GOTO EXIT
 
 :CLIENT
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameClient %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.client.GameClient %ARGS%
 	GOTO EXIT
 
 :GAME
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameLauncher %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.client.GameLauncher %ARGS%
 	GOTO EXIT
 
 :HELP

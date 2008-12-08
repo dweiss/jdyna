@@ -11,8 +11,16 @@ import java.util.logging.Logger;
  * Simple socket utilities to expose the initial IOR. We don't need naming service for
  * this.
  */
-public class NetworkUtils
+public final class NetworkUtils
 {
+    private NetworkUtils()
+    {
+        // No instances.
+    }
+
+    /*
+     * 
+     */
     public static void expose(final String ior, int port) throws IOException
     {
         final ServerSocket socket = new ServerSocket(port);

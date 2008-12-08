@@ -1,15 +1,19 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.corba;
 
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.corba.GameClient;
-import com.dawidweiss.dyna.corba.GameLauncher;
-import com.dawidweiss.dyna.corba.GameServer;
+import org.omg.CORBA.ORB;
+
+import com.dawidweiss.dyna.corba.bindings.ICGameServer;
+import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
+import com.dawidweiss.dyna.corba.client.GameClient;
+import com.dawidweiss.dyna.corba.client.GameLauncher;
+import com.dawidweiss.dyna.corba.server.GameServer;
 
 /**
- * Development-mode, starts the server and two additional players connected via Corba.
+ * Development-mode launcher, starting the server and two additional players.
  */
 public final class MainCorba
 {
@@ -28,7 +32,19 @@ public final class MainCorba
             }
         });
         t.start();
-        Thread.sleep(1000);
+
+        while (true)
+        {
+            try
+            {
+                NetworkUtils.read("localhost", 50000);
+                break;
+            }
+            catch (Exception e)
+            {
+                Thread.sleep(500);
+            }
+        }
 
         wrap(new Callable<Object>()
         {
@@ -54,8 +70,16 @@ public final class MainCorba
             }
         }).start();
 
-        Thread.sleep(2000);
-        
+        final ORB orb = ORB.init(new String [0], null);
+        final ICGameServer gameServer = ICGameServerHelper
+            .narrow(orb.string_to_object(new String(
+                NetworkUtils.read("localhost", 50000), "UTF-8")));
+
+        while (gameServer.players().length < 2)
+        {
+            Thread.sleep(500);
+        }
+
         wrap(new Callable<Object>()
         {
             public Object call() throws Exception

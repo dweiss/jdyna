@@ -1,6 +1,7 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.server;
 
 import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackPOA;
 

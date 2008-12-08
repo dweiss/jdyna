@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.server;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import org.kohsuke.args4j.Option;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
+import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 

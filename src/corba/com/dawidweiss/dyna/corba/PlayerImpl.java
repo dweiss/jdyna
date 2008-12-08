@@ -6,7 +6,7 @@ import com.dawidweiss.dyna.view.IPlayer;
 import com.dawidweiss.dyna.view.SpriteType;
 
 /**
- * 
+ * Temporary structure used in {@link Adapters}.
  */
 final class PlayerImpl implements IPlayer
 {
@@ -17,7 +17,7 @@ final class PlayerImpl implements IPlayer
     public int animationState;
     public int animationFrame; 
 
-    public PlayerImpl(int playerIndex, String name)
+    PlayerImpl(int playerIndex, String name)
     {
         this.name = name;
         

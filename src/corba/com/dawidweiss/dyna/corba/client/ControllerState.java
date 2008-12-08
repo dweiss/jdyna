@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.client;
 
 import org.apache.commons.lang.ObjectUtils;
 
@@ -7,7 +7,7 @@ import com.dawidweiss.dyna.IController;
 /**
  * A comparable state of {@link IController}.
  */
-public final class ControllerState
+final class ControllerState
 {
     private final IController.Direction direction;
     private final boolean dropsBomb;

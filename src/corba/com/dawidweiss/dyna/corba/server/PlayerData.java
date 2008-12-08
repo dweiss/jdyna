@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.server;
 
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;

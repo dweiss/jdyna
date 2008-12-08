@@ -1,17 +1,15 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.client;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
+import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.ICGame;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
@@ -30,9 +28,6 @@ public class GameLauncher
     @Option(name = "-port", required = true)
     private int port;
 
-    @Argument(metaVar = "players", required = false, multiValued = true)
-    private List<String> args = new ArrayList<String>();
-
     /*
      * Console entry point.
      */
@@ -41,8 +36,7 @@ public class GameLauncher
         /*
          * Perform initial setup. You should be familiar with this by now.
          */
-        final org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args
-            .toArray(new String [args.size()]), null);
+        final org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
         final POA rootPOA;
         try
         {
