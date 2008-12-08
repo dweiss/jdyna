@@ -18,6 +18,8 @@ import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.CStanding;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackHelper;
 import com.dawidweiss.dyna.corba.bindings.ICGame;
 import com.dawidweiss.dyna.corba.bindings.ICGameListener;
 import com.dawidweiss.dyna.corba.bindings.ICGamePOA;
@@ -96,12 +98,25 @@ class GameServant extends ICGamePOA
                 new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
 
             /*
-             * Prepare players and listeners.
+             * Add all players as listeners of this game, since they are listeners anyway.
              */
-
             for (PlayerData p: players) 
             {
                 add(p.controller);
+            }
+            
+            /*
+             * Create controller callbacks and start the game. 
+             */
+            final Player [] parray = new Player [this.players.size()];
+            for (int i = 0; i < parray.length; i++)
+            {
+                final PlayerData pd = this.players.get(i);
+                final PlayerCallbackServant servant = new PlayerCallbackServant();
+                final ICControllerCallback callback = ICControllerCallbackHelper.narrow(
+                    _poa().servant_to_reference(servant));
+                pd.controller.onControllerSetup(callback);
+                parray[i] = new Player(pd.info.name, servant);
             }
 
             fireGameStart(Adapters.adapt(boardInfo), playerList());
@@ -110,16 +125,6 @@ class GameServant extends ICGamePOA
              * Run the game loop.
              */
             final int frameRate = 25;
-            final Player [] parray = new Player [this.players.size()];
-            final RemotePlayerController [] controllers = new RemotePlayerController [parray.length];
-            for (int i = 0; i < parray.length; i++)
-            {
-                final PlayerData pd = this.players.get(i);
-                controllers[i] = new RemotePlayerController(pd);
-                controllers[i].start();
-                parray[i] = new Player(pd.info.name, controllers[i]);
-            }
-
             final Game game = new Game(board, boardInfo, parray);
             game.setFrameRate(frameRate);
             game.addListener(gameListener);

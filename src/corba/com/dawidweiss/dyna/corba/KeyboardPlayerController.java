@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 import com.dawidweiss.dyna.IController;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
-import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.CStanding;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerPOA;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
@@ -16,24 +16,21 @@ import com.dawidweiss.dyna.view.swing.BoardFrame;
  * An adapter for {@link IController} updating player state on a remote game server and
  * displaying the current game state.
  */
-public class ClientSidePlayerController extends ICPlayerControllerPOA
+public class KeyboardPlayerController extends ICPlayerControllerPOA
 {
     private final static Logger logger = Logger.getLogger("player");
-    private final IController controller;
 
     private BoardFrame view;
     private CPlayer [] players;
     private CBoardInfo boardInfo;
 
-    public ClientSidePlayerController(IController controller)
+    private final IController controller;
+    private ICControllerCallback controllerCallback;
+    private ControllerState last;
+
+    public KeyboardPlayerController(IController controller)
     {
         this.controller = controller;
-    }
-
-    @Override
-    public CControllerState state()
-    {
-        return Adapters.adapt(controller);
     }
 
     @Override
@@ -51,14 +48,19 @@ public class ClientSidePlayerController extends ICPlayerControllerPOA
     public synchronized void onNextFrame(int frame, CBoardSnapshot snapshot)
     {
         /*
-         * Because events from the game controller are asynchronous, it may happen
-         * that view is still uninitialized.
+         * Check controller state updates.
          */
-        if (view == null)
+        final ControllerState now = new ControllerState(controller);
+        if (last == null || !last.equals(now))
         {
-            return;
+            last = now;
+            controllerCallback.update(Adapters.adapt(controller));
         }
-        IBoardSnapshot adapted = Adapters.adapt(snapshot, boardInfo, players);
+
+        /*
+         * Update local view.
+         */
+        final IBoardSnapshot adapted = Adapters.adapt(snapshot, boardInfo, players);
         view.onNextFrame(frame, adapted);
     }
 
@@ -68,5 +70,11 @@ public class ClientSidePlayerController extends ICPlayerControllerPOA
         logger.info("Game finished.");
         view.dispose();
         view = null;
+    }
+
+    @Override
+    public synchronized void onControllerSetup(ICControllerCallback callback)
+    {
+        this.controllerCallback = callback;
     }
 }

@@ -71,7 +71,7 @@ public class GameClient
          */
         final IController local = Globals.getDefaultKeyboardController(0);
         final ICPlayerController controller = ICPlayerControllerHelper.narrow(
-            rootPOA.servant_to_reference(new ClientSidePlayerController(local)));
+            rootPOA.servant_to_reference(new KeyboardPlayerController(local)));
 
         gameServer.register(name, controller);
 

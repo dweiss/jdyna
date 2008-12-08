@@ -128,7 +128,7 @@ module bindings {
 	   /**
 	    * The game is about to start.
 	    */
-	   oneway void onStart(in CBoardInfo boardInfo, in CPlayerSeq players);
+	   void onStart(in CBoardInfo boardInfo, in CPlayerSeq players);
 
 	   /**
 	    * An asynchronous callback received on each game frame (some frames may be skipped
@@ -139,7 +139,18 @@ module bindings {
 	   /**
 	    * Game over event.
 	    */
-	   oneway void onEnd(in CPlayer winner, in CStandingSeq standings);
+	   void onEnd(in CPlayer winner, in CStandingSeq standings);
+	};
+	
+	/**
+	 * Game controller expects player control signals to be passed via this interface.
+	 */ 
+	interface ICControllerCallback {
+        /**
+         * This is a synchronous call, so conserve the resources of your client
+         * and avoid sending spurious messages.
+         */
+        void update(in CControllerState state);
 	};
 
 	/**
@@ -147,11 +158,12 @@ module bindings {
 	 */
     interface ICPlayerController : ICGameListener {
         /**
-         * The controller state is continuously read by the game controller
-         * during the game. It should be updated accordingly by the player and
-         * <b>must not block</b> the calling thread.
-         */
-        readonly attribute CControllerState state;  
+         * Invoked by the game controller just before the game starts. The 
+         * player's controller should pass state information to the provided callback
+         * object and <b>must not</b> flood it with requests. It is advised to have
+         * one call every time the state needs to be changed.
+         */  
+        void onControllerSetup(in ICControllerCallback callback); 
     };
 };
 };
