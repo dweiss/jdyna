@@ -61,7 +61,10 @@ public final class Game
     private IBoardSnapshot boardSnapshot = new IBoardSnapshot() {
         public Cell [][] getCells()
         {
-            // TODO: This should be a 'safe' copy of the actual board cell structure.
+            /*
+             * This should be a 'safe' copy of the actual board cell structure,
+             * even within the same VM, so that nobody can cheat.
+             */
             return board.cells;
         }
 
