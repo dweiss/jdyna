@@ -22,7 +22,7 @@ import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
 
@@ -124,10 +124,10 @@ public final class BoardPanel extends Canvas implements IGameListener
             /*
              * Paint players.
              */
-            final IPlayer [] players = snapshot.getPlayers();
+            final IPlayerSprite [] players = snapshot.getPlayers();
             for (int playerIndex = 0; playerIndex < players.length; playerIndex++)
             {
-                final IPlayer player = players[playerIndex];
+                final IPlayerSprite player = players[playerIndex];
                 int state = player.getAnimationState();
                 int frame = player.getAnimationFrame();
     

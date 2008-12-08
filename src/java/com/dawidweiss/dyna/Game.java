@@ -11,7 +11,7 @@ import java.util.List;
 import com.dawidweiss.dyna.IController.Direction;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.google.common.collect.Lists;
 
 /**
@@ -36,7 +36,7 @@ public final class Game
     /**
      * Player views for listeners.
      */
-    private IPlayer [] playerViews;
+    private IPlayerSprite [] playerViews;
 
     /**
      * A list of killed players. 
@@ -68,7 +68,7 @@ public final class Game
             return board.cells;
         }
 
-        public IPlayer [] getPlayers()
+        public IPlayerSprite [] getPlayers()
         {
             return playerViews;
         }
@@ -421,7 +421,7 @@ public final class Game
     private void setupPlayers()
     {
         final PlayerInfo [] pi = new PlayerInfo [players.length];
-        final IPlayer [] pv = new IPlayer [players.length];
+        final IPlayerSprite [] pv = new IPlayerSprite [players.length];
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < pi.length)
         {

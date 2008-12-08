@@ -17,5 +17,5 @@ public interface IBoardSnapshot
     /** 
      * Current position and attributes of players.
      */
-    IPlayer [] getPlayers();
+    IPlayerSprite [] getPlayers();
 }

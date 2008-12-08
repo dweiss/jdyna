@@ -17,7 +17,7 @@ import com.dawidweiss.dyna.corba.bindings.CPlayerState;
 import com.dawidweiss.dyna.corba.bindings.CPoint;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 
 /**
  * Adapters between Corba and Java game structures.
@@ -73,7 +73,7 @@ public final class Adapters
 
     public static CBoardSnapshot adapt(IBoardSnapshot in)
     {
-        final IPlayer [] p = in.getPlayers();
+        final IPlayerSprite [] p = in.getPlayers();
         final CPlayerState [] players = new CPlayerState [p.length];
         for (int i = 0; i < p.length; i++)
         {
@@ -88,10 +88,10 @@ public final class Adapters
     public static IBoardSnapshot adapt(CBoardSnapshot snapshot, CBoardInfo info, CPlayer [] pNames)
     {
         final CPlayerState [] cplayers = snapshot.players;
-        final IPlayer [] players = new IPlayer [cplayers.length];
+        final IPlayerSprite [] players = new IPlayerSprite [cplayers.length];
         for (int i = 0; i < players.length; i++)
         {
-            final PlayerImpl np = new PlayerImpl(i, pNames[i].name);
+            final PlayerSpriteImpl np = new PlayerSpriteImpl(i, pNames[i].name);
             np.position = adapt(cplayers[i].position);
             np.animationFrame = cplayers[i].animationFrame;
             np.animationState = cplayers[i].animationState;
@@ -126,7 +126,7 @@ public final class Adapters
                 return cells;
             }
 
-            public IPlayer [] getPlayers()
+            public IPlayerSprite [] getPlayers()
             {
                 return players;
             }
@@ -150,7 +150,7 @@ public final class Adapters
         return ca;
     }
 
-    public static CPlayerState adapt(IPlayer player)
+    public static CPlayerState adapt(IPlayerSprite player)
     {
         return new CPlayerState(player.getAnimationFrame(), player.getAnimationState(),
             adapt(player.getPosition()));

@@ -2,13 +2,13 @@ package com.dawidweiss.dyna.corba;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.dawidweiss.dyna.view.SpriteType;
 
 /**
  * Temporary structure used in {@link Adapters}.
  */
-final class PlayerImpl implements IPlayer
+final class PlayerSpriteImpl implements IPlayerSprite
 {
     private final String name;
     private final SpriteType type;
@@ -17,7 +17,7 @@ final class PlayerImpl implements IPlayer
     public int animationState;
     public int animationFrame; 
 
-    PlayerImpl(int playerIndex, String name)
+    PlayerSpriteImpl(int playerIndex, String name)
     {
         this.name = name;
         

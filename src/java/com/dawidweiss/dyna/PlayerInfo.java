@@ -3,13 +3,13 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 
 import com.dawidweiss.dyna.IController.Direction;
-import com.dawidweiss.dyna.view.IPlayer;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.dawidweiss.dyna.view.SpriteType;
 
 /**
  * Extra {@link Player} information for the {@link Game}.
  */
-final class PlayerInfo implements IPlayer
+final class PlayerInfo implements IPlayerSprite
 {
     /* */
     public final Player player;
@@ -132,7 +132,7 @@ final class PlayerInfo implements IPlayer
     }
 
     /**
-     * @see IPlayer
+     * @see IPlayerSprite
      */
     @Override
     public int getAnimationFrame()
@@ -141,7 +141,7 @@ final class PlayerInfo implements IPlayer
     }
 
     /**
-     * @see IPlayer
+     * @see IPlayerSprite
      */
     @Override
     public int getAnimationState()
@@ -150,7 +150,7 @@ final class PlayerInfo implements IPlayer
     }
 
     /**
-     * @see IPlayer
+     * @see IPlayerSprite
      */
     @Override
     public SpriteType getType()
@@ -160,7 +160,7 @@ final class PlayerInfo implements IPlayer
     }
 
     /**
-     * @see IPlayer
+     * @see IPlayerSprite
      */
     @Override
     public Point getPosition()
@@ -169,7 +169,7 @@ final class PlayerInfo implements IPlayer
     }
     
     /**
-     * @see IPlayer
+     * @see IPlayerSprite
      */
     @Override
     public String getName()
