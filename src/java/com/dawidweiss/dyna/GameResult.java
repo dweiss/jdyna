@@ -8,28 +8,6 @@ import java.util.*;
 public final class GameResult
 {
     /**
-     * Player's standing.
-     */
-    public final static class Standing
-    {
-        /* */
-        public final Player player;
-
-        /**
-         * The victim number indicates the order of being killed, starting from 0 (the
-         * first player killed). Note that the number may be the same for two players if
-         * they were killed in the same explosion.
-         */
-        public final int victimNumber;
-
-        public Standing(Player p, int victimNumber)
-        {
-            this.player = p;
-            this.victimNumber = victimNumber;
-        }
-    }
-
-    /**
      * The winner (last man standing). If <code>null</code>, the game was a draw.
      */
     public final Player winner;

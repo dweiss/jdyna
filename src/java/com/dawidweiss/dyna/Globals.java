@@ -1,9 +1,11 @@
 package com.dawidweiss.dyna;
 
+import java.awt.event.KeyEvent;
+
 /**
  * Global defaults.
  */
-final class Globals
+public final class Globals
 {
     /**
      * @see BombCell#range
@@ -28,6 +30,11 @@ final class Globals
      */
     public static final boolean DELAYED_BOMB_EXPLOSIONS = false;
 
+    /**
+     * Default pixel size of each cell in the playfield.
+     */
+    public static final int DEFAULT_CELL_SIZE = 16;
+
     /*
      * 
      */
@@ -35,4 +42,21 @@ final class Globals
     {
         // no instances.
     }
+    
+    /**
+     * Returns "default" keyboard layout for a player numbered <code>num</code>.
+     */
+    public static IController getDefaultKeyboardController(int num)
+    {
+        switch (num)
+        {
+            case 0:
+                return new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
+                    KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);                
+            case 1:
+                return new KeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
+                    KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
+        }
+        throw new RuntimeException("No default keyboard for player: " + num);
+    } 
 }

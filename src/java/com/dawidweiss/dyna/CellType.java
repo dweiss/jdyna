@@ -147,4 +147,21 @@ public enum CellType
         final Integer i = ANIMATING_CELLS.get(type);
         return (i == null ? 0 : i);
     }
+
+    private final static CellType [] BY_ORDINALS;
+    static
+    {
+        int max = 0;
+        for (CellType t : CellType.values()) max = Math.max(max, t.ordinal());
+        BY_ORDINALS = new CellType [max + 1];
+        for (CellType t : CellType.values()) BY_ORDINALS[t.ordinal()] = t;
+    }
+
+    /**
+     * Convert from enum's ordinal number to enum type.
+     */
+    public static CellType valueOf(int ordinal)
+    {
+        return BY_ORDINALS[ordinal];
+    }
 }

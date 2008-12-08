@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 /**
  * {@link Board} data reader.
  */
-final class BoardIO
+public final class BoardIO
 {
     private BoardIO()
     {

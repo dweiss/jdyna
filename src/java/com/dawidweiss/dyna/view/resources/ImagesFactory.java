@@ -65,7 +65,7 @@ public final class ImagesFactory
          * Cell (grid) data. 
          */
 
-        ImageSliceBuilder sb = new ImageSliceBuilder("05.png", cellSize);
+        ImageSliceBuilder sb = new ImageSliceBuilder("tiles/05.png", cellSize);
         List<CellData> cells = Arrays.asList(new CellData [] {
             /* Simple cells */
             create(CellType.CELL_EMPTY, 1, sb.tile(0, 0)),
@@ -115,7 +115,7 @@ public final class ImagesFactory
          */
 
         final int playerFrameSize = 24;
-        sb = new ImageSliceBuilder("02.png", playerFrameSize);
+        sb = new ImageSliceBuilder("tiles/02.png", playerFrameSize);
         sb.w = playerFrameSize - 1;
         sb.h = playerFrameSize - 1;
         final Point offset = new Point(-playerFrameSize / 2, -playerFrameSize / 2);

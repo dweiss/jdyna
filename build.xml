@@ -1,0 +1,86 @@
+
+<project name="DynaBlaster" default="dist">
+	<property name="tmp.path" value="tmp/build" />
+	<property name="build.path" value="${tmp.path}/classes" />
+	<property name="dist.path" value="${tmp.path}/dist" />
+
+	<property name="debug" value="on" />
+	<property name="optimize" value="off" />
+
+	<property name="src.java" location="src/java" />
+	<property name="src.idl.stubs" location="src/corba" />
+	<property name="src.idl" location="src/idl/dyna.idl" />
+
+	<!-- Paths and filesets. -->
+
+	<path id="classpath.compile">
+		<fileset id="libs" dir=".">
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="prepare">
+		<mkdir dir="${build.path}" />
+	</target>
+
+	<target name="clean" description="Clean generated files.">
+		<delete dir="${build.path}" />
+	</target>
+
+	<target name="compile" depends="compile.idl" description="Compile sources.">
+		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
+			<src location="${src.java}" />
+			<src location="${src.idl.stubs}" />
+			<classpath refid="classpath.compile" />
+		</javac>
+
+		<copy todir="${build.path}">
+			<fileset dir="${src.java}">
+				<exclude name="**/*.java" />
+			</fileset>
+			<fileset dir="src/boards" />
+			<fileset dir="src/graphics" />
+		</copy>
+	</target>
+
+	<target name="compile.idl" depends="prepare" description="Compile Corba bindings.">
+		<taskdef name="idldepend" classname="com.byteslooser.idldepend.IDLCheckerTask">
+			<classpath location="lib/compilation/idldepend-1-2-2.jar" />
+		</taskdef>
+
+		<mkdir dir="${src.idl.stubs}" />
+		<idldepend compiler="jdk" force="false" checkAll="false" verbose="basic" targetDir="${src.idl.stubs}" file="${src.idl}" />
+	</target>
+
+	<target name="jar" depends="compile" description="Compile an executable JAR">
+		<mkdir dir="${dist.path}" />
+
+		<pathconvert property="manifest.libs" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+					<flattenmapper />
+				</chainedmapper>
+			</mapper>
+			<fileset dir="lib/runtime" includes="*.jar" id="classpath.runtime" />
+		</pathconvert>
+
+		<jar jarfile="${dist.path}/dyna.jar" basedir="${build.path}">
+			<manifest>
+				<attribute name="Main-Class" value="com.dawidweiss.dyna.Main" />
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Class-Path" value="${manifest.libs}" />
+			</manifest>
+		</jar>
+
+		<copy todir="${dist.path}" flatten="true">
+			<fileset refid="classpath.runtime" />
+		</copy>
+	</target>
+
+	<target name="dist" depends="jar" description="Builds the distribution.">
+		<copy todir="${dist.path}">
+			<fileset dir="src/scripts" />
+		</copy>
+	</target>
+</project>
+

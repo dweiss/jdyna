@@ -27,7 +27,7 @@ public class Cell
     /**
      * Create and return an instance of a cell of given type.
      */
-    final static Cell getInstance(CellType type)
+    public final static Cell getInstance(CellType type)
     {
         switch (type)
         {
@@ -37,5 +37,11 @@ public class Cell
             default:
                 return new Cell(type);
         }
+    }
+    
+    @Override
+    public String toString()
+    {
+        return Character.toString(type.code);
     }
 }

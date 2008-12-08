@@ -1,0 +1,157 @@
+
+/*
+ * CORBA interfaces for Dyna. Prefixes 'C' and 'IC' are used to avoid confusion
+ * with plain Java version.
+ */
+
+module com {
+module dawidweiss {
+module dyna {
+module corba {
+module bindings {
+
+	/*
+	 * Forward references and typedefs.
+	 */
+	
+	interface ICGameServer;
+	interface ICGameListener;
+	interface ICGame;
+	interface ICPlayerController;
+	struct CPlayer;
+	struct CPlayerState;
+	struct CStanding;
+	struct CControllerState;
+
+    /*
+     * Cels are int-coded.
+     * <pre>
+     * 0x007f - The int-ordinal of CellType
+     * 0xff80 - Cell counter associated with the cell.
+     * </pre> 
+     */
+    typedef sequence<short> CCellSeq;
+
+	typedef sequence<CPlayer> CPlayerSeq;
+    typedef sequence<CPlayerState> CPlayerStateSeq;
+    typedef sequence<CStanding> CStandingSeq;
+
+	/**
+	 * A player is described with a name and unique id.
+	 */
+	struct CPlayer {
+	    long id;
+	    wstring name;
+	};
+
+    /**
+     * Standings after game over.
+     */
+    struct CStanding {
+        long id;
+        long victimNumber;
+    };
+
+	/*
+	 * Snapshots of game data structures.
+	 */
+    struct CDimension {
+       long width, height;
+    };
+
+    struct CPoint {
+       long x, y;
+    };
+
+	struct CPlayerState {
+	   long animationFrame;
+	   long animationState;
+	   CPoint position;
+	};
+
+	struct CBoardSnapshot {
+	   CCellSeq cells;
+	   CPlayerStateSeq players;
+	};
+	
+	struct CBoardInfo {
+	   CDimension gridSize;
+	   long cellSize;
+	   CDimension pixelSize;
+	};
+
+    enum CDirection
+    {
+        LEFT, RIGHT, UP, DOWN, NONE
+    };
+
+	struct CControllerState {
+	   CDirection direction;
+	   boolean dropsBomb;
+	};
+
+	/**
+	 * A game server is the main object on which players are registered and games are 
+	 * started. 
+	 */
+	interface ICGameServer {
+	    /** Register a new player in the controller. */
+	    CPlayer register(in wstring name, in ICPlayerController controller);
+
+	    /** Create a game for a set of players. */
+	    ICGame create(in CPlayerSeq players);
+
+	    /** Currently registered players. */
+	    CPlayerSeq players();
+	};
+
+	/**
+	 * A single game between a set of players.
+	 */
+	interface ICGame {
+	    /**
+	     * Starts the game and executes the entire game loop.
+	     */
+	    void run();
+
+	    void add(in ICGameListener listener);
+	    void remove(in ICGameListener listener);
+	};
+
+	/**
+	 * A game listener receives events from one or more games.
+	 */
+	interface ICGameListener {
+	   /**
+	    * The game is about to start.
+	    */
+	   oneway void onStart(in CBoardInfo boardInfo, in CPlayerSeq players);
+
+	   /**
+	    * An asynchronous callback received on each game frame (some frames may be skipped
+	    * if the connection is slow). 
+	    */
+	   oneway void onNextFrame(in long frame, in CBoardSnapshot snapshot);
+
+	   /**
+	    * Game over event.
+	    */
+	   oneway void onEnd(in CStandingSeq standings);
+	};
+
+	/**
+	 * A controller for a single remote player.
+	 */
+    interface ICPlayerController : ICGameListener {
+        /**
+         * The controller state is continuously read by the game controller
+         * during the game. It should be updated accordingly by the player and
+         * <b>must not block</b> the calling thread.
+         */
+        readonly attribute CControllerState state;  
+    };
+};
+};
+};
+};
+};

@@ -8,7 +8,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dawidweiss.dyna.GameResult.Standing;
 import com.dawidweiss.dyna.IController.Direction;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
@@ -42,7 +41,7 @@ public final class Game
     /**
      * A list of killed players. 
      */
-    private final ArrayList<GameResult.Standing> standings = Lists.newArrayList();
+    private final ArrayList<Standing> standings = Lists.newArrayList();
 
     /** Single frame delay, in milliseconds. */
     private int framePeriod;

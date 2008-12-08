@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
  * The board additionally includes information about {@link ISprite} objects (overlays
  * over the cell area).
  */
-final class Board
+public final class Board
 {
     /** Board's width in cells. */
     public final int width;
@@ -41,7 +41,7 @@ final class Board
     /*
      * 
      */
-    public Board(int width, int height, Cell [][] cells, Point [] playerPositions)
+    Board(int width, int height, Cell [][] cells, Point [] playerPositions)
     {
         assert width > 0 && height > 0 && cells.length == (width * height);
 
