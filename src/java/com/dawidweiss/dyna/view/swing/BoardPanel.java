@@ -70,7 +70,6 @@ public final class BoardPanel extends Canvas implements IGameListener
          * Set up 2-screen buffering strategy when the canvas is shown.
          */
         addHierarchyListener(new HierarchyListener() {
-            @Override
             public void hierarchyChanged(HierarchyEvent e)
             {
                 if (isDisplayable() && bufferStrategy == null)

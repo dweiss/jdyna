@@ -134,7 +134,6 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    @Override
     public int getAnimationFrame()
     {
         return this.frame;
@@ -143,7 +142,6 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    @Override
     public int getAnimationState()
     {
         return this.state.ordinal();
@@ -152,7 +150,6 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    @Override
     public SpriteType getType()
     {
         final SpriteType [] playerSprites = SpriteType.getPlayerSprites();
@@ -162,7 +159,6 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    @Override
     public Point getPosition()
     {
         return new Point(location);
@@ -171,7 +167,6 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    @Override
     public String getName()
     {
         return player.name;

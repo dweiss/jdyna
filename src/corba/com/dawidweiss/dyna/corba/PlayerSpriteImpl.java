@@ -30,25 +30,21 @@ final class PlayerSpriteImpl implements IPlayerSprite
         return name;
     }
 
-    @Override
     public int getAnimationFrame()
     {
         return animationFrame;
     }
 
-    @Override
     public int getAnimationState()
     {
         return animationState;
     }
 
-    @Override
     public Point getPosition()
     {
         return position;
     }
 
-    @Override
     public SpriteType getType()
     {
         return type;

@@ -14,19 +14,16 @@ final class PlayerCallbackServant extends ICControllerCallbackPOA
     private volatile boolean dropsBomb;
     private volatile Direction current;
 
-    @Override
     public boolean dropsBomb()
     {
         return dropsBomb;
     }
 
-    @Override
     public Direction getCurrent()
     {
         return current;
     }
 
-    @Override
     public void update(CControllerState state)
     {
         this.dropsBomb = state.dropsBomb;

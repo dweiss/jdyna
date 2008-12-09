@@ -34,7 +34,6 @@ public class KeyboardPlayerController extends ICPlayerControllerPOA
         this.controller = controller;
     }
 
-    @Override
     public synchronized void onStart(CBoardInfo boardInfo, CPlayer [] players)
     {
         logger.info("Game started.");
@@ -45,7 +44,6 @@ public class KeyboardPlayerController extends ICPlayerControllerPOA
         view.setVisible(true);
     }
 
-    @Override
     public synchronized void onNextFrame(int frame, CBoardSnapshot snapshot)
     {
         /*
@@ -65,7 +63,6 @@ public class KeyboardPlayerController extends ICPlayerControllerPOA
         view.onNextFrame(frame, adapted);
     }
 
-    @Override
     public synchronized void onEnd(CPlayer winner, CStanding [] standings)
     {
         logger.info("Game finished.");
@@ -73,7 +70,6 @@ public class KeyboardPlayerController extends ICPlayerControllerPOA
         view = null;
     }
 
-    @Override
     public synchronized void onControllerSetup(ICControllerCallback callback)
     {
         this.controllerCallback = callback;

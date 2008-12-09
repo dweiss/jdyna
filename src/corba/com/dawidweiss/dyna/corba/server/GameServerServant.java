@@ -37,7 +37,6 @@ class GameServerServant extends ICGameServerPOA
     /*
      * Create a new game. 
      */
-    @Override
     public ICGame create(CPlayer [] players)
     {
         synchronized (this)
@@ -85,7 +84,6 @@ class GameServerServant extends ICGameServerPOA
     /*
      * Idle players. 
      */
-    @Override
     public CPlayer [] players()
     {
         synchronized (this)
@@ -102,7 +100,6 @@ class GameServerServant extends ICGameServerPOA
     /*
      * 
      */
-    @Override
     public CPlayer register(String name, ICPlayerController controller)
     {
         synchronized (this)

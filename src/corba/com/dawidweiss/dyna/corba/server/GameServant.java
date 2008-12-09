@@ -64,7 +64,6 @@ class GameServant extends ICGamePOA
     /**
      * Add a listener.
      */
-    @Override
     public void add(ICGameListener listener)
     {
         listeners.add(listener);
@@ -73,7 +72,6 @@ class GameServant extends ICGamePOA
     /**
      * Remove a listener.
      */
-    @Override
     public void remove(ICGameListener listener)
     {
         listeners.remove(listener);
@@ -82,7 +80,6 @@ class GameServant extends ICGamePOA
     /**
      * Run the game.
      */
-    @Override
     public void run()
     {
         try
