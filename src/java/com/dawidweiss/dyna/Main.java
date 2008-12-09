@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.dawidweiss.dyna.view.BoardInfo;
@@ -57,6 +58,7 @@ public final class Main
         final BoardFrame frame = new BoardFrame(boardInfo);
         game.addListener(frame);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final GameResult result = game.run();
         Logger.getAnonymousLogger().info(result.toString());
