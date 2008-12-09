@@ -34,7 +34,7 @@ public final class Main
         /*
          * Set up a single game between two players.
          */
-        final Board board = boards.get(1);
+        final Board board = boards.get(0);
 
         final IController c1 = new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
             KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
@@ -46,8 +46,8 @@ public final class Main
             new Dimension(board.width, board.height), 16);
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        final Player p3 = new Player("Player 2", c2);
-        final Player p4 = new Player("Player 2", c2);
+        final Player p3 = new Player("Player 3", c2);
+        final Player p4 = new Player("Player 4", c2);
         final Game game = new Game(board, boardInfo, p1, p2, p3, p4);
         game.setFrameRate(25);
 

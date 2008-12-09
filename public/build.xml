@@ -86,6 +86,7 @@
 		<copy todir="${dist.path}">
 			<fileset dir="src/scripts" />
 		</copy>
+		<chmod file="${dist.path}/dyna.sh" perm="a+rx" />
 	</target>
 </project>
 

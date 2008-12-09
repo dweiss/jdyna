@@ -12,6 +12,7 @@ SET ARGS=
 IF "%COMMAND%" == "server" GOTO SERVER
 IF "%COMMAND%" == "client" GOTO CLIENT
 IF "%COMMAND%" == "game" GOTO GAME
+IF "%COMMAND%" == "localgame" GOTO LOCALGAME
 GOTO HELP
 
 :SERVER
@@ -26,7 +27,11 @@ GOTO HELP
 	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.client.GameLauncher %ARGS%
 	GOTO EXIT
 
+:LOCALGAME
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.Main %ARGS%
+	GOTO EXIT
+
 :HELP
-	ECHO "%0 [server|client|game]"
+	ECHO "%0 [server|client|game|localgame]"
 
 :EXIT
