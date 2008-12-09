@@ -45,11 +45,16 @@
 
 	<target name="compile.idl" depends="prepare" description="Compile Corba bindings.">
 		<taskdef name="idldepend" classname="com.byteslooser.idldepend.IDLCheckerTask">
-			<classpath location="lib/compilation/idldepend-1-2-2.jar" />
+			<classpath id="classpath.idlcompiler">
+				<fileset dir="lib/" includes="**/*.jar" />
+			</classpath>
 		</taskdef>
 
 		<mkdir dir="${src.idl.stubs}" />
-		<idldepend compiler="jdk" force="false" checkAll="false" verbose="basic" targetDir="${src.idl.stubs}" file="${src.idl}" />
+		<idldepend compiler="openorb" force="false" checkAll="false" verbose="basic" 
+			targetDir="${src.idl.stubs}" file="${src.idl}">
+			<classpath refid="classpath.idlcompiler" />
+		</idldepend>
 	</target>
 
 	<target name="jar" depends="compile" description="Compile an executable JAR">

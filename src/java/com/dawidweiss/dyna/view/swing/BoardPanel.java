@@ -1,16 +1,11 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -20,9 +15,7 @@ import com.dawidweiss.dyna.Cell;
 import com.dawidweiss.dyna.CellType;
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.view.BoardInfo;
-import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayerSprite;
+import com.dawidweiss.dyna.view.*;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
 
@@ -31,8 +24,18 @@ import com.google.common.collect.Maps;
  * game.
  */
 @SuppressWarnings("serial")
-public final class BoardPanel extends Canvas implements IGameListener
+public final class BoardPanel extends JPanel implements IGameListener
 {
+    /**
+     * Exclusive lock so that drawing and updating does not take place at the same time.
+     */
+    private final Object exclusiveLock = new Object();
+
+    /**
+     * The latest board's background state.
+     */
+    private final BufferedImage background;
+
     /*
      * Board information.
      */
@@ -54,11 +57,6 @@ public final class BoardPanel extends Canvas implements IGameListener
     private HashMap<Integer,Integer> dyingPlayers = Maps.newHashMap();
 
     /**
-     * Buffering strategy for this canvas.
-     */
-    private BufferStrategy bufferStrategy; 
-
-    /**
      * 
      */
     public BoardPanel(BoardInfo boardInfo, Images images, GraphicsConfiguration conf)
@@ -67,18 +65,15 @@ public final class BoardPanel extends Canvas implements IGameListener
         this.images = images.createCompatible(conf);
 
         /*
-         * Set up 2-screen buffering strategy when the canvas is shown.
+         * TODO: correct buffering strategy.
          */
-        addHierarchyListener(new HierarchyListener() {
-            public void hierarchyChanged(HierarchyEvent e)
-            {
-                if (isDisplayable() && bufferStrategy == null)
-                {
-                    createBufferStrategy(2);
-                    bufferStrategy = getBufferStrategy();
-                }
-            }
-        });
+        this.setDoubleBuffered(false);
+
+        /*
+         * Initial board update.
+         */
+        final Dimension size = getPreferredSize();
+        background = conf.createCompatibleImage(size.width, size.height);
     }
 
     /**
@@ -86,20 +81,19 @@ public final class BoardPanel extends Canvas implements IGameListener
      */
     public void updateBoard(IBoardSnapshot snapshot)
     {
-        if (bufferStrategy == null) return;
+        final Graphics2D g = background.createGraphics();
 
-        final Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
-        try
+        final BufferedImage backgroundImage = getCellImage(CellType.CELL_EMPTY, 0);
+        final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
+
+        synchronized (exclusiveLock)
         {
-            final BufferedImage backgroundImage = getCellImage(CellType.CELL_EMPTY, 0);
-            final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
-    
             /*
              * Erase the background with approximated background color.
              */
             g.setColor(backgroundColor);
             g.fillRect(0, 0, boardInfo.pixelSize.width, boardInfo.pixelSize.height);
-    
+
             /*
              * Paint grid cells.
              */
@@ -111,7 +105,7 @@ public final class BoardPanel extends Canvas implements IGameListener
                 {
                     final Cell cell = cells[x][y];
                     final CellType type = cell.type;
-    
+
                     final BufferedImage image = getCellImage(type, cell.counter);
                     if (image != null)
                     {
@@ -119,7 +113,7 @@ public final class BoardPanel extends Canvas implements IGameListener
                     }
                 }
             }
-    
+
             /*
              * Paint players.
              */
@@ -129,7 +123,7 @@ public final class BoardPanel extends Canvas implements IGameListener
                 final IPlayerSprite player = players[playerIndex];
                 int state = player.getAnimationState();
                 int frame = player.getAnimationFrame();
-    
+
                 /*
                  * Special handing of the 'dying' state.
                  */
@@ -139,7 +133,7 @@ public final class BoardPanel extends Canvas implements IGameListener
                 {
                     Integer f = dyingPlayers.get(playerIndex);
                     f = (f == null ? 0 : f);
-    
+
                     final int max = images.getMaxSpriteImageFrame(
                         player.getType(), dyingState);
                     if (f < max)
@@ -149,13 +143,13 @@ public final class BoardPanel extends Canvas implements IGameListener
                         dyingPlayers.put(playerIndex, f + 1);
                     }
                 }
-    
+
                 /*
                  * Paint the player. 
                  */
                 final BufferedImage image = 
                     images.getSpriteImage(player.getType(), state, frame);
-    
+
                 if (image != null)
                 {
                     Point p = new Point(player.getPosition());
@@ -165,12 +159,7 @@ public final class BoardPanel extends Canvas implements IGameListener
                 }
             }
         }
-        finally
-        {
-            g.dispose();
-        }
-        bufferStrategy.show();
-        Toolkit.getDefaultToolkit().sync();
+        g.dispose();
     }
 
     /**
@@ -197,6 +186,19 @@ public final class BoardPanel extends Canvas implements IGameListener
 
         final int frame = cellCounter / advanceRate;
         return cellImages[frame % cellImages.length];
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public void paint(Graphics g)
+    {
+        synchronized (exclusiveLock)
+        {
+            final Graphics2D g2d = (Graphics2D) g;
+            g2d.drawImage(background, null, 0, 0);
+        }
     }
 
     /*

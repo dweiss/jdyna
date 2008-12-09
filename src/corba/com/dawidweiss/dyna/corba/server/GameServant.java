@@ -90,7 +90,7 @@ class GameServant extends ICGamePOA
             final ClassLoader cl = Thread.currentThread().getContextClassLoader();
             final List<Board> boards = BoardIO.readBoards(new InputStreamReader(cl
                 .getResourceAsStream("boards.conf"), "UTF-8"));
-            final Board board = boards.get(0);
+            final Board board = boards.get(1);
 
             final BoardInfo boardInfo = new BoardInfo(
                 new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);

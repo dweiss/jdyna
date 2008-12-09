@@ -1,7 +1,8 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
+
+import javax.swing.JFrame;
 
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.view.BoardInfo;
@@ -14,7 +15,7 @@ import com.dawidweiss.dyna.view.resources.ImagesFactory;
  * Swing board view.
  */
 @SuppressWarnings("serial")
-public final class BoardFrame extends Frame implements IGameListener
+public final class BoardFrame extends JFrame implements IGameListener
 {
     private final GraphicsConfiguration conf;
     private BoardPanel gamePanel;
@@ -30,10 +31,11 @@ public final class BoardFrame extends Frame implements IGameListener
         final Images images = ImagesFactory.DYNA_CLASSIC;
 
         gamePanel = new BoardPanel(boardInfo, images, conf);
-        add(gamePanel);
+        getContentPane().add(gamePanel);
         setLocationByPlatform(true);
         setIgnoreRepaint(true);
         setFocusTraversalKeysEnabled(false);
+        getRootPane().setDoubleBuffered(false);
         pack();
     }
 

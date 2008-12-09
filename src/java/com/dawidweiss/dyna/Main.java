@@ -1,21 +1,16 @@
 package com.dawidweiss.dyna;
 
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.dawidweiss.dyna.view.BoardInfo;
-import com.dawidweiss.dyna.view.resources.ImageUtilities;
-import com.dawidweiss.dyna.view.resources.Images;
-import com.dawidweiss.dyna.view.resources.ImagesFactory;
-import com.dawidweiss.dyna.view.swing.BoardPanel;
+import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
  * The <b>Dyna Blaster</b> game. Oh, yes.
@@ -38,7 +33,7 @@ public final class Main
         /*
          * Set up a single game between two players.
          */
-        final Board board = boards.get(0);
+        final Board board = boards.get(1);
 
         final IController c1 = new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
             KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
@@ -59,14 +54,9 @@ public final class Main
          * Create and attach a view to the game.
          */
 
-        final GraphicsConfiguration conf = ImageUtilities.getGraphicsConfiguration();
-        final Images images = ImagesFactory.DYNA_CLASSIC;
-        final JFrame frame = new JFrame(conf);
-        final BoardPanel gamePanel = new BoardPanel(boardInfo, images, conf);
-        game.addListener(gamePanel);
-        frame.getContentPane().add(gamePanel);
+        final BoardFrame frame = new BoardFrame(boardInfo);
+        game.addListener(frame);
         frame.setLocationByPlatform(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIgnoreRepaint(true);
         frame.pack();
         frame.setFocusTraversalKeysEnabled(false);
