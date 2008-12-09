@@ -64,7 +64,7 @@ public final class BoardIO
                             {
                                 char code = stack.get(row).charAt(col);
     
-                                if (code > '0' && code < '9')
+                                if (code >= '0' && code <= '9')
                                 {
                                     playerPositions.add(new Point(col, row));
                                     code = ' ';

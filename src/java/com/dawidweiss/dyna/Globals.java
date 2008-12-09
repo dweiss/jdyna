@@ -35,6 +35,17 @@ public final class Globals
      */
     public static final int DEFAULT_CELL_SIZE = 16;
 
+    /**
+     * After the game is over we may want to linger a bit so that views can paint the death
+     * sequence of the last player.
+     */
+    public static final int DEFAULT_LINGER_FRAMES = 45;
+
+    /**
+     * Paint player labels by default.
+     */
+    public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = false;
+
     /*
      * 
      */
@@ -57,6 +68,6 @@ public final class Globals
                 return new KeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
                     KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
         }
-        throw new RuntimeException("No default keyboard for player: " + num);
+        throw new RuntimeException("No default keyboard mapping for player: " + num);
     } 
 }

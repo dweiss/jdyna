@@ -1,20 +1,15 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IGameListener;
-import com.dawidweiss.dyna.Player;
+import org.apache.commons.io.IOUtils;
+
+import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.view.*;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
@@ -45,17 +40,27 @@ public final class BoardPanel extends JPanel implements IGameListener
      * A set of required images.
      */
     private Images images;
-    
+
     /**
      * When a player dies we need to display its 'dying' state sequence. This is not
-     * propagated from the controller because the controller does not know how many
-     * frames it would take to display such sequence.
+     * propagated from the controller because the controller does not know how many frames
+     * it would take to display such sequence.
      * <p>
-     * This map stores the index of a given player and its 'dead' status frame count.
-     * If the frame count equals -1, the player is dead.
+     * This map stores the index of a given player and its 'dead' status frame count. If
+     * the frame count equals -1, the player is dead.
      */
-    private HashMap<Integer,Integer> dyingPlayers = Maps.newHashMap();
+    private HashMap<Integer, Integer> dyingPlayers = Maps.newHashMap();
 
+    /**
+     * Label font for players.
+     */
+    private final Font font;
+
+    /**
+     * Should player labels be painted or not?
+     */
+    private boolean paintPlayerLabels = Globals.SWING_VIEW_PAINT_PLAYER_LABELS;
+    
     /**
      * 
      */
@@ -64,8 +69,23 @@ public final class BoardPanel extends JPanel implements IGameListener
         this.boardInfo = boardInfo;
         this.images = images.createCompatible(conf);
 
+        InputStream is = null;
+        try
+        {
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                "fonts/5px2bus.ttf");
+            this.font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(5f);
+            is.close();
+        }
+        catch (Exception e)
+        {
+            IOUtils.closeQuietly(is);
+            throw new RuntimeException(e);
+        }
+
         /*
-         * TODO: correct buffering strategy.
+         * TODO: correct buffering strategy. Reimplementation based on AWT's Canvas turned
+         * out to be much slower under Linux. I don't see any sense in this...
          */
         this.setDoubleBuffered(false);
 
@@ -134,8 +154,8 @@ public final class BoardPanel extends JPanel implements IGameListener
                     Integer f = dyingPlayers.get(playerIndex);
                     f = (f == null ? 0 : f);
 
-                    final int max = images.getMaxSpriteImageFrame(
-                        player.getType(), dyingState);
+                    final int max = images.getMaxSpriteImageFrame(player.getType(),
+                        dyingState);
                     if (f < max)
                     {
                         state = dyingState;
@@ -145,17 +165,32 @@ public final class BoardPanel extends JPanel implements IGameListener
                 }
 
                 /*
-                 * Paint the player. 
+                 * Paint the player.
                  */
-                final BufferedImage image = 
-                    images.getSpriteImage(player.getType(), state, frame);
+                final BufferedImage image = images.getSpriteImage(player.getType(),
+                    state, frame);
 
                 if (image != null)
                 {
-                    Point p = new Point(player.getPosition());
-                    Point offset = images.getSpriteOffset(player.getType(), state, frame);
+                    final Point p = new Point(player.getPosition());
+                    final Point offset = images.getSpriteOffset(player.getType(), state,
+                        frame);
+                    final Point label = new Point(p);
+
                     p.translate(offset.x, offset.y);
                     g.drawImage(image, null, p.x, p.y);
+
+                    if (paintPlayerLabels)
+                    {
+                        final String playerLabel = player.getName().toUpperCase();
+                        g.setFont(font);
+                        final FontMetrics fm = g.getFontMetrics();
+                        label.translate(0, -image.getHeight() / 2);
+                        label.translate(-fm.stringWidth(player.getName()) / 2, -(fm
+                            .getDescent() + 2));
+                        g.setColor(Color.YELLOW);
+                        g.drawString(playerLabel, label.x, label.y);
+                    }
                 }
             }
         }

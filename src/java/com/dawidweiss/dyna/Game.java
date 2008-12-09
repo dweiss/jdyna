@@ -7,6 +7,7 @@ import static java.lang.Math.min;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.IController.Direction;
 import com.dawidweiss.dyna.view.BoardInfo;
@@ -56,6 +57,11 @@ public final class Game
     private BoardInfo boardData;
 
     /**
+     * How many frames to 'linger' after the game is over.
+     */
+    private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
+
+    /**
      * Static board view for listeners. 
      */
     private IBoardSnapshot boardSnapshot = new IBoardSnapshot() {
@@ -102,9 +108,12 @@ public final class Game
             fireNextFrameEvent(frame);
             frame++;
 
-            result = checkGameOver();
-        } while (result == null);
-        
+            if (result == null)
+            {
+                result = checkGameOver();
+            }
+        } while (result == null || lingerFrames-- > 0);
+
         return result;
     }
 
@@ -425,7 +434,7 @@ public final class Game
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < pi.length)
         {
-            throw new RuntimeException("The board has fewer positions than players: "
+            Logger.getAnonymousLogger().warning("The board has fewer positions than players: "
                 + defaults.length + " < " + pi.length);
         }
 
@@ -434,7 +443,7 @@ public final class Game
             pi[i] = new PlayerInfo(players[i], i);
             pv[i] = pi[i];
             pi[i].location.setLocation(
-                boardData.gridToPixel(defaults[i]));
+                boardData.gridToPixel(defaults[i % defaults.length]));
         }
 
         this.playerInfos = pi;
