@@ -9,7 +9,7 @@ import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
 /**
- * OpenORB related utilities.
+ * OpenORB-related utilities.
  */
 public final class CorbaUtils
 {
@@ -18,8 +18,9 @@ public final class CorbaUtils
         // no instances.
     }
     
-    /*
-     * 
+    /**
+     * Initialize OpenORB's ORB, bound to a specific port and host if these are given
+     * or taking defaults otherwise.
      */
     public static ORB initORB(String iiop_host, int iiop_port)
     {
@@ -37,8 +38,8 @@ public final class CorbaUtils
         return org.omg.CORBA.ORB.init(new String[0], props);
     }
 
-    /*
-     * 
+    /**
+     * Acquire a root POA from an ORB.
      */
     public static POA rootPOA(ORB orb)
     {
@@ -57,5 +58,4 @@ public final class CorbaUtils
             throw new RuntimeException(e);
         }
     }
-
 }

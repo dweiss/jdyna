@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  * Simple socket utilities to expose the initial IOR. We don't need naming service for
- * this.
+ * publishing initial IOR.
  */
 public final class NetworkUtils
 {
@@ -19,8 +19,8 @@ public final class NetworkUtils
         // No instances.
     }
 
-    /*
-     * 
+    /**
+     * Starts a background socket publisher thread. 
      */
     public static void expose(final String ior, String host, int port) throws IOException
     {
@@ -51,8 +51,8 @@ public final class NetworkUtils
         t.start();
     }
 
-    /*
-     * 
+    /**
+     * Acquire an IOR from a remote address.
      */
     public static byte [] read(String host, int port) throws IOException
     {
