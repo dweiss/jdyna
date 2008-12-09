@@ -51,14 +51,20 @@ class GameServant extends ICGamePOA
             fireNextFrame(frame, Adapters.adapt(snapshot));
         }
     };
+
+    /*
+     * Board number.
+     */
+    private int board;
     
     /*
      * 
      */
-    public GameServant(GameServerServant gameServer, List<PlayerData> gamePlayers)
+    public GameServant(GameServerServant gameServer, int board, List<PlayerData> gamePlayers)
     {
         this.gameServer = gameServer;
         this.players = gamePlayers;
+        this.board = board;
     }
 
     /**
@@ -90,7 +96,7 @@ class GameServant extends ICGamePOA
             final ClassLoader cl = Thread.currentThread().getContextClassLoader();
             final List<Board> boards = BoardIO.readBoards(new InputStreamReader(cl
                 .getResourceAsStream("boards.conf"), "UTF-8"));
-            final Board board = boards.get(1);
+            final Board board = boards.get(this.board);
 
             final BoardInfo boardInfo = new BoardInfo(
                 new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
@@ -145,7 +151,7 @@ class GameServant extends ICGamePOA
         catch (Throwable t)
         {
             logger.log(Level.SEVERE, "Unhandled exception during game execution.", t);
-            throw new RuntimeException();
+            throw new RuntimeException(t);
         }
         finally
         {

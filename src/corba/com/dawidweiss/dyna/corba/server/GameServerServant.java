@@ -1,8 +1,6 @@
 package com.dawidweiss.dyna.corba.server;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,10 +35,12 @@ class GameServerServant extends ICGameServerPOA
     /*
      * Create a new game. 
      */
-    public ICGame create(CPlayer [] players)
+    public ICGame create(int board, CPlayer [] players)
     {
         synchronized (this)
         {
+            pruneDead();
+
             // Check if all the players exist and are idle.
             final List<PlayerData> gamePlayers = Lists.newArrayList();
             for (CPlayer p : players)
@@ -67,7 +67,12 @@ class GameServerServant extends ICGameServerPOA
             // Pass the startup information to all the controllers.
             try
             {
-                final GameServant gameServant = new GameServant(this, gamePlayers);
+                /*
+                 * TODO: Each game should be created on its own POA which should be destroyed
+                 * after the game is over.
+                 */
+
+                final GameServant gameServant = new GameServant(this, board, gamePlayers);
                 final ICGame game = ICGameHelper.narrow(
                     _poa().servant_to_reference(gameServant));
                 logger.info("New game created.");
@@ -82,12 +87,41 @@ class GameServerServant extends ICGameServerPOA
     }
 
     /*
+     * 
+     */
+    private void pruneDead()
+    {
+        logger.info("Pruning dead players.");
+
+        Iterator<PlayerData> i = players.values().iterator();
+        while (i.hasNext())
+        {
+            final PlayerData p = i.next();
+            try
+            {
+                if (p.controller._non_existent())
+                {
+                    logger.info("Pruning dead: " + p.info.name);
+                    i.remove();
+                }
+            }
+            catch (Throwable t)
+            {
+                logger.info("Pruning inaccessible: " + p.info.name);
+                i.remove();
+            }
+        }
+    }
+
+    /*
      * Idle players. 
      */
     public CPlayer [] players()
     {
         synchronized (this)
         {
+            pruneDead();
+            
             final ArrayList<CPlayer> idle = Lists.newArrayList();
             for (PlayerData p : players.values())
             {

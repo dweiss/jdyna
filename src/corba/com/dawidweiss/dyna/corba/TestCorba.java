@@ -15,7 +15,7 @@ import com.dawidweiss.dyna.corba.server.GameServer;
 /**
  * Development-mode launcher, starting the server and two additional players.
  */
-public final class MainCorba
+public final class TestCorba
 {
     /* Command-line entry point. */
     public static void main(String [] args) throws Exception

@@ -99,7 +99,7 @@ module bindings {
 	    CPlayer register(in wstring name, in ICPlayerController controller);
 
 	    /** Create a game for a set of players. */
-	    ICGame create(in CPlayerSeq players);
+	    ICGame create(in long boardNumber, in CPlayerSeq players);
 
 	    /** Currently registered players. */
 	    CPlayerSeq players();

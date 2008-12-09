@@ -3,17 +3,11 @@ package com.dawidweiss.dyna.corba.client;
 import java.io.PrintStream;
 import java.util.logging.Logger;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
+import org.kohsuke.args4j.*;
 
+import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
-import com.dawidweiss.dyna.corba.bindings.CPlayer;
-import com.dawidweiss.dyna.corba.bindings.ICGame;
-import com.dawidweiss.dyna.corba.bindings.ICGameServer;
-import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
+import com.dawidweiss.dyna.corba.bindings.*;
 
 /**
  * Starts a single game between a set of players.
@@ -22,11 +16,25 @@ public class GameLauncher
 {
     private final static Logger logger = Logger.getAnonymousLogger();
 
-    @Option(name = "-server", required = true)
-    private String server;
+    @Option(name = "-b", aliases = "--board", required = false, metaVar = "number", 
+        usage = "Board number.")
+    private int board = 0;
 
-    @Option(name = "-port", required = true)
-    private int port;
+    @Option(name = "-p", aliases = "--port",
+        required = true, metaVar = "port", usage = "Server's IOR port.")
+    protected int port;
+
+    @Option(name = "-h", aliases = "--host", 
+        required = true, metaVar = "address", usage = "Server's IOR host.")
+    protected String host;
+
+    @Option(name = "--iiop.host", 
+        required = false, metaVar = "address", usage = "IIOP bind interface.")
+    protected String iiop_host;
+
+    @Option(name = "--iiop.port", 
+        required = false, metaVar = "port", usage = "IIOP bind port.")
+    protected int iiop_port;
 
     /*
      * Console entry point.
@@ -34,26 +42,16 @@ public class GameLauncher
     public void start() throws Exception
     {
         /*
-         * Perform initial setup. You should be familiar with this by now.
+         * Perform initial setup.
          */
-        final org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
-        final POA rootPOA;
-        try
-        {
-            rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootPOA.the_POAManager().activate();
-        }
-        catch (org.omg.CORBA.ORBPackage.InvalidName ex)
-        {
-            throw new Exception("RootPOA missing?");
-        }
+        final org.omg.CORBA.ORB orb = CorbaUtils.initORB(iiop_host, iiop_port);
 
         /*
          * Resolve game server.
          */
         final ICGameServer gameServer = ICGameServerHelper.narrow(
             orb.string_to_object(
-                new String(NetworkUtils.read(server, port), "UTF-8")));
+                new String(NetworkUtils.read(host, port), "UTF-8")));
 
         /*
          * Create the game.
@@ -66,7 +64,7 @@ public class GameLauncher
         else
         {
             logger.warning("Creating game for " + players.length + " players.");
-            ICGame game = gameServer.create(players);
+            ICGame game = gameServer.create(board, players);
             logger.warning("Running the game.");
             game.run();
         }

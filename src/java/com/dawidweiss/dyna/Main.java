@@ -56,10 +56,6 @@ public final class Main
 
         final BoardFrame frame = new BoardFrame(boardInfo);
         game.addListener(frame);
-        frame.setLocationByPlatform(true);
-        frame.setIgnoreRepaint(true);
-        frame.pack();
-        frame.setFocusTraversalKeysEnabled(false);
         frame.setVisible(true);
 
         final GameResult result = game.run();

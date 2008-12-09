@@ -1,17 +1,12 @@
 package com.dawidweiss.dyna.corba.server;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.*;
 import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
 
+import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
@@ -23,36 +18,33 @@ public class GameServer
 {
     private final static Logger logger = Logger.getAnonymousLogger();
 
-    @Option(name = "-port", required = true, usage = "The port to bind to.")
-    private int port;
+    @Option(name = "-p", aliases = "--port",
+        required = true, metaVar = "port", usage = "Server IOR bind port.")
+    protected int port;
 
-    @Option(name = "-host", required = true, metaVar = "addr")
-    private String host;
+    @Option(name = "-h", aliases = "--host", 
+        required = true, metaVar = "address", usage = "Server IOR bind interface.")
+    protected String host;
 
-    @Argument(metaVar = "ORB params", required = false)
-    private List<String> args = new ArrayList<String>();
+    @Option(name = "--iiop.host", 
+        required = false, metaVar = "address", usage = "IIOP bind interface.")
+    protected String iiop_host;
 
-    /*
+    @Option(name = "--iiop.port", 
+        required = false, metaVar = "port", usage = "IIOP bind port.")
+    protected int iiop_port;
+
+   /*
      * Console entry point.
      */
     public void start() throws Exception
     {
         /*
-         * Perform initial setup. You should be familiar with this by now.
+         * ORB setup.
          */
-        final org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args
-            .toArray(new String [args.size()]), null);
-        final POA rootPOA;
-        try
-        {
-            rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootPOA.the_POAManager().activate();
-        }
-        catch (org.omg.CORBA.ORBPackage.InvalidName ex)
-        {
-            throw new Exception("RootPOA missing?");
-        }
-        
+        final org.omg.CORBA.ORB orb = CorbaUtils.initORB(iiop_host, iiop_port);
+        final POA rootPOA = CorbaUtils.rootPOA(orb);
+
         /*
          * Create game manager, save its reference.
          */
