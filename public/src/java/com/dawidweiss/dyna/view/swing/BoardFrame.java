@@ -1,15 +1,14 @@
 package com.dawidweiss.dyna.view.swing;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.resources.ImageUtilities;
-import com.dawidweiss.dyna.view.resources.Images;
-import com.dawidweiss.dyna.view.resources.ImagesFactory;
+import com.dawidweiss.dyna.view.resources.*;
 
 /**
  * Swing board view.
@@ -36,7 +35,10 @@ public final class BoardFrame extends JFrame implements IGameListener
         setIgnoreRepaint(true);
         setFocusTraversalKeysEnabled(false);
         getRootPane().setDoubleBuffered(false);
+        setResizable(false);
         pack();
+        setIconImage(new BufferedImage(16, 16, BufferedImage.TRANSLUCENT));
+        setTitle("Play responsibly.");
     }
 
     public void onNextFrame(int frame, IBoardSnapshot snapshot)
