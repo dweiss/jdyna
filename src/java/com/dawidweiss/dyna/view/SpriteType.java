@@ -13,7 +13,7 @@ public enum SpriteType
     };
 
     /**
-     * All player sprites.
+     * All "player" sprites.
      */
     public static SpriteType [] getPlayerSprites()
     {
