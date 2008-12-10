@@ -1,0 +1,26 @@
+
+Improvement and patch suggestions:
+
+I10	Intelligent opponents and bots. [TWO'2008 homework.]
+
+I9	Visual editor for game boards :]
+
+I8	Add different (than classic) gameboard definitions. This can (should?) include an alternative reader
+	for board definitions so that, for example, a name can be given to the board... 
+
+I7	Bonuses (bomb increase, range increase).
+
+I6	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
+
+I5	Multicast or broadcast (datagram?) networking implementation.
+
+I4	Delta-compression of network data sent between frames. With changes for existing networking implementations.
+
+I3	Rip and add sounds (jMonkeyEngine or lwjgl.org have support, I think). This should include changes
+	to the view protocol to indicate when a sound should be played.
+
+I2	Improve (suggest changes, implement them) the multi player server mode. How should games and
+    	players be managed? When does a new game start and who initiates a game? Think of multiple
+	environments -- cell phones, applets, WebStart. The mechanism should apply to all.
+
+I1	Implement jMonkeyEngine-based OpenGL view.
