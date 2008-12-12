@@ -3,6 +3,8 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.dawidweiss.dyna.view.ISprite;
 import com.google.common.collect.Lists;
 
@@ -17,6 +19,9 @@ import com.google.common.collect.Lists;
  */
 public final class Board
 {
+    /** Board name. */
+    public final String name;
+    
     /** Board's width in cells. */
     public final int width;
 
@@ -41,10 +46,12 @@ public final class Board
     /*
      * 
      */
-    Board(int width, int height, Cell [][] cells, Point [] playerPositions)
+    Board(String name, int width, int height, Cell [][] cells, Point [] playerPositions)
     {
+        assert !StringUtils.isEmpty(name);
         assert width > 0 && height > 0 && cells.length == (width * height);
 
+        this.name = name;
         this.width = width;
         this.height = height;
         this.cells = cells;

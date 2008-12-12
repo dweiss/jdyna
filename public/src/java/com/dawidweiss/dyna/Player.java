@@ -22,12 +22,12 @@ public final class Player
     /**
      * Movement controller for this player.
      */
-    public final IController controller;
+    public final IPlayerController controller;
 
     /*
      * 
      */
-    public Player(String name, IController controller)
+    public Player(String name, IPlayerController controller)
     {
         assert name != null && controller != null;
 

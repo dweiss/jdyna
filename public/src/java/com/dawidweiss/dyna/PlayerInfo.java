@@ -2,7 +2,7 @@ package com.dawidweiss.dyna;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.IController.Direction;
+import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.dawidweiss.dyna.view.SpriteType;
 

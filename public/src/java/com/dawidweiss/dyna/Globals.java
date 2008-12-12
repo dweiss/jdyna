@@ -2,6 +2,8 @@ package com.dawidweiss.dyna;
 
 import java.awt.event.KeyEvent;
 
+import com.dawidweiss.dyna.input.KeyboardController;
+
 /**
  * Global defaults.
  */
@@ -57,7 +59,7 @@ public final class Globals
     /**
      * Returns "default" keyboard layout for a player numbered <code>num</code>.
      */
-    public static IController getDefaultKeyboardController(int num)
+    public static IPlayerController getDefaultKeyboardController(int num)
     {
         switch (num)
         {

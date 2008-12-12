@@ -5,8 +5,8 @@ import java.awt.Point;
 
 import com.dawidweiss.dyna.Cell;
 import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IController;
-import com.dawidweiss.dyna.IController.Direction;
+import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
@@ -50,7 +50,7 @@ public final class Adapters
         return new CDimension(d.width, d.height);
     }
 
-    public static IController.Direction adapt(CDirection direction)
+    public static IPlayerController.Direction adapt(CDirection direction)
     {
         if (direction == null) return null;
 
@@ -59,13 +59,13 @@ public final class Adapters
             case CDirection._NONE:
                 return null;
             case CDirection._DOWN:
-                return IController.Direction.DOWN;
+                return IPlayerController.Direction.DOWN;
             case CDirection._UP:
-                return IController.Direction.UP;
+                return IPlayerController.Direction.UP;
             case CDirection._LEFT:
-                return IController.Direction.LEFT;
+                return IPlayerController.Direction.LEFT;
             case CDirection._RIGHT:
-                return IController.Direction.RIGHT;
+                return IPlayerController.Direction.RIGHT;
         }
 
         throw new RuntimeException(/* unreachable */);
@@ -166,10 +166,10 @@ public final class Adapters
         return new Point(position.x, position.y);
     }
 
-    public static CControllerState adapt(IController controller)
+    public static CControllerState adapt(IPlayerController controller)
     {
         final boolean dropsBomb = controller.dropsBomb();
-        final IController.Direction direction = controller.getCurrent();
+        final IPlayerController.Direction direction = controller.getCurrent();
         return new CControllerState(adapt(direction), dropsBomb);
     }
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.IController.Direction;
+import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.IPlayerSprite;
@@ -208,9 +208,9 @@ public final class Game
              * Process controller direction signals.
              */
             final PlayerInfo pi = playerInfos[i];
-            final IController c = players[i].controller;
+            final IPlayerController c = players[i].controller;
 
-            final IController.Direction signal = c.getCurrent();
+            final IPlayerController.Direction signal = c.getCurrent();
             pi.updateState(signal);
 
             /*

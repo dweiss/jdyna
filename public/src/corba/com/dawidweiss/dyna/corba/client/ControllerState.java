@@ -2,17 +2,17 @@ package com.dawidweiss.dyna.corba.client;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.IPlayerController;
 
 /**
- * A comparable state of {@link IController}.
+ * A comparable state of {@link IPlayerController}.
  */
 final class ControllerState
 {
-    private final IController.Direction direction;
+    private final IPlayerController.Direction direction;
     private final boolean dropsBomb;
 
-    public ControllerState(IController c)
+    public ControllerState(IPlayerController c)
     {
         this.direction = c.getCurrent();
         this.dropsBomb = c.dropsBomb();

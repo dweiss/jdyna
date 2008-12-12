@@ -1,6 +1,6 @@
 package com.dawidweiss.dyna.corba.server;
 
-import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackPOA;
@@ -9,7 +9,7 @@ import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackPOA;
  * A game controller receiving and storing callback calls from a singleplayer.
  */
 final class PlayerCallbackServant extends ICControllerCallbackPOA
-    implements IController
+    implements IPlayerController
 {
     private volatile boolean dropsBomb;
     private volatile Direction current;

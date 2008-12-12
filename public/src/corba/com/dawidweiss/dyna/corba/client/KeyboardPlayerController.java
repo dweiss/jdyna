@@ -2,7 +2,7 @@ package com.dawidweiss.dyna.corba.client;
 
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
@@ -14,7 +14,7 @@ import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
- * An adapter for {@link IController} updating player state on a remote game server and
+ * An adapter for {@link IPlayerController} updating player state on a remote game server and
  * displaying the current game state.
  */
 public class KeyboardPlayerController extends ICPlayerControllerPOA
@@ -25,11 +25,11 @@ public class KeyboardPlayerController extends ICPlayerControllerPOA
     private CPlayer [] players;
     private CBoardInfo boardInfo;
 
-    private final IController controller;
+    private final IPlayerController controller;
     private ICControllerCallback controllerCallback;
     private ControllerState last;
 
-    public KeyboardPlayerController(IController controller)
+    public KeyboardPlayerController(IPlayerController controller)
     {
         this.controller = controller;
     }

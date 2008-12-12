@@ -1,7 +1,7 @@
 package com.dawidweiss.dyna;
 
 /**
- * Player's standing.
+ * A single player's rank ({@link #victimNumber}) after the game is over. 
  */
 public final class Standing
 {

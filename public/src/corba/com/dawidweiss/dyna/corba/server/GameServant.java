@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardIO;
+import com.dawidweiss.dyna.Boards;
 import com.dawidweiss.dyna.Game;
 import com.dawidweiss.dyna.GameResult;
 import com.dawidweiss.dyna.Globals;
@@ -29,7 +29,7 @@ import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.google.common.collect.Lists;
 
 /**
- * Servant for {@link ICGame}. 
+ * Servant for {@link ICGame}.
  */
 class GameServant extends ICGamePOA
 {
@@ -56,11 +56,12 @@ class GameServant extends ICGamePOA
      * Board number.
      */
     private int board;
-    
+
     /*
      * 
      */
-    public GameServant(GameServerServant gameServer, int board, List<PlayerData> gamePlayers)
+    public GameServant(GameServerServant gameServer, int board,
+        List<PlayerData> gamePlayers)
     {
         this.gameServer = gameServer;
         this.players = gamePlayers;
@@ -94,31 +95,31 @@ class GameServant extends ICGamePOA
              * Load board data.
              */
             final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            final List<Board> boards = BoardIO.readBoards(new InputStreamReader(cl
+            final Boards boards = Boards.read(new InputStreamReader(cl
                 .getResourceAsStream("boards.conf"), "UTF-8"));
             final Board board = boards.get(this.board);
 
-            final BoardInfo boardInfo = new BoardInfo(
-                new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+            final BoardInfo boardInfo = new BoardInfo(new Dimension(board.width,
+                board.height), Globals.DEFAULT_CELL_SIZE);
 
             /*
              * Add all players as listeners of this game, since they are listeners anyway.
              */
-            for (PlayerData p: players) 
+            for (PlayerData p : players)
             {
                 add(p.controller);
             }
-            
+
             /*
-             * Create controller callbacks and start the game. 
+             * Create controller callbacks and start the game.
              */
             final Player [] parray = new Player [this.players.size()];
             for (int i = 0; i < parray.length; i++)
             {
                 final PlayerData pd = this.players.get(i);
                 final PlayerCallbackServant servant = new PlayerCallbackServant();
-                final ICControllerCallback callback = ICControllerCallbackHelper.narrow(
-                    _poa().servant_to_reference(servant));
+                final ICControllerCallback callback = ICControllerCallbackHelper
+                    .narrow(_poa().servant_to_reference(servant));
                 pd.controller.onControllerSetup(callback);
                 parray[i] = new Player(pd.info.name, servant);
             }
@@ -139,7 +140,7 @@ class GameServant extends ICGamePOA
              */
             final CPlayer winner = lookup(result.winner.name);
             final List<Standing> standings = result.standings;
-            final CStanding [] results = new CStanding[standings.size()];
+            final CStanding [] results = new CStanding [standings.size()];
             for (int i = 0; i < standings.size(); i++)
             {
                 final CPlayer p = lookup(standings.get(i).player.name);
@@ -178,7 +179,8 @@ class GameServant extends ICGamePOA
      * Lookup player by his or her name.
      */
     private CPlayer lookup(String name)
-    {;
+    {
+        ;
         CPlayer player = null;
         for (PlayerData pd : this.players)
         {
@@ -186,7 +188,7 @@ class GameServant extends ICGamePOA
             {
                 player = pd.info;
                 break;
-            }   
+            }
         }
 
         return player;

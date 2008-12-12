@@ -1,16 +1,18 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.input;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.dawidweiss.dyna.IPlayerController;
 import com.google.common.collect.Maps;
 
 /**
- * {@link IController} based on keyboard events. 
+ * Player controller ({@link IPlayerController}) based on keyboard events.
  */
-public final class KeyboardController implements IController
+public final class KeyboardController implements IPlayerController
 {
     /**
      * Global lock for accessing static data structures.
@@ -24,12 +26,12 @@ public final class KeyboardController implements IController
     private static ArrayList<Integer> pressedCodes = new ArrayList<Integer>();
 
     /**
-     * Counter for keystrokes. This is not strictly necessary, but useful
-     * to track keys whose detection should always be triggered (bomb drop),
-     * even in between controller calls.
+     * Counter for keystrokes. This is not strictly necessary, but useful to track keys
+     * whose detection should always be triggered (bomb drop), even in between controller
+     * calls.
      */
     private static HashMap<Integer, Integer> keystrokes = Maps.newHashMap();
-    
+
     /**
      * Hook into events manager.
      */

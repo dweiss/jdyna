@@ -1,10 +1,8 @@
 package com.dawidweiss.dyna;
 
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -28,27 +26,22 @@ public final class Main
          * Load board configurations.
          */
         final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        final List<Board> boards = BoardIO.readBoards(new InputStreamReader(cl
+        final Boards boards = Boards.read(new InputStreamReader(cl
             .getResourceAsStream("boards.conf"), "UTF-8"));
 
         /*
          * Set up a single game between two players.
          */
-        final Board board = boards.get(0);
+        final Board board = boards.get("classic");
 
-        final IController c1 = new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
-            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
-
-        final IController c2 = new KeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
-            KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
+        final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
+        final IPlayerController c2 = Globals.getDefaultKeyboardController(1);
 
         final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), 16);
+            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        final Player p3 = new Player("Player 3", c2);
-        final Player p4 = new Player("Player 4", c2);
-        final Game game = new Game(board, boardInfo, p1, p2, p3, p4);
+        final Game game = new Game(board, boardInfo, p1, p2);
         game.setFrameRate(25);
 
         /*

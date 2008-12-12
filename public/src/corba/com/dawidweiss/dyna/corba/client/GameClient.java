@@ -7,7 +7,7 @@ import org.kohsuke.args4j.*;
 import org.omg.PortableServer.POA;
 
 import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IController;
+import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.*;
@@ -59,7 +59,7 @@ public class GameClient
         /*
          * Create game client, register it.
          */
-        final IController local = Globals.getDefaultKeyboardController(0);
+        final IPlayerController local = Globals.getDefaultKeyboardController(0);
         final ICPlayerController controller = ICPlayerControllerHelper.narrow(
             rootPOA.servant_to_reference(new KeyboardPlayerController(local)));
 
