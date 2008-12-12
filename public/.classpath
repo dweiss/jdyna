@@ -9,11 +9,11 @@
 	<classpathentry kind="lib" path="lib/runtime/args4j-2.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/openorb_orb-1.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/avalon-framework.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/tools-1.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/commons-cli.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/logkit.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/openorb_orb_omg-1.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/avalon-framework.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/commons-cli.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/logkit.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/openorb_orb_omg-1.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/openorb_orb-1.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/runtime-corba/tools-1.4.0.jar"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>

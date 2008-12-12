@@ -19,6 +19,8 @@
 		</fileset>
 	</path>
 
+	<fileset dir="lib" includes="runtime*/*.jar" id="classpath.runtime" />
+
 	<target name="prepare">
 		<mkdir dir="${build.path}" />
 	</target>
@@ -66,7 +68,7 @@
 					<flattenmapper />
 				</chainedmapper>
 			</mapper>
-			<fileset dir="lib/runtime" includes="*.jar" id="classpath.runtime" />
+			<fileset refid="classpath.runtime" />
 		</pathconvert>
 
 		<jar jarfile="${dist.path}/dyna.jar" basedir="${build.path}">
