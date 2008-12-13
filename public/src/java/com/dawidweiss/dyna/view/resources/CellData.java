@@ -21,12 +21,18 @@ class CellData implements Cloneable
     /** Prefetched frame images. */
     public BufferedImage [] frames;
 
-    /* */
+    /*
+     * This is not a deep clone, but we clone the superficial structures,
+     * leaving image and image slices the same to conserve memory. 
+     */
     public Object clone()
     {
         try
         {
-            return super.clone();
+        	final CellData _ret = (CellData) super.clone();
+			_ret.slices = slices.clone();
+			_ret.frames = frames.clone();
+            return _ret;
         }
         catch (CloneNotSupportedException e)   
         {

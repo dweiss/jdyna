@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/corba"/>
 	<classpathentry kind="src" path="src/boards"/>
 	<classpathentry kind="src" path="src/graphics"/>
@@ -15,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/runtime-corba/openorb_orb_omg-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime-corba/openorb_orb-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime-corba/tools-1.4.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>
