@@ -1,6 +1,5 @@
 package com.dawidweiss.dyna;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Logger;
@@ -8,7 +7,6 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
@@ -37,8 +35,7 @@ public final class Main
         final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
         final IPlayerController c2 = Globals.getDefaultKeyboardController(1);
 
-        final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+        final BoardInfo boardInfo = new BoardInfo(board);
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
         final Game game = new Game(board, boardInfo, p1, p2);

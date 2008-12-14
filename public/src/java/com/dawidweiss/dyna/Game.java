@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
-import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.google.common.collect.Lists;

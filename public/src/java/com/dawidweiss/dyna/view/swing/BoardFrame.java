@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
+import com.dawidweiss.dyna.BoardInfo;
 import com.dawidweiss.dyna.IGameListener;
-import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.dawidweiss.dyna.view.resources.*;
 

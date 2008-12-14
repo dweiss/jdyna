@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.Board;
+import com.dawidweiss.dyna.BoardInfo;
 import com.dawidweiss.dyna.Boards;
 import com.dawidweiss.dyna.Game;
 import com.dawidweiss.dyna.GameResult;
@@ -24,7 +25,6 @@ import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackHelper;
 import com.dawidweiss.dyna.corba.bindings.ICGame;
 import com.dawidweiss.dyna.corba.bindings.ICGameListener;
 import com.dawidweiss.dyna.corba.bindings.ICGamePOA;
-import com.dawidweiss.dyna.view.BoardInfo;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
 import com.google.common.collect.Lists;
 

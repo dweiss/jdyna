@@ -1,7 +1,8 @@
-package com.dawidweiss.dyna.view;
+package com.dawidweiss.dyna;
 
 import java.awt.Dimension;
 import java.awt.Point;
+
 
 /**
  * Static board information.
@@ -14,27 +15,42 @@ public final class BoardInfo
     public final Dimension gridSize;
 
     /**
-     * X and Y dimensions of a single cell.
+     * X and Y dimensions of a single cell. This field exists only to support 
+     * <i>possible</i> future changes of the baseline grid size. Such changes would have
+     * to alter the game's controller as well, so they will not be trivial. You can
+     * most likely assume it equals {@link Globals#DEFAULT_CELL_SIZE}. 
      */
     public final int cellSize;
 
     /**
-     * Board dimensions (pixels).
+     * Board dimensions (in pixels). This is what the game controller will use for
+     * players coordinate system. Views should translate accordingly to their own
+     * coordinate systems (usually 1:1). 
      */
     public final Dimension pixelSize;
 
     /*
      * 
      */
-    public BoardInfo(Dimension gridSize, int cellSize)
+    BoardInfo(Board board)
+    {
+        this(new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+    }
+
+    /**
+     * Public board info constructor simply takes a grid size and default cell size.
+     * 
+     * @see Globals#DEFAULT_CELL_SIZE
+     */
+    public BoardInfo(Dimension gridSize, int defaultCellSize)
     {
         this.gridSize = gridSize;
-        this.cellSize = cellSize;
+        this.cellSize = defaultCellSize;
         this.pixelSize = new Dimension(
             gridSize.width * cellSize,
-            gridSize.height * cellSize);
+            gridSize.height * cellSize);        
     }
-    
+
     /**
      * Convert pixel coordinates to grid cell coordinates.
      */
