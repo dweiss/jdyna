@@ -3,6 +3,8 @@ package com.dawidweiss.dyna;
 import java.awt.event.KeyEvent;
 
 import com.dawidweiss.dyna.input.KeyboardController;
+import com.dawidweiss.dyna.view.swing.BoardPanel;
+import com.dawidweiss.dyna.view.swing.Magnification;
 
 /**
  * Global defaults.
@@ -47,6 +49,11 @@ public final class Globals
      * Paint player labels by default.
      */
     public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = false;
+
+    /**
+     * Default view scaling in {@link BoardPanel}.
+     */
+    public static final Magnification DEFAULT_VIEW_MAGNIFICATION = Magnification.TIMES_2;
 
     /*
      * 

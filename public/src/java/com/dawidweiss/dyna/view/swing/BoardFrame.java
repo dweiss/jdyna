@@ -8,7 +8,9 @@ import javax.swing.JFrame;
 import com.dawidweiss.dyna.BoardInfo;
 import com.dawidweiss.dyna.IGameListener;
 import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.resources.*;
+import com.dawidweiss.dyna.view.resources.ImageUtilities;
+import com.dawidweiss.dyna.view.resources.Images;
+import com.dawidweiss.dyna.view.resources.ImagesFactory;
 
 /**
  * Swing board view.

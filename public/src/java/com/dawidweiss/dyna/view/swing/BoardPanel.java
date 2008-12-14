@@ -1,7 +1,19 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.RenderingHints.Key;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -9,8 +21,14 @@ import javax.swing.JPanel;
 
 import org.apache.commons.io.IOUtils;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.view.*;
+import com.dawidweiss.dyna.BoardInfo;
+import com.dawidweiss.dyna.Cell;
+import com.dawidweiss.dyna.CellType;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IGameListener;
+import com.dawidweiss.dyna.Player;
+import com.dawidweiss.dyna.view.IBoardSnapshot;
+import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
 
@@ -54,13 +72,32 @@ public final class BoardPanel extends JPanel implements IGameListener
     /**
      * Label font for players.
      */
-    private final Font font;
+    private final Font labelFont;
 
     /**
      * Should player labels be painted or not?
      */
     private boolean paintPlayerLabels = Globals.SWING_VIEW_PAINT_PLAYER_LABELS;
     
+    /**
+     * Magnification level. Zoom level are fixed to doubling because we're really
+     * pixel-oriented people.
+     */
+    private Magnification magnification = Globals.DEFAULT_VIEW_MAGNIFICATION;
+
+    /**
+     * Rendering hints that disable bilinear or bicubic interpolation and in general
+     * go for "pixelized" style. 
+     */
+    private final static RenderingHints hints;
+    static
+    {
+        hints = new RenderingHints(Maps.<Key, Object>newHashMap()); 
+        hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        hints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+    }
+
     /**
      * 
      */
@@ -74,7 +111,7 @@ public final class BoardPanel extends JPanel implements IGameListener
         {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 "fonts/5px2bus.ttf");
-            this.font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(5f);
+            this.labelFont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(5f);
             is.close();
         }
         catch (Exception e)
@@ -183,7 +220,7 @@ public final class BoardPanel extends JPanel implements IGameListener
                     if (paintPlayerLabels)
                     {
                         final String playerLabel = player.getName().toUpperCase();
-                        g.setFont(font);
+                        g.setFont(labelFont);
                         final FontMetrics fm = g.getFontMetrics();
                         label.translate(0, -image.getHeight() / 2);
                         label.translate(-fm.stringWidth(player.getName()) / 2, -(fm
@@ -232,7 +269,17 @@ public final class BoardPanel extends JPanel implements IGameListener
         synchronized (exclusiveLock)
         {
             final Graphics2D g2d = (Graphics2D) g;
-            g2d.drawImage(background, null, 0, 0);
+            g2d.setRenderingHints(hints);
+
+            BufferedImageOp op = null;
+            if (magnification != Magnification.TIMES_1)
+            {
+                final double scale = magnification.scaleFactor;
+                
+                op = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale),
+                    AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            }
+            g2d.drawImage(background, op, 0, 0);
         }
     }
 
@@ -251,6 +298,9 @@ public final class BoardPanel extends JPanel implements IGameListener
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(boardInfo.pixelSize);
+        final Dimension size = new Dimension(boardInfo.pixelSize);
+        size.width *= magnification.scaleFactor;
+        size.height *= magnification.scaleFactor;
+        return size;
     }
 }
