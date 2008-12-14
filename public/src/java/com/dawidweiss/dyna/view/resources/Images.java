@@ -70,7 +70,7 @@ public final class Images
     /*
      * 
      */
-    public BufferedImage getSpriteImage(SpriteType type, int state, int frameCounter)
+    public BufferedImage getSpriteImage(SpriteType type, int state, int frame)
     {
         final SpriteData data = sprites.get(type);
         if (data == null)
@@ -78,16 +78,6 @@ public final class Images
 
         if (state >= data.frames.length || data.frames[state].length == 0)
             return null;
-
-        final int frame;
-        if (frameCounter == 0)
-        {
-            frame = 0;
-        }
-        else
-        {
-            frame = 1 + (frameCounter - 1) / data.frameAdvanceRate;
-        }
 
         final int frames = data.frames[state].length;
         return data.frames[state][frame % frames];
@@ -173,5 +163,14 @@ public final class Images
         }
         
         return new Images(cellSize, cellData, spriteData);
+    }
+
+    /**
+     * Returns the number of frames it takes to advance one animation frame
+     * for a given sprite type. 
+     */
+    public int getSpriteAdvanceRate(SpriteType type)
+    {
+        return sprites.get(type).frameAdvanceRate;
     }
 }

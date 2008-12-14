@@ -202,10 +202,24 @@ public final class BoardPanel extends JPanel implements IGameListener
                 }
 
                 /*
-                 * Paint the player.
+                 * Paint the player. Players should immediately advance to the next
+                 * animation frame if they move. However, if they keep moving, we need
+                 * to cycle through all the animation frames. The logic below tries
+                 * to express this.
                  */
-                final BufferedImage image = images.getSpriteImage(player.getType(),
-                    state, frame);
+                int animFrame = 0;
+                if (frame > 0)
+                {
+                    animFrame = (frame - 1) / images.getSpriteAdvanceRate(player.getType());
+
+                    if (state != dyingState && state != deadState)
+                    {
+                        animFrame++;
+                    }
+                }
+
+                final BufferedImage image = images.getSpriteImage(
+                    player.getType(), state, animFrame);
 
                 if (image != null)
                 {
