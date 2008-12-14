@@ -1,6 +1,10 @@
 
 Improvement and patch suggestions:
 
+I12 [P. KROL] Look at grid size specification in BoardInfo and its package membership.
+
+I11 Rethink event passing, filtering and serialization. [DW]
+
 I10	Intelligent opponents and bots. [TWO'2008 homework.]
 
 I9	Visual editor for game boards :]
