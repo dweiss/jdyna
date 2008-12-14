@@ -86,7 +86,7 @@ public final class Images
         }
         else
         {
-            frame = (frameCounter - 1) / data.frameAdvanceRate;
+            frame = 1 + (frameCounter - 1) / data.frameAdvanceRate;
         }
 
         final int frames = data.frames[state].length;
