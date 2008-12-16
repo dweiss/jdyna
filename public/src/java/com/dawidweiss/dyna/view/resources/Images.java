@@ -140,7 +140,7 @@ public final class Images
         final List<CellData> cellData = Lists.newArrayList();
         for (CellData cd : this.cells.values())
         {
-            final CellData c = (CellData) cd.clone();
+            final CellData c = cd.shallowClone();
             for (int i = 0; i < c.frames.length; i++)
             {
                 c.frames[i] = ImageUtilities.convert(c.frames[i], conf);
@@ -151,7 +151,7 @@ public final class Images
         final List<SpriteData> spriteData = Lists.newArrayList();
         for (SpriteData sd : this.sprites.values())
         {
-            final SpriteData c = (SpriteData) sd.clone();
+            final SpriteData c = sd.shallowClone();
             for (int i = 0; i < c.frames.length; i++)
             {
                 for (int f = 0; f < c.frames[i].length; f++)

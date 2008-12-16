@@ -8,7 +8,7 @@ import com.dawidweiss.dyna.view.SpriteType;
 /**
  * Extra data for {@link SpriteType}.
  */
-class SpriteData implements Cloneable
+class SpriteData
 {
     /** Which Sprite this information applies to. */
     public SpriteType spriteType;
@@ -25,31 +25,39 @@ class SpriteData implements Cloneable
     /** Precalculated offsets. */
     public Point [][] offsets;
 
-    /* */
-    public Object clone()
+    /**
+     * This method clones the superficial structures leaving images, offsets and image
+     * slices the same to conserve memory.
+     * 
+     * @return Shallow copy of this instance.
+     */
+    public SpriteData shallowClone()
     {
+        // make new instance
         SpriteData cloned = new SpriteData();
-        cloned.spriteType = spriteType;
-        cloned.frameAdvanceRate = frameAdvanceRate;
-        
-        cloned.slices = new ImageSlice [slices.length][];
-        for (int i = 0; i < slices.length; i++)
-        {
-            cloned.slices[i] = slices[i].clone();
-        }
-        
-        cloned.frames = new BufferedImage[frames.length][];
-        for (int i = 0; i < frames.length; i++)
-        {
-            cloned.frames[i] = frames[i].clone();
-        }
-        
-        cloned.offsets = new Point[offsets.length][];
-        for (int i = 0; i < offsets.length; i++)
-        {
-            cloned.offsets[i] = offsets[i].clone();
-        }
 
+        // copy all fields values
+        cloned.frameAdvanceRate = frameAdvanceRate;
+        cloned.spriteType = spriteType;
+
+        // clone arrays
+        cloned.frames = frames.clone();
+        cloned.offsets = offsets.clone();
+        cloned.slices = slices.clone();
+
+        //
+        // clone all inner arrays
+        //
+        final Object [][][] arrays = new Object [] [] [] {
+            cloned.slices, cloned.offsets, cloned.frames
+        };
+        for (Object [][] array : arrays)
+        {
+            for (int i = 0; i < array.length; i++)
+            {
+                array[i] = array[i].clone();
+            }
+        }
         return cloned;
     }
 }

@@ -7,7 +7,7 @@ import com.dawidweiss.dyna.CellType;
 /**
  * Extra data for {@link CellType}.
  */
-class CellData implements Cloneable
+class CellData
 {
     /** Which cell type this information applies to. */
     public CellType cellType;
@@ -21,22 +21,25 @@ class CellData implements Cloneable
     /** Prefetched frame images. */
     public BufferedImage [] frames;
 
-    /*
-     * This is not a deep clone, but we clone the superficial structures,
-     * leaving image and image slices the same to conserve memory. 
+    /**
+     * This method clones the superficial structures leaving images and image slices the
+     * same to conserve memory.
+     * 
+     * @return shallow copy of this instance
      */
-    public Object clone()
+    public CellData shallowClone()
     {
-        try
-        {
-        	final CellData _ret = (CellData) super.clone();
-			_ret.slices = slices.clone();
-			_ret.frames = frames.clone();
-            return _ret;
-        }
-        catch (CloneNotSupportedException e)   
-        {
-            throw new RuntimeException(e);
-        }
+        // make new instance
+        CellData cloned = new CellData();
+
+        // copy all fields values
+        cloned.frameAdvanceRate = frameAdvanceRate;
+        cloned.cellType = cellType;
+
+        // clone arrays
+        cloned.frames = frames.clone();
+        cloned.slices = slices.clone();
+
+        return cloned;
     }
 }
