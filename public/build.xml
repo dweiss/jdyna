@@ -42,6 +42,7 @@
 			</fileset>
 			<fileset dir="src/boards" />
 			<fileset dir="src/graphics" />
+			<fileset dir="src/audio" />
 		</copy>
 	</target>
 
