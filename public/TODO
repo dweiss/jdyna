@@ -3,7 +3,7 @@ Improvement and patch suggestions:
 
 I12 Multi-player mode with reincarnating players and 'frag' counters. 
 
-I11 Rethink event passing, filtering and serialization. [DW]
+I11 Rethink event passing, filtering and serialization. [DW; add serialization and I5?]
 
 I10	Intelligent opponents and bots. [TWO'2008 homework.]
 
