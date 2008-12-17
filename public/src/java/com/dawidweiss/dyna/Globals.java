@@ -28,13 +28,6 @@ public final class Globals
     public static final int DEFAULT_BOMB_COUNT = 4;
 
     /**
-     * In classic Dyna, all bombs connected by explosions explode at once. This alters
-     * this behavior and only "chains" explosions by speeding up other bombs. This works
-     * fine, but the GUI is a bit screwed because explosion overlays don't work so well then.
-     */
-    public static final boolean DELAYED_BOMB_EXPLOSIONS = false;
-
-    /**
      * Default pixel size of each cell in the playfield.
      */
     public static final int DEFAULT_CELL_SIZE = 16;
@@ -46,14 +39,33 @@ public final class Globals
     public static final int DEFAULT_LINGER_FRAMES = 45;
 
     /**
+     * Default view scaling in {@link BoardPanel}.
+     */
+    public static final Magnification DEFAULT_VIEW_MAGNIFICATION = Magnification.TIMES_2;
+
+    /**
      * Paint player labels by default.
      */
     public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = false;
 
+
     /**
-     * Default view scaling in {@link BoardPanel}.
+     * In classic Dyna, all bombs connected by explosions explode at once. This alters
+     * this behavior and only "chains" explosions by speeding up other bombs. This works
+     * fine, but the GUI is a bit screwed because explosion overlays don't work so well then.
      */
-    public static final Magnification DEFAULT_VIEW_MAGNIFICATION = Magnification.TIMES_2;
+    public static final boolean DELAYED_BOMB_EXPLOSIONS = false;
+
+    /**
+     * When the player is on the edge between one cell and another, dropping
+     * a bomb may result in placing bombs in two adjecent cells. We add a small
+     * delay between placing two bombs, so that the player has a chance to depress
+     * the bomb drop key (or whatever stimuli).
+     * <p>
+     * This field is the number of frames that must pass before the player is allowed
+     * to drop another bomb.
+     */
+    public static final int BOMB_DROP_DELAY = 5;
 
     /*
      * 

@@ -111,7 +111,7 @@ public final class Game
             
             events.clear();
             processBoardCells();
-            processPlayers();
+            processPlayers(frame);
             events.add(new GameStateEvent(board.cells, playerInfos));
 
             fireFrameEvent(frame);
@@ -212,7 +212,7 @@ public final class Game
      * Move players according to their controller signals, drop bombs,
      * check collisions.
      */
-    private void processPlayers()
+    private void processPlayers(int frame)
     {
         final ArrayList<PlayerInfo> killed = Lists.newArrayList();
 
@@ -240,9 +240,9 @@ public final class Game
                 movePlayer(pi, signal);
             }
 
-            if (c.dropsBomb() && pi.bombCount > 0)
+            if (c.dropsBomb())
             {
-                dropBomb(pi);
+                dropBombAttempt(frame, pi);
             }
 
             /*
@@ -296,12 +296,18 @@ public final class Game
      * Attempt to drop a bomb at the given location (if the player has any bombs left
      * and the cell under its feet is empty).
      */
-    private void dropBomb(PlayerInfo pi)
+    private void dropBombAttempt(int frame, PlayerInfo pi)
     {
         final Point xy = boardData.pixelToGrid(pi.location);
-        if (board.cellAt(xy).type == CellType.CELL_EMPTY && pi.bombCount > 0)
+
+        final boolean canPlaceBomb = board.cellAt(xy).type == CellType.CELL_EMPTY;
+        final boolean hasBombs = pi.bombCount > 0;
+        final boolean dropDelay = (pi.lastBombFrame + Globals.BOMB_DROP_DELAY > frame);
+
+        if (canPlaceBomb && hasBombs && !dropDelay)
         {
             pi.bombCount--;
+            pi.lastBombFrame = frame;
 
             final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
             bomb.player = pi;

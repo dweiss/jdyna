@@ -20,8 +20,7 @@ I5	Multicast or broadcast (datagram?) networking implementation.
 
 I4	Delta-compression of network data sent between frames. With changes for existing networking implementations.
 
-I3	Rip and add sounds (jMonkeyEngine or lwjgl.org have support, I think). This should include changes
-	to the view protocol to indicate when a sound should be played.
+I3	Add a sound player view based on  lwjgl.org.
 
 I2	Improve (suggest changes, implement them) the multi player server mode. How should games and
     	players be managed? When does a new game start and who initiates a game? Think of multiple

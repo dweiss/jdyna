@@ -46,6 +46,13 @@ final class PlayerInfo implements IPlayerSprite
      */
     public int bombRange = Globals.DEFAULT_BOMB_RANGE;
 
+    /**
+     * This field stores the most recent frame number when a bomb was dropped.
+     * 
+     * @see Globals#BOMB_DROP_DELAY
+     */
+    public int lastBombFrame = Integer.MIN_VALUE;
+
     /*
      * 
      */
