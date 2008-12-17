@@ -15,8 +15,32 @@ import com.google.common.collect.Lists;
  */
 public final class Game
 {
-    /* */
+    /**
+     * The game board (playfield cells).
+     */
     public final Board board;
+    
+    /**
+     * Game modes control how the game progresses, when the game terminates and
+     * what are the conditions to bring some players back to life.
+     */
+    public static enum Mode
+    {
+        /**
+         * In last man standing mode ("classic" Dyna Blaster), the purpose of the game
+         * is to kill all the enemies. The last player to survive wins the game. All players
+         * are ranked after the game is over.
+         * 
+         * @see GameResult
+         * @see Standing
+         */
+        LAST_MAN_STANDING,
+        
+        /**
+         * 
+         */
+        DEATHMATCH
+    }
 
     /**
      * Static player information. 
@@ -70,8 +94,13 @@ public final class Game
     /**
      * Starts the main game loop and runs the whole thing.
      */
-    public GameResult run()
+    public GameResult run(Mode mode)
     {
+        if (mode != Mode.LAST_MAN_STANDING)
+        {
+            throw new UnsupportedOperationException("Mode not yet implemented: " + mode);
+        }
+
         setupPlayers();
 
         int frame = 0;

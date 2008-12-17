@@ -119,7 +119,7 @@ class GameServant extends ICGamePOA
             final Game game = new Game(board, boardInfo, parray);
             game.setFrameRate(frameRate);
             game.addListener(gameListener);
-            final GameResult result = game.run();
+            final GameResult result = game.run(Game.Mode.LAST_MAN_STANDING);
 
             /*
              * Fire game end.
