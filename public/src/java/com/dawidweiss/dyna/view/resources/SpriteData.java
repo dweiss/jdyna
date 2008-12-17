@@ -3,7 +3,7 @@ package com.dawidweiss.dyna.view.resources;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-import com.dawidweiss.dyna.view.SpriteType;
+import com.dawidweiss.dyna.ISprite;
 
 /**
  * Extra data for {@link SpriteType}.
@@ -11,7 +11,7 @@ import com.dawidweiss.dyna.view.SpriteType;
 class SpriteData
 {
     /** Which Sprite this information applies to. */
-    public SpriteType spriteType;
+    public ISprite.Type spriteType;
 
     /** How many game frames to change animation frame? */
     public int frameAdvanceRate;

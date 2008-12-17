@@ -8,14 +8,14 @@ import org.omg.CORBA.ORB;
 
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
-import com.dawidweiss.dyna.corba.client.GameClient;
+import com.dawidweiss.dyna.corba.client.GameClientLauncher;
 import com.dawidweiss.dyna.corba.client.GameLauncher;
-import com.dawidweiss.dyna.corba.server.GameServer;
+import com.dawidweiss.dyna.corba.server.GameServerLauncher;
 
 /**
  * Development-mode launcher, starting the server and two additional players.
  */
-public final class TestCorba
+public final class CorbaLauncherOneVM
 {
     /* Command-line entry point. */
     public static void main(String [] args) throws Exception
@@ -24,9 +24,9 @@ public final class TestCorba
         {
             public Object call() throws Exception
             {
-                GameServer.main(new String []
+                GameServerLauncher.main(new String []
                 {
-                    "-port", "50000"
+                    "--host", "localhost", "--port", "50000"
                 });
                 return null;
             }
@@ -50,9 +50,9 @@ public final class TestCorba
         {
             public Object call() throws Exception
             {
-                GameClient.main(new String []
+                GameClientLauncher.main(new String []
                 {
-                    "-name", "p1", "-server", "localhost", "-port", "50000"
+                    "--name", "p1", "--host", "localhost", "--port", "50000"
                 });
                 return null;
             }
@@ -62,9 +62,9 @@ public final class TestCorba
         {
             public Object call() throws Exception
             {
-                GameClient.main(new String []
+                GameClientLauncher.main(new String []
                 {
-                    "-name", "p2", "-server", "localhost", "-port", "50000"
+                    "--name", "p2", "--host", "localhost", "--port", "50000"
                 });
                 return null;
             }
@@ -86,7 +86,7 @@ public final class TestCorba
             {
                 GameLauncher.main(new String []
                 {
-                    "-server", "localhost", "-port", "50000"
+                    "--host", "localhost", "--port", "50000"
                 });
                 return null;
             }

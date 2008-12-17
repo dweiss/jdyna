@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.view;
+package com.dawidweiss.dyna;
 
 import java.awt.Point;
 
@@ -13,9 +13,30 @@ import java.awt.Point;
 public interface ISprite
 {
     /**
+     * All sprite types available in the game.
+     */
+    public static enum Type
+    {
+        PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4;
+
+        private static final Type [] PLAYER_SPRITES = new Type []
+        {
+            PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4
+        };
+
+        /**
+         * All "player" sprites.
+         */
+        public static Type [] getPlayerSprites()
+        {
+            return PLAYER_SPRITES;
+        }
+    }
+
+    /**
      * The type of this sprite.
      */
-    SpriteType getType();
+    Type getType();
 
     /**
      * Current animation state (managed for each {@link SpriteType} by the controller, but

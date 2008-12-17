@@ -8,7 +8,7 @@ import java.util.EnumMap;
 import java.util.List;
 
 import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.view.SpriteType;
+import com.dawidweiss.dyna.ISprite;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -24,7 +24,7 @@ public final class Images
     private final EnumMap<CellType, CellData> cells;
 
     /** Sprite data */
-    private final EnumMap<SpriteType, SpriteData> sprites;
+    private final EnumMap<ISprite.Type, SpriteData> sprites;
 
     /*
      * 
@@ -36,7 +36,7 @@ public final class Images
         cells = Maps.newEnumMap(CellType.class);
         for (CellData cd : cellData) cells.put(cd.cellType, cd);
 
-        sprites = Maps.newEnumMap(SpriteType.class);
+        sprites = Maps.newEnumMap(ISprite.Type.class);
         for (SpriteData sd : spriteData) sprites.put(sd.spriteType, sd);
         
     }
@@ -70,7 +70,7 @@ public final class Images
     /*
      * 
      */
-    public BufferedImage getSpriteImage(SpriteType type, int state, int frame)
+    public BufferedImage getSpriteImage(ISprite.Type type, int state, int frame)
     {
         final SpriteData data = sprites.get(type);
         if (data == null)
@@ -86,7 +86,7 @@ public final class Images
     /*
      * 
      */
-    public Point getSpriteOffset(SpriteType type, int state, int frameCounter)
+    public Point getSpriteOffset(ISprite.Type type, int state, int frameCounter)
     {
         final SpriteData data = sprites.get(type);
         if (data == null)
@@ -103,7 +103,7 @@ public final class Images
     /**
      * Return the frame number that is available for a given sprite in the given state. 
      */
-    public int getMaxSpriteImageFrame(SpriteType type, int state)
+    public int getMaxSpriteImageFrame(ISprite.Type type, int state)
     {
         final SpriteData data = sprites.get(type);
         if (data == null)
@@ -169,7 +169,7 @@ public final class Images
      * Returns the number of frames it takes to advance one animation frame
      * for a given sprite type. 
      */
-    public int getSpriteAdvanceRate(SpriteType type)
+    public int getSpriteAdvanceRate(ISprite.Type type)
     {
         return sprites.get(type).frameAdvanceRate;
     }

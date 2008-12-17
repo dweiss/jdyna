@@ -6,26 +6,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Boards;
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameListener;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.Standing;
+import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.Adapters;
-import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
-import com.dawidweiss.dyna.corba.bindings.CBoardSnapshot;
-import com.dawidweiss.dyna.corba.bindings.CPlayer;
-import com.dawidweiss.dyna.corba.bindings.CStanding;
-import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
-import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackHelper;
-import com.dawidweiss.dyna.corba.bindings.ICGame;
-import com.dawidweiss.dyna.corba.bindings.ICGameListener;
-import com.dawidweiss.dyna.corba.bindings.ICGamePOA;
-import com.dawidweiss.dyna.view.IBoardSnapshot;
+import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.Lists;
 
 /**
@@ -44,11 +27,14 @@ class GameServant extends ICGamePOA
 
     private Logger logger = Logger.getLogger("game");
 
-    private IGameListener gameListener = new IGameListener()
+    /*
+     * 
+     */
+    private IGameEventListener gameListener = new IGameEventListener()
     {
-        public void onNextFrame(int frame, IBoardSnapshot snapshot)
+        public void onFrame(int frame, List<GameEvent> events)
         {
-            fireNextFrame(frame, Adapters.adapt(snapshot));
+            fireFrame(frame, Adapters.adapt(events));
         }
     };
 
@@ -138,12 +124,12 @@ class GameServant extends ICGamePOA
             /*
              * Fire game end.
              */
-            final CPlayer winner = lookup(result.winner.name);
+            final CPlayer winner = lookup(result.winner);
             final List<Standing> standings = result.standings;
             final CStanding [] results = new CStanding [standings.size()];
             for (int i = 0; i < standings.size(); i++)
             {
-                final CPlayer p = lookup(standings.get(i).player.name);
+                final CPlayer p = lookup(standings.get(i).player);
                 results[i] = new CStanding(p.id, standings.get(i).victimNumber);
             }
 
@@ -178,19 +164,23 @@ class GameServant extends ICGamePOA
     /**
      * Lookup player by his or her name.
      */
-    private CPlayer lookup(String name)
+    private CPlayer lookup(Player p)
     {
-        ;
+        if (p == null)
+        {
+            return new CPlayer(-1, "<draw>");
+        }
+
         CPlayer player = null;
         for (PlayerData pd : this.players)
         {
-            if (pd.info.name.equals(name))
+            if (pd.info.name.equals(p.name))
             {
                 player = pd.info;
                 break;
             }
         }
-
+        
         return player;
     }
 
@@ -213,11 +203,11 @@ class GameServant extends ICGamePOA
     /*
      * 
      */
-    protected void fireNextFrame(int frame, CBoardSnapshot snapshot)
+    protected void fireFrame(int frame, CGameEvent [] events)
     {
         for (ICGameListener l : listeners)
         {
-            l.onNextFrame(frame, snapshot);
+            l.onFrame(frame, events);
         }
     }
 

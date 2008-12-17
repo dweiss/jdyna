@@ -2,21 +2,18 @@ package com.dawidweiss.dyna.view.swing;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.swing.JFrame;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.IGameListener;
-import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.resources.ImageUtilities;
-import com.dawidweiss.dyna.view.resources.Images;
-import com.dawidweiss.dyna.view.resources.ImagesFactory;
+import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.view.resources.*;
 
 /**
  * Swing board view.
  */
 @SuppressWarnings("serial")
-public final class BoardFrame extends JFrame implements IGameListener
+public final class BoardFrame extends JFrame implements IGameEventListener
 {
     private final GraphicsConfiguration conf;
     private BoardPanel gamePanel;
@@ -43,8 +40,8 @@ public final class BoardFrame extends JFrame implements IGameListener
         setTitle("Play responsibly.");
     }
 
-    public void onNextFrame(int frame, IBoardSnapshot snapshot)
+    public void onFrame(int frame, List<GameEvent> events)
     {
-        gamePanel.onNextFrame(frame, snapshot);
+        gamePanel.onFrame(frame, events);
     }
 }

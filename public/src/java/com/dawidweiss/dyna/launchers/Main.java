@@ -1,5 +1,6 @@
-package com.dawidweiss.dyna;
+package com.dawidweiss.dyna.launchers;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Logger;
@@ -7,13 +8,19 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
- * The <b>Dyna Blaster</b> game. Oh, yes.
- * <p>
- * This class starts a local two-player game, where players are controlled via the same
- * keyboard.
+ * Start a game:
+ * <ul>
+ *  <li>two players,</li>
+ *  <li>one game,</li>
+ *  <li>both players controlled via keyboard (default mappings).</li>
+ * </ul>
+ * 
+ * @see Globals#getDefaultKeyboardController(int)
  */
 public final class Main
 {
@@ -35,16 +42,22 @@ public final class Main
         final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
         final IPlayerController c2 = Globals.getDefaultKeyboardController(1);
 
-        final BoardInfo boardInfo = new BoardInfo(board);
+        final BoardInfo boardInfo = new BoardInfo(
+            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
         final Game game = new Game(board, boardInfo, p1, p2);
         game.setFrameRate(25);
 
         /*
-         * Create and attach a view to the game.
+         * Attach sounds view to the game.
          */
+        game.addListener(new GameSoundEffects());
 
+        /*
+         * Attach a display view to the game.
+         */
         final BoardFrame frame = new BoardFrame(boardInfo);
         game.addListener(frame);
         frame.setVisible(true);

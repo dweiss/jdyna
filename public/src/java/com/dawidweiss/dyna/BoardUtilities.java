@@ -161,7 +161,7 @@ final class BoardUtilities
      */
     private static Cell overlap(Cell cell, Cell explosion)
     {
-        if (!CellType.isExplosion(cell.type))
+        if (!cell.type.isExplosion())
         {
             return explosion;
         }

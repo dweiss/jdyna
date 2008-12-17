@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.view;
+package com.dawidweiss.dyna;
 
 /**
  * Public view of each player's dynamic data.

@@ -3,8 +3,6 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
-import com.dawidweiss.dyna.view.IPlayerSprite;
-import com.dawidweiss.dyna.view.SpriteType;
 
 /**
  * Extra {@link Player} information for the {@link Game}.
@@ -51,7 +49,7 @@ final class PlayerInfo implements IPlayerSprite
     /*
      * 
      */
-    public PlayerInfo(Player player, int playerIndex)
+    PlayerInfo(Player player, int playerIndex)
     {
         this.player = player;
         this.playerIndex = playerIndex;
@@ -150,9 +148,9 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * @see IPlayerSprite
      */
-    public SpriteType getType()
+    public ISprite.Type getType()
     {
-        final SpriteType [] playerSprites = SpriteType.getPlayerSprites();
+        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
         return playerSprites[playerIndex % playerSprites.length];
     }
 

@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba.client;
+package com.dawidweiss.dyna.corba.server;
 
 import java.io.PrintStream;
 import java.util.logging.Logger;
@@ -6,28 +6,24 @@ import java.util.logging.Logger;
 import org.kohsuke.args4j.*;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
-import com.dawidweiss.dyna.corba.bindings.*;
+import com.dawidweiss.dyna.corba.bindings.ICGameServer;
+import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 
 /**
- * Starts a single game client.
+ * Starts the game server and saves its initial reference to a file.
  */
-public class GameClient
+public class GameServerLauncher
 {
     private final static Logger logger = Logger.getAnonymousLogger();
 
-    @Option(name = "-n", aliases = "--name", required = true, metaVar = "name", usage = "Player name.")
-    private String name;
-
     @Option(name = "-p", aliases = "--port",
-        required = true, metaVar = "port", usage = "Server's IOR port.")
+        required = true, metaVar = "port", usage = "Server IOR bind port.")
     protected int port;
 
     @Option(name = "-h", aliases = "--host", 
-        required = true, metaVar = "address", usage = "Server's IOR host.")
+        required = true, metaVar = "address", usage = "Server IOR bind interface.")
     protected String host;
 
     @Option(name = "--iiop.host", 
@@ -38,37 +34,31 @@ public class GameClient
         required = false, metaVar = "port", usage = "IIOP bind port.")
     protected int iiop_port;
 
-    /*
+   /*
      * Console entry point.
      */
     public void start() throws Exception
     {
         /*
-         * Perform initial setup.
+         * ORB setup.
          */
         final org.omg.CORBA.ORB orb = CorbaUtils.initORB(iiop_host, iiop_port);
-        final POA rootPOA = CorbaUtils.rootPOA(orb);        
+        final POA rootPOA = CorbaUtils.rootPOA(orb);
 
         /*
-         * Resolve game server.
+         * Create game manager, save its reference.
          */
-        final ICGameServer gameServer = ICGameServerHelper.narrow(
-            orb.string_to_object(
-                new String(NetworkUtils.read(host, port), "UTF-8")));
+        final GameServerServant servant = new GameServerServant();
+        final ICGameServer gameServer = 
+            ICGameServerHelper.narrow(rootPOA.servant_to_reference(servant));
 
-        /*
-         * Create game client, register it.
-         */
-        final IPlayerController local = Globals.getDefaultKeyboardController(0);
-        final ICPlayerController controller = ICPlayerControllerHelper.narrow(
-            rootPOA.servant_to_reference(new KeyboardPlayerController(local)));
-
-        gameServer.register(name, controller);
+        final String ior = orb.object_to_string(gameServer);
+        NetworkUtils.expose(ior, host, port);
 
         /*
          * Start the ORB and run it in an infinite loop.
          */
-        logger.info("Client started and ready.");
+        logger.info("Server started and ready.");
         orb.run();
     }
     
@@ -77,7 +67,7 @@ public class GameClient
      */
     public static void main(String [] args) throws Exception
     {
-        final GameClient launcher = new GameClient();
+        final GameServerLauncher launcher = new GameServerLauncher();
         final CmdLineParser parser = new CmdLineParser(launcher);
         parser.setUsageWidth(80);
 
@@ -98,5 +88,5 @@ public class GameClient
         }
 
         launcher.start();
-    }
+    }    
 }

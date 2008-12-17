@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.dawidweiss.dyna.view.ISprite;
 import com.google.common.collect.Lists;
 
 /**

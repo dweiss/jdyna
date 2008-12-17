@@ -1,34 +1,18 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
+import java.awt.image.*;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import org.apache.commons.io.IOUtils;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameListener;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayerSprite;
+import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
 
@@ -37,7 +21,7 @@ import com.google.common.collect.Maps;
  * game.
  */
 @SuppressWarnings("serial")
-public final class BoardPanel extends JPanel implements IGameListener
+public final class BoardPanel extends JPanel implements IGameEventListener
 {
     /**
      * Exclusive lock so that drawing and updating does not take place at the same time.
@@ -136,7 +120,7 @@ public final class BoardPanel extends JPanel implements IGameListener
     /**
      * Update {@link #background} because the board changed.
      */
-    public void updateBoard(IBoardSnapshot snapshot)
+    public void updateBoard(GameStateEvent gameState)
     {
         final Graphics2D g = background.createGraphics();
 
@@ -154,7 +138,7 @@ public final class BoardPanel extends JPanel implements IGameListener
             /*
              * Paint grid cells.
              */
-            final Cell [][] cells = snapshot.getCells();
+            final Cell [][] cells = gameState.cells;
             final int cellSize = boardInfo.cellSize;
             for (int y = boardInfo.gridSize.height - 1; y >= 0; y--)
             {
@@ -174,10 +158,10 @@ public final class BoardPanel extends JPanel implements IGameListener
             /*
              * Paint players.
              */
-            final IPlayerSprite [] players = snapshot.getPlayers();
-            for (int playerIndex = 0; playerIndex < players.length; playerIndex++)
+            final List<? extends IPlayerSprite> players = gameState.players;
+            for (int playerIndex = 0; playerIndex < players.size(); playerIndex++)
             {
-                final IPlayerSprite player = players[playerIndex];
+                final IPlayerSprite player = players.get(playerIndex);
                 int state = player.getAnimationState();
                 int frame = player.getAnimationFrame();
 
@@ -249,11 +233,17 @@ public final class BoardPanel extends JPanel implements IGameListener
     }
 
     /**
-     * @see IGameListener
+     * @see IGameEventListener
      */
-    public void onNextFrame(int frame, IBoardSnapshot snapshot)
+    public void onFrame(int frame, List<GameEvent> events)
     {
-        updateBoard(snapshot);
+        for (GameEvent e : events)
+        {
+            if (e.type == GameEvent.Type.GAME_STATE)
+            {
+                updateBoard((GameStateEvent) e);                
+            }
+        }
         BoardPanel.this.repaint();
     }
 

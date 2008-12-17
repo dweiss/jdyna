@@ -18,6 +18,7 @@ module bindings {
 	interface ICGameListener;
 	interface ICGame;
 	interface ICPlayerController;
+
 	struct CPlayer;
 	struct CPlayerState;
 	struct CStanding;
@@ -44,6 +45,60 @@ module bindings {
 	    wstring name;
 	};
 
+	/*
+	 * Basic data types.
+	 */
+    struct CDimension {
+       long width, height;
+    };
+
+    struct CPoint {
+       long x, y;
+    };
+	
+	/*
+	 * Game events. Propagated by value as a union of structures corresponding
+	 * to Java event types.
+	 */
+
+	struct CPlayerState {
+	   long animationFrame;
+	   long animationState;
+	   CPoint position;
+	};
+
+	struct CBoardInfo {
+	   CDimension gridSize;
+	   long cellSize;
+	   CDimension pixelSize;
+	};	 
+
+	enum CGameEventType {
+		GAME_STATE, SOUND_EFFECT
+	};
+	
+	struct CGameState {
+	   CCellSeq cells;
+	   CPlayerStateSeq players;
+	};
+	
+	enum CSoundEffectType {
+	    BOMB, BONUS, DYING
+	};
+
+	struct CSoundEffect {
+		CSoundEffectType effect;
+		long count;
+	};
+
+	union CGameEvent switch (CGameEventType) {
+		case GAME_STATE:
+			CGameState gameState;
+		case SOUND_EFFECT:
+			CSoundEffect soundEffect;
+	};
+	typedef sequence<CGameEvent> CGameEventSeq; 
+
     /**
      * Standings after game over.
      */
@@ -53,32 +108,8 @@ module bindings {
     };
 
 	/*
-	 * Snapshots of game data structures.
+	 * Controller structures.
 	 */
-    struct CDimension {
-       long width, height;
-    };
-
-    struct CPoint {
-       long x, y;
-    };
-
-	struct CPlayerState {
-	   long animationFrame;
-	   long animationState;
-	   CPoint position;
-	};
-
-	struct CBoardSnapshot {
-	   CCellSeq cells;
-	   CPlayerStateSeq players;
-	};
-	
-	struct CBoardInfo {
-	   CDimension gridSize;
-	   long cellSize;
-	   CDimension pixelSize;
-	};
 
     enum CDirection
     {
@@ -134,7 +165,7 @@ module bindings {
 	    * An asynchronous callback received on each game frame (some frames may be skipped
 	    * if the connection is slow). 
 	    */
-	   oneway void onNextFrame(in long frame, in CBoardSnapshot snapshot);
+	   oneway void onFrame(in long frame, in CGameEventSeq events);
 
 	   /**
 	    * Game over event.

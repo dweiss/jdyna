@@ -7,8 +7,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * A cell type contains the cell's numeric code. An enum is basically the same as
- * integer-coded constant and efficient to use in sets and maps.
+ * A cell type contains the cell's numeric code and exposes several properties, including 
+ * walkability, hostility against the player, etc.
  */
 public enum CellType
 {
@@ -25,36 +25,58 @@ public enum CellType
     CELL_BOMB('b'),
 
     /* Explosions. */
-    CELL_BOOM_LX('<'), CELL_BOOM_RX('>'), CELL_BOOM_X('-'), CELL_BOOM_TY('^'), CELL_BOOM_BY(
-        'v'), CELL_BOOM_Y('|'), CELL_BOOM_XY('+');
+    CELL_BOOM_LX('<'), 
+    CELL_BOOM_RX('>'), 
+    CELL_BOOM_X('-'), 
+    CELL_BOOM_TY('^'), 
+    CELL_BOOM_BY('v'), 
+    CELL_BOOM_Y('|'), 
+    CELL_BOOM_XY('+');
 
     /**
      * Character code for the cell (16 bits).
      */
     public final char code;
 
-    /*
-     * 
-     */
+    /* */
     private CellType(char code)
     {
         this.code = code;
     }
 
     /**
-     * A static mapping between codes and enum constants. 64k is not a problem with
-     * today's architecture, huh? (we don't care about code points).
-     * 
-     * @see #valueOf(char)
+     * Is the given type an explosion cell?
      */
-    private final static CellType [] cells;
-    static
+    public boolean isExplosion()
     {
-        cells = new CellType [Character.MAX_VALUE];
-        for (CellType c : CellType.values())
-        {
-            cells[c.code] = c;
-        }
+        return EXPLOSION_CELLS.contains(this);
+    }
+
+    /**
+     * @return Returns <code>true</code> if this cell type is lethal.
+     */
+    public boolean isLethal()
+    {
+        return LETHAL.contains(this);
+    }   
+
+    /**
+     * @return Returns <code>true</code> if this cell type is empty (players can walk on
+     *         it).
+     */
+    public boolean isWalkable()
+    {
+        return WALKABLES.contains(this);
+    }
+    
+    /**
+     * Return the frame counter after which the cell should be replaced with
+     * {@link #CELL_EMPTY}. If zero, the cell should not be removed from the grid at all.
+     */
+    int getRemoveAtCounter()
+    {
+        final Integer i = ANIMATING_CELLS.get(this);
+        return (i == null ? 0 : i);
     }
 
     /**
@@ -63,37 +85,69 @@ public enum CellType
      */
     public static CellType valueOf(char code)
     {
-        final CellType c = cells[code];
+        final CellType c = CODE_TO_CELL_TYPE[code];
         if (c == null)
         {
-            throw new RuntimeException("No cell with code: " + (int) code + " ('" + code
-                + "')");
+            throw new RuntimeException("No cell type with code: " 
+                + (int) code + " ('" + code + "')");
         }
 
-        return cells[code];
+        return CODE_TO_CELL_TYPE[code];
     }
 
     /**
-     * Is the given type an explosion cell?
+     * Convert from enum's ordinal number to enum instance.
      */
-    public static boolean isExplosion(CellType type)
+    public static CellType valueOf(int ordinal)
     {
-        return EXPLOSION_CELLS.contains(type);
+        return ORDINAL_TO_CELL_TYPE[ordinal];
     }
-
-    public final static EnumSet<CellType> EXPLOSION_CELLS = EnumSet.of(
-        CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
-        CellType.CELL_BOOM_Y, CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX,
-        CellType.CELL_BOOM_RX, CellType.CELL_BOOM_XY);
 
     /**
-     * @return Returns <code>true</code> if this cell type is lethal.
+     * A static mapping between codes and enum constants. 64k is not a problem with
+     * today's architecture, huh? (we don't care about unicode code points).
+     * 
+     * @see #valueOf(char)
      */
-    public static boolean isLethal(CellType type)
+    private final static CellType [] CODE_TO_CELL_TYPE;
+    static
     {
-        return LETHAL.contains(type);
+        CODE_TO_CELL_TYPE = new CellType [Character.MAX_VALUE];
+        for (CellType c : CellType.values())
+        {
+            CODE_TO_CELL_TYPE[c.code] = c;
+        }
     }
 
+    /**
+     * A mapping from ordinal values to {@link CellType}.
+     */
+    private final static CellType [] ORDINAL_TO_CELL_TYPE;
+    static
+    {
+        int max = 0;
+        for (CellType t : CellType.values()) max = Math.max(max, t.ordinal());
+        ORDINAL_TO_CELL_TYPE = new CellType [max + 1];
+        for (CellType t : CellType.values()) ORDINAL_TO_CELL_TYPE[t.ordinal()] = t;
+    }
+    
+    /**
+     * A static set of all cells that are explosions.
+     * 
+     * @see #isExplosion()
+     */
+    private final static EnumSet<CellType> EXPLOSION_CELLS;
+    static
+    {
+        EXPLOSION_CELLS = EnumSet.of(
+            CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
+            CellType.CELL_BOOM_Y, CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX,
+            CellType.CELL_BOOM_RX, CellType.CELL_BOOM_XY);
+    }
+
+    /**
+     * All lethal (killing the player) cell types.
+     */
     private final static EnumSet<CellType> LETHAL;
     static
     {
@@ -101,27 +155,21 @@ public enum CellType
     }
 
     /**
-     * @return Returns <code>true</code> if this cell type is empty (players can walk on
-     *         it).
+     * All cells on which the player can walk. This does not mean that they are
+     * safe, explosion cells are also walkable.
      */
-    public static boolean isWalkable(CellType type)
-    {
-        return WALKABLES.contains(type);
-    }
-    
     private final static EnumSet<CellType> WALKABLES;
     static
     {
         WALKABLES = EnumSet.of(CellType.CELL_EMPTY);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
-    
 
     /**
      * All cells that are animated and should be replaced with {@link CellType#CELL_EMPTY}
      * at the end of the animation sequence.
      */
-    public final static EnumMap<CellType, Integer> ANIMATING_CELLS = Maps.newEnumMap(CellType.class);
+    private final static EnumMap<CellType, Integer> ANIMATING_CELLS;
     static
     {
         /*
@@ -131,37 +179,11 @@ public enum CellType
         final int explosionFrameCount = 7 * 2;
         final int crateFrameCount = 7 * 2;
 
+        ANIMATING_CELLS = Maps.newEnumMap(CellType.class);
         for (CellType c : EXPLOSION_CELLS)
         {
             ANIMATING_CELLS.put(c, explosionFrameCount);
         }
         ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
     }    
-
-    /**
-     * Return the frame counter after which the cell should be replaced with
-     * {@link #CELL_EMPTY}. If zero, the cell should not be removed at all.
-     */
-    public static int getRemoveAtCounter(CellType type)
-    {
-        final Integer i = ANIMATING_CELLS.get(type);
-        return (i == null ? 0 : i);
-    }
-
-    private final static CellType [] BY_ORDINALS;
-    static
-    {
-        int max = 0;
-        for (CellType t : CellType.values()) max = Math.max(max, t.ordinal());
-        BY_ORDINALS = new CellType [max + 1];
-        for (CellType t : CellType.values()) BY_ORDINALS[t.ordinal()] = t;
-    }
-
-    /**
-     * Convert from enum's ordinal number to enum type.
-     */
-    public static CellType valueOf(int ordinal)
-    {
-        return BY_ORDINALS[ordinal];
-    }
 }

@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.view.SpriteType;
+import com.dawidweiss.dyna.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -181,10 +179,10 @@ public final class ImagesFactory
         };
 
         sprites.addAll(Arrays.asList(new SpriteData [] {
-            createPlayer(SpriteType.PLAYER_1, playerFrameRate, offset, slices1),
-            createPlayer(SpriteType.PLAYER_2, playerFrameRate, offset, slices2),
-            createPlayer(SpriteType.PLAYER_3, playerFrameRate, offset, slices3),
-            createPlayer(SpriteType.PLAYER_4, playerFrameRate, offset, slices4),
+            createPlayer(ISprite.Type.PLAYER_1, playerFrameRate, offset, slices1),
+            createPlayer(ISprite.Type.PLAYER_2, playerFrameRate, offset, slices2),
+            createPlayer(ISprite.Type.PLAYER_3, playerFrameRate, offset, slices3),
+            createPlayer(ISprite.Type.PLAYER_4, playerFrameRate, offset, slices4),
         }));
 
         return new Images(cellSize, cells, sprites);
@@ -193,7 +191,7 @@ public final class ImagesFactory
     /*
      * 
      */
-    private static SpriteData createPlayer(SpriteType type, int frameRate,
+    private static SpriteData createPlayer(ISprite.Type type, int frameRate,
         Point offsetForAllFrames, StateImageSlices... stateSlices)
     {
         final SpriteData data = new SpriteData();

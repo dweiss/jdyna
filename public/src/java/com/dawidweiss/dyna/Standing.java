@@ -15,6 +15,9 @@ public final class Standing
      */
     public final int victimNumber;
 
+    /*
+     * 
+     */
     public Standing(Player p, int victimNumber)
     {
         this.player = p;

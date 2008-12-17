@@ -1,17 +1,12 @@
 package com.dawidweiss.dyna;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
-import com.dawidweiss.dyna.view.IBoardSnapshot;
-import com.dawidweiss.dyna.view.IPlayerSprite;
 import com.google.common.collect.Lists;
 
 /**
@@ -31,12 +26,7 @@ public final class Game
     /**
      * Dynamic information about players involved in the game.
      */
-    private PlayerInfo [] playerInfos;
-    
-    /**
-     * Player views for listeners.
-     */
-    private IPlayerSprite [] playerViews;
+    private List<PlayerInfo> playerInfos;
 
     /**
      * A list of killed players. 
@@ -50,7 +40,7 @@ public final class Game
     private long lastFrameTimestamp;
 
     /** Game listeners. */
-    private final ArrayList<IGameListener> listeners = Lists.newArrayList();
+    private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
 
     /** Board dimensions. */
     private BoardInfo boardData;
@@ -61,23 +51,11 @@ public final class Game
     private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
 
     /**
-     * Static board view for listeners. 
+     * Reusable array of events dispatched in each frame.
+     * 
+     * @see #run()
      */
-    private IBoardSnapshot boardSnapshot = new IBoardSnapshot() {
-        public Cell [][] getCells()
-        {
-            /*
-             * This should be a 'safe' copy of the actual board cell structure,
-             * even within the same VM, so that nobody can cheat.
-             */
-            return board.cells;
-        }
-
-        public IPlayerSprite [] getPlayers()
-        {
-            return playerViews;
-        }
-    };
+    private final ArrayList<GameEvent> events = Lists.newArrayList();
 
     /**
      * Creates a single game.
@@ -101,12 +79,19 @@ public final class Game
         do
         {
             waitForFrame();
+            
+            events.clear();
             processBoardCells();
             processPlayers();
+            events.add(new GameStateEvent(board.cells, playerInfos));
 
-            fireNextFrameEvent(frame);
+            fireFrameEvent(frame);
             frame++;
 
+            /*
+             * The game may be finished, but there are still
+             * lingering frames we must replay.
+             */
             if (result == null)
             {
                 result = checkGameOver();
@@ -136,7 +121,7 @@ public final class Game
                 winner = pi.player;
             }
         }
-        final int all = playerInfos.length;
+        final int all = playerInfos.size();
 
         /*
          * There is one alive player, everyone else is dead. 
@@ -169,7 +154,7 @@ public final class Game
     /*
      * 
      */
-    public void addListener(IGameListener listener)
+    public void addListener(IGameEventListener listener)
     {
         listeners.add(listener);
     }
@@ -177,19 +162,20 @@ public final class Game
     /*
      * 
      */
-    public void removeListener(IGameListener listener)
+    public void removeListener(IGameEventListener listener)
     {
         listeners.remove(listener);
     }
 
     /**
-     * Fire "next frame" event to listeners.
+     * Dispatch frame events to listeners.
      */
-    private void fireNextFrameEvent(int frame)
+    private void fireFrameEvent(int frame)
     {
-        for (IGameListener gl : listeners)
+        final List<GameEvent> e = Collections.unmodifiableList(events);
+        for (IGameEventListener gl : listeners)
         {
-            gl.onNextFrame(frame, boardSnapshot);
+            gl.onFrame(frame, e);
         }
     }
 
@@ -206,7 +192,7 @@ public final class Game
             /*
              * Process controller direction signals.
              */
-            final PlayerInfo pi = playerInfos[i];
+            final PlayerInfo pi = playerInfos.get(i);
             final IPlayerController c = players[i].controller;
 
             final IPlayerController.Direction signal = c.getCurrent();
@@ -237,6 +223,14 @@ public final class Game
         }
         
         /*
+         * Add sound effect to the queue, if any.
+         */
+        if (killed.size() > 0)
+        {
+            events.add(new SoundEffectEvent(SoundEffect.DYING, killed.size()));
+        }
+
+        /*
          * Update standings. Assign <b>the same</b> victim number to all the people
          * killed in the same round.
          */
@@ -261,7 +255,7 @@ public final class Game
          */
         final Point xy = boardData.pixelToGrid(pi.location);
         final Cell c = board.cellAt(xy);
-        if (CellType.isLethal(c.type))
+        if (c.type.isLethal())
         {
             // For whom the bell tolls...
             pi.kill();
@@ -420,7 +414,7 @@ public final class Game
          * Leave player info as an argument, we may want to add a 'god mode' in the future so
          * that certain players (or at given period of times) can walk on bombs.
          */
-        return CellType.isWalkable(board.cellAt(txy).type);        
+        return board.cellAt(txy).type.isWalkable();        
     }
 
     /**
@@ -428,25 +422,23 @@ public final class Game
      */
     private void setupPlayers()
     {
-        final PlayerInfo [] pi = new PlayerInfo [players.length];
-        final IPlayerSprite [] pv = new IPlayerSprite [players.length];
+        this.playerInfos = Lists.newArrayList();
+
         final Point [] defaults = board.defaultPlayerPositions;
-        if (defaults.length < pi.length)
+        if (defaults.length < players.length)
         {
             Logger.getAnonymousLogger().warning("The board has fewer positions than players: "
-                + defaults.length + " < " + pi.length);
+                + defaults.length + " < " + players.length);
         }
 
         for (int i = 0; i < players.length; i++)
         {
-            pi[i] = new PlayerInfo(players[i], i);
-            pv[i] = pi[i];
-            pi[i].location.setLocation(
+            final PlayerInfo pi = new PlayerInfo(players[i], i);
+            pi.location.setLocation(
                 boardData.gridToPixel(defaults[i % defaults.length]));
-        }
 
-        this.playerInfos = pi;
-        this.playerViews = pv;
+            playerInfos.add(pi);
+        }
     }
 
     /**
@@ -473,7 +465,7 @@ public final class Game
                  */
                 cell.counter++;
 
-                final int removeAt = CellType.getRemoveAtCounter(type);
+                final int removeAt = type.getRemoveAtCounter();
                 if (removeAt > 0 && cell.counter == removeAt)
                 {
                     cells[x][y] = Cell.getInstance(CellType.CELL_EMPTY);
@@ -503,6 +495,14 @@ public final class Game
                     }
                 }
             }
+        }
+
+        /*
+         * Add sound events to the queue.
+         */
+        if (bombs.size() > 0)
+        {
+            events.add(new SoundEffectEvent(SoundEffect.BOMB, bombs.size()));
         }
 
         /*

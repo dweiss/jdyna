@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import org.junit.Test;
 
-import com.dawidweiss.dyna.view.SpriteType;
+import com.dawidweiss.dyna.ISprite;
 
 public class SpriteDataTest
 {
@@ -21,7 +21,7 @@ public class SpriteDataTest
         sd = new SpriteData();
 
         sd.frameAdvanceRate = 5;
-        sd.spriteType = SpriteType.PLAYER_1;
+        sd.spriteType = ISprite.Type.PLAYER_1;
 
         sd.frames = new BufferedImage [fakeStatesQty] [fakeFramesPerStateQty];
         sd.offsets = new Point [fakeStatesQty] [fakeFramesPerStateQty];

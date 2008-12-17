@@ -1,0 +1,22 @@
+package com.dawidweiss.dyna;
+
+
+/**
+ * Sound effect event.
+ */
+public class SoundEffectEvent extends GameEvent
+{
+    /** Which sound effect should we play? */
+    public final SoundEffect effect;
+    
+    /** How many sound effects occurred in the frame? */
+    public final int count;
+
+    public SoundEffectEvent(SoundEffect effect, int count)
+    {
+        super(GameEvent.Type.SOUND_EFFECT);
+        
+        this.effect = effect;
+        this.count = count;
+    }
+}
