@@ -31,7 +31,11 @@ public enum CellType
     CELL_BOOM_TY('^'), 
     CELL_BOOM_BY('v'), 
     CELL_BOOM_Y('|'), 
-    CELL_BOOM_XY('+');
+    CELL_BOOM_XY('+'),
+
+    /* Bonuses */
+    CELL_BONUS_BOMB('@'),
+    CELL_BONUS_RANGE('*');
 
     /**
      * Character code for the cell (16 bits).
@@ -115,6 +119,9 @@ public enum CellType
         CODE_TO_CELL_TYPE = new CellType [Character.MAX_VALUE];
         for (CellType c : CellType.values())
         {
+            if (CODE_TO_CELL_TYPE[c.code] != null)
+                throw new RuntimeException("Two cells have the same code.");
+
             CODE_TO_CELL_TYPE[c.code] = c;
         }
     }
@@ -161,7 +168,8 @@ public enum CellType
     private final static EnumSet<CellType> WALKABLES;
     static
     {
-        WALKABLES = EnumSet.of(CellType.CELL_EMPTY);
+        WALKABLES = EnumSet.of(CellType.CELL_EMPTY, CellType.CELL_BONUS_BOMB,
+            CellType.CELL_BONUS_RANGE);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 

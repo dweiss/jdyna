@@ -64,6 +64,7 @@ public final class ImagesFactory
          */
 
         ImageSliceBuilder sb = new ImageSliceBuilder("tiles/05.png", cellSize);
+        ImageSliceBuilder sb2 = new ImageSliceBuilder("tiles/composites.png", cellSize);
         List<CellData> cells = Arrays.asList(new CellData [] {
             /* Simple cells */
             create(CellType.CELL_EMPTY, 1, sb.tile(0, 0)),
@@ -99,6 +100,14 @@ public final class ImagesFactory
             ),
             create(CellType.CELL_BOOM_XY, boomFrameRate, sb.tile(new int [][] {
                 {8, 2}, {6, 2}, {5, 2}, {4, 2}, {5, 2}, {6, 2}, {7, 2}})
+            ),
+
+            /* Bonuses */
+            create(CellType.CELL_BONUS_BOMB, 4, sb2.tile(new int [][] {
+                {0, 0}, {3, 0} })
+            ),
+            create(CellType.CELL_BONUS_RANGE, 4, sb2.tile(new int [][] {
+                {1, 0}, {4, 0} })
             ),
         });
 

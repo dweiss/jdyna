@@ -284,11 +284,37 @@ public final class Game
          */
         final Point xy = boardData.pixelToGrid(pi.location);
         final Cell c = board.cellAt(xy);
+        
+        // For whom the bell tolls...
         if (c.type.isLethal())
         {
-            // For whom the bell tolls...
             pi.kill();
             kills.add(pi);
+        }
+        
+        /*
+         * Process bonuses. The bonus-assignment is not entirely fair, because if
+         * two players touch the bonus at once, the player with lower index will collect
+         * the bonus. With randomized player order, however, this should be of no 
+         * practical importance.
+         */
+        boolean bonusCollected = false;
+        if (c.type == CellType.CELL_BONUS_BOMB)
+        {
+            pi.bombCount++;
+            bonusCollected = true;
+        }
+
+        if (c.type == CellType.CELL_BONUS_RANGE)
+        {
+            pi.bombRange++;
+            bonusCollected = true;
+        }
+
+        if (bonusCollected)
+        {
+            board.cellAt(xy, Cell.getInstance(CellType.CELL_EMPTY));
+            events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
         }
     }
 

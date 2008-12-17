@@ -58,10 +58,19 @@ public final class Board
     }
 
     /**
+     * Returns the cell at the given coordinates.
      * Same as <code>{@link #cells}[p.x][p.y]</code>.
      */
     public Cell cellAt(Point p)
     {
         return cells[p.x][p.y];
+    }
+
+    /**
+     * Sets the cell at the given coordinates to a given value. 
+     */
+    public void cellAt(Point p, Cell cell)
+    {
+        cells[p.x][p.y] = cell;
     }
 }
