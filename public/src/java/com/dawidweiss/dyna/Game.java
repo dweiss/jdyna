@@ -107,9 +107,9 @@ public final class Game
         GameResult result = null;
         do
         {
-            waitForFrame();
-            
             events.clear();
+            waitForFrame();
+
             processBoardCells();
             processPlayers(frame);
             events.add(new GameStateEvent(board.cells, playerInfos));
