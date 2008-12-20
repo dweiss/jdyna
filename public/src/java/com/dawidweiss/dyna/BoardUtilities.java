@@ -181,4 +181,22 @@ final class BoardUtilities
 
         return Cell.getInstance(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
     }
+
+    /**
+     * Calculate manhattan distance between two locations. 
+     */
+    public static int manhattanDistance(Point a, Point b)
+    {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+
+    /**
+     * Euclidian distance between two points.
+     */
+    public static double euclidianDistance(Point a, Point b)
+    {
+        final int x = a.x - b.x;
+        final int y = a.y - b.y;
+        return Math.sqrt(x * x + y * y);
+    }
 }

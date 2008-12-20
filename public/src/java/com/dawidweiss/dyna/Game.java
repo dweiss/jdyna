@@ -1,13 +1,21 @@
 package com.dawidweiss.dyna;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.awt.Point;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Game controller. The controller and <b>all the objects involved in the game</b> are
@@ -73,6 +81,24 @@ public final class Game
      * How many frames to 'linger' after the game is over.
      */
     private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
+    
+    /**
+     * If periodic bonuses are placed on the board, then this is 
+     * the period after which a new bonus should be placed on the board.
+     * Bonuses will be placed at random board positions.
+     */
+    private int bonusPeriod = Globals.DEFAULT_BONUS_PERIOD;
+
+    /**
+     * Last time a bonus was added to the board.
+     */
+    private int lastBonusFrame;
+
+    /**
+     * Bonus cells assigned every {@link #bonusPeriod}.
+     */
+    private final static List<CellType> BONUSES = 
+        Arrays.asList(CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -81,6 +107,11 @@ public final class Game
      */
     private final ArrayList<GameEvent> events = Lists.newArrayList();
 
+    /**
+     * Random number generator (bonuses etc).
+     */
+    private final Random random = new Random();
+    
     /**
      * Creates a single game.
      */
@@ -101,7 +132,9 @@ public final class Game
             throw new UnsupportedOperationException("Mode not yet implemented: " + mode);
         }
 
+        setFrameRate(Globals.DEFAULT_FRAME_RATE);
         setupPlayers();
+        lastBonusFrame = bonusPeriod;
 
         int frame = 0;
         GameResult result = null;
@@ -112,6 +145,7 @@ public final class Game
 
             processBoardCells();
             processPlayers(frame);
+            processBonuses(frame);
             events.add(new GameStateEvent(board.cells, playerInfos));
 
             fireFrameEvent(frame);
@@ -128,6 +162,52 @@ public final class Game
         } while (result == null || lingerFrames-- > 0);
 
         return result;
+    }
+
+    /**
+     * Check if new bonuses should be placed on the board.
+     */
+    private void processBonuses(int frame)
+    {
+        if (lastBonusFrame < frame)
+        {
+            /* 
+             * We pick the bonus location at random, avoiding
+             * cells where players are. We could try to make it smarter
+             * by placing bonuses in equal or at least maximum distance from all
+             * players, but it did not work that well in practice (I tried).
+             */
+            final HashSet<Point> banned = Sets.newHashSet();
+            for (PlayerInfo pi : playerInfos)
+            {
+                if (!pi.isDead()) banned.add(pi.location);
+            }
+
+            final ArrayList<Point> positions = 
+                Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
+            for (int y = board.height - 1; y >= 0; y--)
+            {
+                for (int x = board.width - 1; x >= 0; x--)
+                {
+                    final Point p = new Point(x, y);
+                    if (!banned.contains(p) 
+                        && board.cellAt(p).type == CellType.CELL_EMPTY)
+                    {
+                        positions.add(p);
+                    }
+                }
+            }
+
+            final int size = positions.size(); 
+            if (size > 0)
+            {
+                final CellType bonus = BONUSES.get(random.nextInt(BONUSES.size()));
+                final Point p = positions.get(random.nextInt(size));
+                board.cellAt(p, Cell.getInstance(bonus));
+            }
+
+            this.lastBonusFrame = frame + bonusPeriod;
+        }
     }
 
     /**

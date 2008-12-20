@@ -67,6 +67,18 @@ public final class Globals
      */
     public static final int BOMB_DROP_DELAY = 5;
 
+    /**
+     * Default frame rate for playing games.
+     */
+    public static final int DEFAULT_FRAME_RATE = 25;
+
+    /**
+     * Default interval (in frames) between placing a new bonus on the playfield.
+     * The default is 15 seconds. Assign to a very large value to effectively prevent
+     * bonuses from showing up.
+     */
+    public static final int DEFAULT_BONUS_PERIOD = DEFAULT_FRAME_RATE * 15;
+
     /*
      * 
      */
