@@ -1,29 +1,62 @@
 
-Improvement and patch suggestions:
+NEXT: I17
 
-I12 Multi-player mode with reincarnating players and 'frag' counters. 
+## Improvement and patch suggestions:
 
-I11 Rethink event passing, filtering and serialization. [DW; add serialization and I5?]
+GENERAL/ STARTUP SCREEN
 
-I10	Intelligent opponents and bots. [TWO'2008 homework.]
+I2	Improve (suggest changes, implement them) the multi player server mode. How should games and
+   	players be managed? When does a new game start and who initiates a game? Think of multiple
+	environments -- cell phones, applets, WebStart. The mechanism should apply to all.
+	
+I15 Code up a startup screen with options to launch a local game between an arbitrary (2-4?)
+    number of players. Select opponents between various CPU players and human players.
+    Add configuration screen to keyboard layouts.
+    Launch a game server, show connected players
+    and start new games with these players. Connect to another game server and allow
+    a given user to play against remote opponents.
 
-I9	Visual editor for game boards :]
+I16 Add game recording listener/ replay mode for recorded games. [dep. on I13]
 
-I8	Add different (than classic) gameboard definitions. This can (should?) include an alternative reader
-	for board definitions so that, for example, a name can be given to the board... 
+EVENTS/ NETWORKING
 
-I7	Bonuses (bomb increase, range increase).
+I13 Event packet serialization and packet streams.
 
-I6	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
+I4	Delta-compression of network data sent between frames. 
+    With changes for existing networking implementations.
 
 I5	Multicast or broadcast (datagram?) networking implementation.
 
-I4	Delta-compression of network data sent between frames. With changes for existing networking implementations.
+SOUND
 
 I3	Add a sound player view based on  lwjgl.org.
 
-I2	Improve (suggest changes, implement them) the multi player server mode. How should games and
-    	players be managed? When does a new game start and who initiates a game? Think of multiple
-	environments -- cell phones, applets, WebStart. The mechanism should apply to all.
+I14 There is something screwy in javax.audio (how many mixed samples can be replayed
+    at once?). Would interrupt-and-replay work better?
+
+VIEW
 
 I1	Implement jMonkeyEngine-based OpenGL view.
+    
+GAMEPLAY
+    
+I12 Multi-player mode with reincarnating players and 'frag' counters. 
+
+I10	Intelligent opponents and bots. [TWO'2008 homework.]
+
+MISC
+
+I9	Visual editor for game boards :]
+
+I6	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
+
+
+## DONE
+
+[DONE] I11  Rethink event passing, filtering and serialization. [DW; add serialization and I5?]
+
+[DONE] I7	Bonuses (bomb increase, range increase).
+
+[DONE] I8	Add different (than classic) gameboard definitions. This can (should?) include an 
+    alternative reader for board definitions so that, for example, a name can be given to 
+    the board... 
