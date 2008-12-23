@@ -29,7 +29,7 @@ public final class CorbaUtils
         props.put("org.omg.CORBA.ORBClass", "org.openorb.orb.core.ORB");
         if (!StringUtils.isEmpty(iiop_host))
         {
-            props.put("iiop.host", iiop_host);
+            props.put("iiop.hostname", iiop_host);
         }
         if (iiop_port > 0)
         {
