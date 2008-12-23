@@ -21,7 +21,7 @@ Running the game, understanding the code
 
 In local (no network) mode, Dyna does not require any Corba. Look at:
 
-com.dawidweiss.dyna.Main
+com.dawidweiss.dyna.launchers.Main
 
 class for starters. It configures and launches:
   - the board (cell grid)
