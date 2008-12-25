@@ -74,12 +74,16 @@ module bindings {
 	};	 
 
 	enum CGameEventType {
-		GAME_STATE, SOUND_EFFECT
+		GAME_STATE, SOUND_EFFECT, GAME_START
 	};
 	
 	struct CGameState {
 	   CCellSeq cells;
 	   CPlayerStateSeq players;
+	};
+	
+	struct CGameStart {
+	   CBoardInfo boardInfo;
 	};
 	
 	enum CSoundEffectType {
@@ -96,6 +100,8 @@ module bindings {
 			CGameState gameState;
 		case SOUND_EFFECT:
 			CSoundEffect soundEffect;
+	    case GAME_START:
+	        CGameStart gameStart;
 	};
 	typedef sequence<CGameEvent> CGameEventSeq; 
 

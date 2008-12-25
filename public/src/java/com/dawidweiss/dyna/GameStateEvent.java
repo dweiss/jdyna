@@ -95,8 +95,6 @@ public final class GameStateEvent extends GameEvent
         this.players = Arrays.asList(structs);
     }
 
-    // TODO: refactor timer code.
-
     /**
      * Custom serialization code.
      */

@@ -1,6 +1,8 @@
 package com.dawidweiss.dyna.view.swing;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -28,7 +30,14 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         this(ImageUtilities.getGraphicsConfiguration());
         final Images images = ImagesFactory.DYNA_CLASSIC;
 
-        gamePanel = new BoardPanel(boardInfo, images, conf);
+        gamePanel = new BoardPanel(images, conf);
+        gamePanel.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e)
+            {
+                pack();
+            }
+        });
+
         getContentPane().add(gamePanel);
         setLocationByPlatform(true);
         setIgnoreRepaint(true);

@@ -94,7 +94,10 @@ public final class Adapters
                 case CGameEventType._SOUND_EFFECT:
                     adapted.add(adapt(e.soundEffect()));
                     break;
-                    
+                case CGameEventType._GAME_START:
+                    adapted.add(adapt(e.gameStart()));
+                    break;
+
                 default:
                     // Unrecognized event.
                     break;
@@ -102,6 +105,14 @@ public final class Adapters
         }
 
         return adapted;
+    }
+
+    /*
+     * 
+     */
+    private static GameStartEvent adapt(CGameStart gameStart)
+    {
+        return new GameStartEvent(adapt(gameStart.boardInfo));
     }
 
     /*
@@ -122,6 +133,9 @@ public final class Adapters
                 case SOUND_EFFECT:
                     gameEvent.soundEffect(adapt((SoundEffectEvent) ev)); 
                     break;
+                case GAME_START:
+                    gameEvent.gameStart(adapt((GameStartEvent) ev)); 
+                    break;
                 default:
                     Logger.getAnonymousLogger().info("Unrecognized event: "
                         + ev.type);
@@ -133,6 +147,14 @@ public final class Adapters
         return result.toArray(new CGameEvent [result.size()]);
     }    
     
+    /*
+     * 
+     */
+    private static CGameStart adapt(GameStartEvent ev)
+    {
+        return new CGameStart(adapt(ev.getBoardInfo()));
+    }
+
     /*
      * 
      */

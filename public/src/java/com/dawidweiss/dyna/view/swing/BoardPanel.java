@@ -1,18 +1,40 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
-import java.awt.image.*;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 
-import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.BoardInfo;
+import com.dawidweiss.dyna.Cell;
+import com.dawidweiss.dyna.CellType;
+import com.dawidweiss.dyna.GameEvent;
+import com.dawidweiss.dyna.GameStartEvent;
+import com.dawidweiss.dyna.GameStateEvent;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.IPlayerSprite;
+import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.view.resources.Images;
 import com.google.common.collect.Maps;
 
@@ -31,7 +53,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /**
      * The latest board's background state.
      */
-    private final BufferedImage background;
+    private BufferedImage background;
 
     /*
      * Board information.
@@ -67,7 +89,18 @@ public final class BoardPanel extends JPanel implements IGameEventListener
      * Magnification level. Zoom level are fixed to doubling because we're really
      * pixel-oriented people.
      */
-    private Magnification magnification = Globals.DEFAULT_VIEW_MAGNIFICATION;
+    private Magnification magnification;
+
+    /**
+     * Hardware graphics configuration.
+     */
+    private final GraphicsConfiguration conf;
+
+    /**
+     * Affine transformation scaling to {@link #magnification} or <code>null</code>
+     * if 1:1 rendering is to be used.
+     */
+    private BufferedImageOp magnificationOp;
 
     /**
      * Rendering hints that disable bilinear or bicubic interpolation and in general
@@ -85,10 +118,10 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /**
      * 
      */
-    public BoardPanel(BoardInfo boardInfo, Images images, GraphicsConfiguration conf)
+    public BoardPanel(Images images, GraphicsConfiguration conf)
     {
-        this.boardInfo = boardInfo;
         this.images = images.createCompatible(conf);
+        this.conf = conf;
 
         InputStream is = null;
         try
@@ -109,12 +142,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
          * out to be much slower under Linux. I don't see any sense in this...
          */
         this.setDoubleBuffered(false);
-
-        /*
-         * Initial board update.
-         */
-        final Dimension size = getPreferredSize();
-        background = conf.createCompatibleImage(size.width, size.height);
+        this.setMagnification(Globals.DEFAULT_VIEW_MAGNIFICATION);
     }
 
     /**
@@ -239,12 +267,40 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     {
         for (GameEvent e : events)
         {
+            if (e.type == GameEvent.Type.GAME_START)
+            {
+                initializeBoard((GameStartEvent) e);
+                fireSizeChanged();
+            }
+
             if (e.type == GameEvent.Type.GAME_STATE)
             {
                 updateBoard((GameStateEvent) e);                
             }
         }
         BoardPanel.this.repaint();
+    }
+
+    /**
+     * Initialize board data.
+     */
+    private void initializeBoard(GameStartEvent e)
+    {
+        this.boardInfo = e.getBoardInfo();
+
+        synchronized (exclusiveLock)
+        {
+            /*
+             * Create the background image for the board.
+             */
+            final Dimension size = getPreferredSize();
+            background = conf.createCompatibleImage(size.width, size.height);
+    
+            final Graphics2D g = (Graphics2D) background.getGraphics();
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, size.width, size.height);
+            g.dispose();
+        }
     }
 
     /**
@@ -270,20 +326,21 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     @Override
     public void paint(Graphics g)
     {
+        final Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHints(hints);
+
         synchronized (exclusiveLock)
         {
-            final Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHints(hints);
-
-            BufferedImageOp op = null;
-            if (magnification != Magnification.TIMES_1)
+            if (this.background == null)
             {
-                final double scale = magnification.scaleFactor;
-                
-                op = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale),
-                    AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+                final Rectangle r = g.getClipBounds();
+                g.setColor(Color.BLACK);
+                g.fillRect(r.x, r.y, r.width, r.height);
             }
-            g2d.drawImage(background, op, 0, 0);
+            else
+            {
+                g2d.drawImage(background, magnificationOp, 0, 0);
+            }
         }
     }
 
@@ -302,9 +359,63 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     @Override
     public Dimension getPreferredSize()
     {
-        final Dimension size = new Dimension(boardInfo.pixelSize);
-        size.width *= magnification.scaleFactor;
-        size.height *= magnification.scaleFactor;
-        return size;
+        synchronized (exclusiveLock)
+        {
+            if (this.boardInfo == null)
+            {
+                return new Dimension(300, 200);
+            }
+
+            final Dimension size = new Dimension(boardInfo.pixelSize);
+            size.width *= magnification.scaleFactor;
+            size.height *= magnification.scaleFactor;
+            return size;
+        }
+    }
+    
+    /**
+     * Set board pixel doubling to the desired value.
+     */
+    public void setMagnification(Magnification magnification)
+    {
+        synchronized (exclusiveLock)
+        {
+            if (ObjectUtils.equals(this.magnification, magnification)) return;
+            this.magnification = magnification;
+
+            magnificationOp = null;
+            if (magnification != Magnification.TIMES_1)
+            {
+                final double scale = magnification.scaleFactor;
+                
+                magnificationOp = new AffineTransformOp(
+                    AffineTransform.getScaleInstance(scale, scale),
+                    AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            }
+        }
+        
+        fireSizeChanged();
+    }
+
+    /*
+     * Fire size changed event.
+     */
+    private void fireSizeChanged()
+    {
+        final Runnable r = new Runnable() {
+            public void run()
+            {
+                BoardPanel.super.setSize(getPreferredSize());
+            }
+        };
+
+        if (SwingUtilities.isEventDispatchThread())
+        {
+            r.run();
+        }
+        else
+        {
+            SwingUtilities.invokeLater(r);
+        }
     }
 }
