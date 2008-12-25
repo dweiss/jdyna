@@ -54,6 +54,15 @@ public final class GameSoundEffects implements IGameEventListener
         }
     }
 
+    /**
+     * Dispose of all native resources stored in the listener.
+     */
+    public void dispose()
+    {
+       this.audioManager.close();
+       this.audioManager = null;
+    }
+     
     /*
      * 
      */
