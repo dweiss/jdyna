@@ -1,6 +1,7 @@
 package com.dawidweiss.dyna.launchers;
 
 import java.awt.Dimension;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Logger;
@@ -8,8 +9,16 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.Board;
+import com.dawidweiss.dyna.BoardInfo;
+import com.dawidweiss.dyna.Boards;
+import com.dawidweiss.dyna.Game;
+import com.dawidweiss.dyna.GameResult;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
+import com.dawidweiss.dyna.serialization.GameWriter;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
@@ -54,6 +63,11 @@ public final class Main
          * Attach sounds view to the game.
          */
         game.addListener(new GameSoundEffects());
+
+        /*
+         * Attach game progress saver.
+         */
+        game.addListener(new GameWriter(new FileOutputStream("game.log")));
 
         /*
          * Attach a display view to the game.

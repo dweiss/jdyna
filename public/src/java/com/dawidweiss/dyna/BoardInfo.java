@@ -2,13 +2,19 @@ package com.dawidweiss.dyna;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.Serializable;
 
 
 /**
  * Static board information.
  */
-public final class BoardInfo
+public final class BoardInfo implements Serializable
 {
+    /**
+     * @see GameEvent#serialVersionUID
+     */
+    private static final long serialVersionUID = 0x200812241355L;    
+
     /**
      * Board dimensions (grid). 
      */

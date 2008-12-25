@@ -138,7 +138,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             /*
              * Paint grid cells.
              */
-            final Cell [][] cells = gameState.cells;
+            final Cell [][] cells = gameState.getCells();
             final int cellSize = boardInfo.cellSize;
             for (int y = boardInfo.gridSize.height - 1; y >= 0; y--)
             {
@@ -158,7 +158,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             /*
              * Paint players.
              */
-            final List<? extends IPlayerSprite> players = gameState.players;
+            final List<? extends IPlayerSprite> players = gameState.getPlayers();
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++)
             {
                 final IPlayerSprite player = players.get(playerIndex);

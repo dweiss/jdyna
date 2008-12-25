@@ -65,12 +65,6 @@ public final class Game
      */
     private final ArrayList<Standing> standings = Lists.newArrayList();
 
-    /** Single frame delay, in milliseconds. */
-    private int framePeriod;
-
-    /** Timestamp of the last frame's start. */
-    private long lastFrameTimestamp;
-
     /** Game listeners. */
     private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
 
@@ -111,7 +105,12 @@ public final class Game
      * Random number generator (bonuses etc).
      */
     private final Random random = new Random();
-    
+
+    /**
+     * Game timer.
+     */
+    private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
+
     /**
      * Creates a single game.
      */
@@ -132,16 +131,15 @@ public final class Game
             throw new UnsupportedOperationException("Mode not yet implemented: " + mode);
         }
 
-        setFrameRate(Globals.DEFAULT_FRAME_RATE);
         setupPlayers();
         lastBonusFrame = bonusPeriod;
 
         int frame = 0;
         GameResult result = null;
+        events.add(new GameStartEvent(boardData));
         do
         {
-            events.clear();
-            waitForFrame();
+            timer.waitForFrame();
 
             processBoardCells();
             processPlayers(frame);
@@ -159,7 +157,15 @@ public final class Game
             {
                 result = checkGameOver();
             }
+
+            events.clear();
         } while (result == null || lingerFrames-- > 0);
+
+        /*
+         * Dispatch game over.
+         */
+        events.add(new GameOverEvent());
+        fireFrameEvent(frame);
 
         return result;
     }
@@ -257,7 +263,7 @@ public final class Game
      */
     public void setFrameRate(double framesPerSecond)
     {
-        framePeriod = (framesPerSecond == 0 ? 0 : (int) (1000 / framesPerSecond));
+        timer.setFrameRate(framesPerSecond);
     }
 
     /*
@@ -418,7 +424,7 @@ public final class Game
             final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
             bomb.player = pi;
             bomb.range = pi.bombRange;
-            board.cells[xy.x][xy.y] = bomb;
+            board.cellAt(xy, bomb);
         }
     }
 
@@ -588,8 +594,6 @@ public final class Game
      */
     private void processBoardCells()
     {
-        final Cell [][] cells = board.cells;
-
         /*
          * Advance animation cells.
          */
@@ -597,7 +601,7 @@ public final class Game
         {
             for (int x = board.width - 1; x >= 0; x--)
             {
-                final Cell cell = cells[x][y];
+                final Cell cell = board.cellAt(x, y);
                 final CellType type = cell.type;
 
                 /*
@@ -609,7 +613,7 @@ public final class Game
                 final int removeAt = type.getRemoveAtCounter();
                 if (removeAt > 0 && cell.counter == removeAt)
                 {
-                    cells[x][y] = Cell.getInstance(CellType.CELL_EMPTY);
+                    board.cellAt(x, y, Cell.getInstance(CellType.CELL_EMPTY));
                     continue;
                 }
             }
@@ -624,7 +628,7 @@ public final class Game
         {
             for (int x = board.width - 1; x >= 0; x--)
             {
-                final Cell cell = cells[x][y];
+                final Cell cell =  board.cellAt(x, y);
                 final CellType type = cell.type;
 
                 if (type == CellType.CELL_BOMB)
@@ -651,9 +655,9 @@ public final class Game
          */
         for (Point p : crates)
         {
-            board.cells[p.x][p.y] = Cell.getInstance(CellType.CELL_CRATE_OUT);
+            board.cellAt(p, Cell.getInstance(CellType.CELL_CRATE_OUT));
         }
-        
+
         /*
          * Update player bomb counters.
          */
@@ -663,34 +667,6 @@ public final class Game
             {
                 bomb.player.bombCount++;
             }
-        }
-    }
-
-    /**
-     * Passive wait for the next frame.
-     */
-    private void waitForFrame()
-    {
-        try
-        {
-            if (lastFrameTimestamp > 0)
-            {
-                final long nextFrameStart = lastFrameTimestamp + framePeriod;
-                long now;
-                while ((now = System.currentTimeMillis()) < nextFrameStart)
-                {
-                    Thread.sleep(nextFrameStart - now);
-                }
-                this.lastFrameTimestamp = nextFrameStart;
-            }
-            else
-            {
-                lastFrameTimestamp = System.currentTimeMillis();
-            }
-        }
-        catch (InterruptedException e)
-        {
-            // Exit immediately.
         }
     }
 }

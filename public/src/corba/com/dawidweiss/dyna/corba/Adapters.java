@@ -20,52 +20,6 @@ public final class Adapters
     }
 
     /*
-     *
-     */
-    private static class PlayerSpriteImpl implements IPlayerSprite
-    {
-        private final String name;
-        private final ISprite.Type type;
-
-        public Point position = new Point();
-        public int animationState;
-        public int animationFrame; 
-
-        PlayerSpriteImpl(int playerIndex, String name)
-        {
-            this.name = name;
-            
-            final ISprite.Type [] types = ISprite.Type.getPlayerSprites();
-            this.type = types[playerIndex % types.length];
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public int getAnimationFrame()
-        {
-            return animationFrame;
-        }
-
-        public int getAnimationState()
-        {
-            return animationState;
-        }
-
-        public Point getPosition()
-        {
-            return position;
-        }
-
-        public ISprite.Type getType()
-        {
-            return type;
-        }
-    }    
-
-    /*
      * 
      */
     public static CBoardInfo adapt(BoardInfo boardInfo)
@@ -199,17 +153,20 @@ public final class Adapters
      */
     public static GameStateEvent adapt(CGameState gameState, CBoardInfo info, CPlayer [] names)
     {
+        final ISprite.Type [] types = ISprite.Type.getPlayerSprites();
+        
         final CPlayerState [] cplayers = gameState.players;
         final IPlayerSprite [] players = new IPlayerSprite [cplayers.length];
         for (int i = 0; i < players.length; i++)
         {
-            final PlayerSpriteImpl np = new PlayerSpriteImpl(i, names[i].name);
-            np.position = adapt(cplayers[i].position);
+            final ISprite.Type t = types[i % types.length];
+            final PlayerSpriteImpl np = new PlayerSpriteImpl(t, names[i].name);
+            np.position.setLocation(adapt(cplayers[i].position));
             np.animationFrame = cplayers[i].animationFrame;
             np.animationState = cplayers[i].animationState;
             players[i] = np;
         }
-        
+
         final int h = info.gridSize.height;
         final int w = info.gridSize.width;
         final short [] cdata = gameState.cells;
@@ -256,14 +213,14 @@ public final class Adapters
      */
     public static CGameState adapt(GameStateEvent in)
     {
-        final List<? extends IPlayerSprite> p = in.players;
+        final List<? extends IPlayerSprite> p = in.getPlayers();
         final CPlayerState [] players = new CPlayerState [p.size()];
         for (int i = 0; i < p.size(); i++)
         {
             players[i] = adapt(p.get(i));
         }
 
-        final short [] cells = adapt(in.cells);
+        final short [] cells = adapt(in.getCells());
 
         return new CGameState(cells, players);
     }

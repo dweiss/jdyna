@@ -16,11 +16,7 @@ I15 Code up a startup screen with options to launch a local game between an arbi
     and start new games with these players. Connect to another game server and allow
     a given user to play against remote opponents.
 
-I16 Add game recording listener/ replay mode for recorded games. [dep. on I13]
-
 EVENTS/ NETWORKING
-
-I13 Event packet serialization and packet streams.
 
 I4	Delta-compression of network data sent between frames. 
     With changes for existing networking implementations.
@@ -52,6 +48,9 @@ I6	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
 
 
 ## DONE
+
+[DONE] I16 Add game recording listener/ replay mode for recorded games. [dep. on I13]
+[DONE] I13 Event packet serialization and packet streams.
 
 [DONE] I11  Rethink event passing, filtering and serialization. [DW; add serialization and I5?]
 

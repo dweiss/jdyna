@@ -30,7 +30,7 @@ public final class Board
     /**
      * The grid of board cells.
      */
-    public final Cell [][] cells;
+    final Cell [][] cells;
 
     /**
      * Default player positions on the board.
@@ -81,5 +81,13 @@ public final class Board
     public void cellAt(Point p, Cell cell)
     {
         cells[p.x][p.y] = cell;
+    }
+
+    /**
+     * Sets the cell at the given coordinates to a given value.
+     */
+    public void cellAt(int x, int y, Cell cell)
+    {
+        cells[x][y] = cell;
     }
 }

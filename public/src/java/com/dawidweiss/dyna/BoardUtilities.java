@@ -90,11 +90,12 @@ final class BoardUtilities
         final int ymax = Math.min(board.height - 1, y + range);
 
         // Push the bomb on the list of exploded bombs and mark it as the centerpoint.
-        if (board.cells[x][y].type == CellType.CELL_BOMB)
+        final Cell c = board.cellAt(x, y);
+        if (c.type == CellType.CELL_BOMB)
         {
-            bombs.add((BombCell) board.cells[x][y]);
+            bombs.add((BombCell) c);
         }
-        board.cells[x][y] = Cell.getInstance(CellType.CELL_BOOM_XY);
+        board.cellAt(x, y, Cell.getInstance(CellType.CELL_BOOM_XY));
 
         // Propagate in all directions from the centerpoint.
         explode0(board, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
@@ -123,7 +124,7 @@ final class BoardUtilities
             final int lx = (horizontal ? i : x);
             final int ly = (horizontal ? y : i);
 
-            final Cell cell = board.cells[lx][ly];
+            final Cell cell = board.cellAt(lx, ly);
             switch (cell.type)
             {
                 case CELL_CRATE:
@@ -151,8 +152,8 @@ final class BoardUtilities
                     break;
             }
 
-            board.cells[lx][ly] =
-                overlap(board.cells[lx][ly], Cell.getInstance(((i == to) ? last : during)));        
+            board.cellAt(lx, ly, 
+                overlap(board.cellAt(lx, ly), Cell.getInstance(((i == to) ? last : during))));       
         }
     }
 

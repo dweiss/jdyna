@@ -6,6 +6,11 @@ package com.dawidweiss.dyna;
  */
 public class SoundEffectEvent extends GameEvent
 {
+    /**
+     * @see GameEvent
+     */
+    private static final long serialVersionUID = 0x200812241355L;
+
     /** Which sound effect should we play? */
     public final SoundEffect effect;
     
