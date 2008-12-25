@@ -93,23 +93,26 @@ public final class ClipManager<T extends Enum<T>>
      */
     public void close()
     {
-        for (List<Clip> cl : ready.values())
+        synchronized (lock)
         {
-            for (Clip c : cl)
+            for (List<Clip> cl : ready.values())
             {
-                c.close();
+                for (Clip c : cl)
+                {
+                    c.close();
+                }
+                cl.clear();
             }
-            cl.clear();
-        }
-
-        for (List<Clip> cl : playing.values())
-        {
-            for (Clip c : cl)
+    
+            for (List<Clip> cl : playing.values())
             {
-                c.close();
+                for (Clip c : cl)
+                {
+                    c.close();
+                }
+                cl.clear();
             }
-            cl.clear();
-        }
+        }      
     }
 
     /**
