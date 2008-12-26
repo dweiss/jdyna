@@ -597,9 +597,9 @@ public final class Game
         /*
          * Advance animation cells.
          */
-        for (int y = board.height - 1; y >= 0; y--)
+        for (int x = board.width - 1; x >= 0; x--)
         {
-            for (int x = board.width - 1; x >= 0; x--)
+            for (int y = board.height - 1; y >= 0; y--)
             {
                 final Cell cell = board.cellAt(x, y);
                 final CellType type = cell.type;
@@ -624,9 +624,9 @@ public final class Game
          */
         final ArrayList<Point> crates = Lists.newArrayList();
         final ArrayList<BombCell> bombs = Lists.newArrayList();
-        for (int y = board.height - 1; y >= 0; y--)
+        for (int x = board.width - 1; x >= 0; x--)
         {
-            for (int x = board.width - 1; x >= 0; x--)
+            for (int y = board.height - 1; y >= 0; y--)
             {
                 final Cell cell =  board.cellAt(x, y);
                 final CellType type = cell.type;
