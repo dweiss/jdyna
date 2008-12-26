@@ -72,7 +72,7 @@ public final class Main
         /*
          * Attach a display view to the game.
          */
-        final BoardFrame frame = new BoardFrame(boardInfo);
+        final BoardFrame frame = new BoardFrame();
         game.addListener(frame);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

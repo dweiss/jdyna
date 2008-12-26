@@ -25,7 +25,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         this.conf = conf;
     }
 
-    public BoardFrame(BoardInfo boardInfo)
+    public BoardFrame()
     {
         this(ImageUtilities.getGraphicsConfiguration());
         final Images images = ImagesFactory.DYNA_CLASSIC;

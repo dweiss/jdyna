@@ -56,7 +56,7 @@ public class PlayerServant extends ICPlayerControllerPOA
         this.players = players;
         this.boardInfo = boardInfo; 
 
-        view = new BoardFrame(Adapters.adapt(boardInfo));
+        view = new BoardFrame();
         view.setVisible(true);
 
         sounds = new GameSoundEffects();
