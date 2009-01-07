@@ -61,8 +61,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
      * propagated from the controller because the controller does not know how many frames
      * it would take to display such sequence.
      * <p>
-     * This map stores the index of a given player and its 'dead' status frame count. If
-     * the frame count equals -1, the player is dead.
+     * This map stores the index of a given player and its 'dead' status frame count.
      */
     private HashMap<Integer, Integer> dyingPlayers = Maps.newHashMap();
 
@@ -208,6 +207,10 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                         frame = f;
                         dyingPlayers.put(playerIndex, f + 1);
                     }
+                }
+                else
+                {
+                    dyingPlayers.remove(playerIndex);
                 }
 
                 /*
