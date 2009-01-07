@@ -347,7 +347,7 @@ public final class Game
                 movePlayer(pi, signal);
             }
 
-            if (c.dropsBomb())
+            if (c.dropsBomb() && !pi.isImmortal())
             {
                 dropBombAttempt(frame, pi);
             }
@@ -404,6 +404,11 @@ public final class Game
     private void checkCollisions(int frame, List<PlayerInfo> kills, PlayerInfo pi)
     {
         /*
+         * Immortals have privileges, but cannot collect bonuses.
+         */
+        if (pi.isImmortal()) return;
+
+        /*
          * Check collisions against grid cells. We only care about the cell directly 
          * under the player.
          */
@@ -411,7 +416,7 @@ public final class Game
         final Cell c = board.cellAt(xy);
         
         // For whom the bell tolls...
-        if (c.type.isLethal() && !pi.isImmortal())
+        if (c.type.isLethal())
         {
             pi.kill(frame);
             kills.add(pi);
@@ -597,10 +602,10 @@ public final class Game
     private boolean canWalkOn(PlayerInfo pi, Point txy)
     {
         /*
-         * Leave player info as an argument, we may want to add a 'god mode' in the future so
-         * that certain players (or at given period of times) can walk on bombs.
+         * Players in immortality mode can walk over bombs, but not anything else.
          */
-        return board.cellAt(txy).type.isWalkable();        
+        CellType t = board.cellAt(txy).type;
+        return t.isWalkable() || (pi.isImmortal() && t == CellType.CELL_BOMB);
     }
 
     /**
