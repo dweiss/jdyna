@@ -1,22 +1,28 @@
 package com.dawidweiss.dyna.corba.client;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
-import org.kohsuke.args4j.*;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.omg.PortableServer.POA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
-import com.dawidweiss.dyna.corba.bindings.*;
+import com.dawidweiss.dyna.corba.bindings.ICGameServer;
+import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
+import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
+import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerHelper;
 
 /**
  * Starts a single game client.
  */
 public class GameClientLauncher
 {
-    private final static Logger logger = Logger.getAnonymousLogger();
+    private final static Logger logger = LoggerFactory.getLogger("corba.gameclient");
 
     @Option(name = "-n", aliases = "--name", required = true, metaVar = "name", usage = "Player name.")
     private String name;

@@ -1,13 +1,20 @@
 package com.dawidweiss.dyna.corba.client;
 
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
 import com.dawidweiss.dyna.corba.Adapters;
-import com.dawidweiss.dyna.corba.bindings.*;
+import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
+import com.dawidweiss.dyna.corba.bindings.CGameEvent;
+import com.dawidweiss.dyna.corba.bindings.CPlayer;
+import com.dawidweiss.dyna.corba.bindings.CStanding;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
+import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerPOA;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
@@ -15,7 +22,7 @@ import com.dawidweiss.dyna.view.swing.BoardFrame;
  */
 public class PlayerServant extends ICPlayerControllerPOA
 {
-    private final static Logger logger = Logger.getLogger("player");
+    private final static Logger logger = LoggerFactory.getLogger("corba.player");
 
     /** Local player controller. */
     private final IPlayerController localController;

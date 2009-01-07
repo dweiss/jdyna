@@ -3,12 +3,30 @@ package com.dawidweiss.dyna.corba.server;
 import java.awt.Dimension;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.dawidweiss.dyna.Board;
+import com.dawidweiss.dyna.BoardInfo;
+import com.dawidweiss.dyna.Boards;
+import com.dawidweiss.dyna.Game;
+import com.dawidweiss.dyna.GameEvent;
+import com.dawidweiss.dyna.GameResult;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.Player;
+import com.dawidweiss.dyna.Standing;
 import com.dawidweiss.dyna.corba.Adapters;
-import com.dawidweiss.dyna.corba.bindings.*;
+import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
+import com.dawidweiss.dyna.corba.bindings.CGameEvent;
+import com.dawidweiss.dyna.corba.bindings.CPlayer;
+import com.dawidweiss.dyna.corba.bindings.CStanding;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
+import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackHelper;
+import com.dawidweiss.dyna.corba.bindings.ICGame;
+import com.dawidweiss.dyna.corba.bindings.ICGameListener;
+import com.dawidweiss.dyna.corba.bindings.ICGamePOA;
 import com.google.common.collect.Lists;
 
 /**
@@ -16,6 +34,8 @@ import com.google.common.collect.Lists;
  */
 class GameServant extends ICGamePOA
 {
+    private final static Logger logger = LoggerFactory.getLogger("corba.gameservant");
+
     /** Game server (to release players after game is over). */
     private final GameServerServant gameServer;
 
@@ -24,8 +44,6 @@ class GameServant extends ICGamePOA
 
     /** All listeners. */
     private final List<ICGameListener> listeners = Lists.newArrayList();
-
-    private Logger logger = Logger.getLogger("game");
 
     /*
      * 
@@ -137,7 +155,7 @@ class GameServant extends ICGamePOA
         }
         catch (Throwable t)
         {
-            logger.log(Level.SEVERE, "Unhandled exception during game execution.", t);
+            logger.error("Unhandled exception during game execution.", t);
             throw new RuntimeException(t);
         }
         finally
@@ -156,7 +174,7 @@ class GameServant extends ICGamePOA
             }
             catch (Throwable t)
             {
-                logger.severe("Could not deactivate game object.");
+                logger.error("Could not deactivate game object.");
             }
         }
     }

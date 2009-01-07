@@ -29,13 +29,17 @@ public class Cell
      */
     public final static Cell getInstance(CellType type)
     {
-        switch (type)
+        if (type.isExplosion())
         {
-            case CELL_BOMB:
-                return new BombCell();
-
-            default:
-                return new Cell(type);
+            return new ExplosionCell(type);
+        }
+        else if (type == CellType.CELL_BOMB)
+        {
+            return new BombCell();
+        }
+        else 
+        {
+            return new Cell(type);
         }
     }
     

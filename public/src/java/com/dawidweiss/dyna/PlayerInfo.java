@@ -69,7 +69,17 @@ final class PlayerInfo implements IPlayerSprite
      * If the player is dead, this is the frame number of its death.
      */
     private int deathAtFrame;
-    
+
+    /**
+     * Number of killed enemies. The more, the better.
+     */
+    private int killedEnemies;
+
+    /**
+     * Number of lives lost in battle. The fewer, the better.  
+     */
+    private int reincarnations; 
+
     /*
      * 
      */
@@ -224,7 +234,16 @@ final class PlayerInfo implements IPlayerSprite
         this.state = State.DOWN;
         this.bombCount = Globals.DEFAULT_BOMB_COUNT;
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
+        this.reincarnations++;
 
         this.immortalityEndsAtFrame = frame + Globals.DEFAULT_IMMORTALITY_FRAMES;
+    }
+ 
+    /**
+     * Collect a token for killing an enemy.
+     */
+    void collectKill()
+    {
+        this.killedEnemies++;
     }
 }

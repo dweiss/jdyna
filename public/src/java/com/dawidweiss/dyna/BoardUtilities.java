@@ -80,31 +80,34 @@ public final class BoardUtilities
      * @param bombs A list of bombs that exploded during this call.
      * @param crates A list of crate positions that should be removed as part of this explosion. 
      */
-    static void explode(Board board, List<BombCell> bombs, List<Point> crates, 
-        int x, int y, int range)
+    static void explode(Board board, List<BombCell> bombs, List<Point> crates, int x, int y)
     {
         // Horizontal mode.
+        final BombCell c = (BombCell) board.cellAt(x, y);
+
+        final int range = c.range;
         final int xmin = Math.max(0, x - range);
         final int xmax = Math.min(board.width - 1, x + range);
         final int ymin = Math.max(0, y - range);
         final int ymax = Math.min(board.height - 1, y + range);
 
         // Push the bomb on the list of exploded bombs and mark it as the centerpoint.
-        final Cell c = board.cellAt(x, y);
         if (c.type == CellType.CELL_BOMB)
         {
-            bombs.add((BombCell) c);
+            bombs.add(c);
         }
-        board.cellAt(x, y, Cell.getInstance(CellType.CELL_BOOM_XY));
+        // Add flame attribution here. 
+        board.cellAt(x, y, 
+            overlap(c, (ExplosionCell) Cell.getInstance(CellType.CELL_BOOM_XY), c));
 
         // Propagate in all directions from the centerpoint.
-        explode0(board, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
+        explode0(board, c, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX);
-        explode0(board, bombs, crates, range, x + 1, xmax, +1, x, y, true,  
+        explode0(board, c, bombs, crates, range, x + 1, xmax, +1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_RX);
-        explode0(board, bombs, crates, range, y - 1, ymin, -1, x, y, false, 
+        explode0(board, c, bombs, crates, range, y - 1, ymin, -1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_TY);
-        explode0(board, bombs, crates, range, y + 1, ymax, +1, x, y, false, 
+        explode0(board, c, bombs, crates, range, y + 1, ymax, +1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_BY);
     }
 
@@ -113,7 +116,7 @@ public final class BoardUtilities
      * of the explosion. 
      */
     private static void explode0(
-        Board board, List<BombCell> bombs, List<Point> crates,
+        Board board, BombCell bomb, List<BombCell> bombs, List<Point> crates,
         int range,
         int from, int to, int step,
         final int x, final int y,
@@ -148,39 +151,49 @@ public final class BoardUtilities
                      * Default Dyna behavior: recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
-                    explode(board, bombs, crates, lx, ly, ((BombCell) cell).range);
+                    explode(board, bombs, crates, lx, ly);
                     break;
             }
 
-            board.cellAt(lx, ly, 
-                overlap(board.cellAt(lx, ly), Cell.getInstance(((i == to) ? last : during))));       
+            final ExplosionCell explosionCell = (ExplosionCell) 
+                Cell.getInstance(((i == to) ? last : during));
+            board.cellAt(lx, ly, overlap(board.cellAt(lx, ly), explosionCell, bomb));       
         }
     }
 
     /**
-     * Overlap explosion images.
+     * Overlap explosion images, updating flame attribution to whoever was the
+     * owner of <code>bomb</code> parameter.
      */
-    private static Cell overlap(Cell cell, Cell explosion)
+    private static Cell overlap(Cell cell, ExplosionCell explosion, BombCell bomb)
     {
         if (!cell.type.isExplosion())
         {
+            explosion.addAttribution(bomb.player);
             return explosion;
         }
 
-        if (cell.type == explosion.type)
+        final ExplosionCell cell2 = (ExplosionCell) cell;
+        if (cell2.type == explosion.type)
         {
-            return cell;
+            cell2.addAttribution(bomb.player);
+            return cell2;
         }
 
         /*
          * We don't want to overlap with previous explosions, because it looks odd.
+         * Merge attributions, however.
          */
-        if (cell.counter > 0)
+        if (cell2.counter > 0)
         {
+            explosion.mergeAttributions(cell2);
             return explosion;
         }
 
-        return Cell.getInstance(EXPLOSION_OVERLAPS.get(cell.type).get(explosion.type));
+        final ExplosionCell cell3 = (ExplosionCell) Cell.getInstance(
+            EXPLOSION_OVERLAPS.get(cell2.type).get(explosion.type));
+        cell3.mergeAttributions(cell2, explosion);
+        return cell3;
     }
 
     /**

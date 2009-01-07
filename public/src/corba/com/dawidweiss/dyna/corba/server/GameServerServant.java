@@ -2,8 +2,9 @@ package com.dawidweiss.dyna.corba.server;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.ICGame;
@@ -19,6 +20,8 @@ import com.google.common.collect.Maps;
  */
 class GameServerServant extends ICGameServerPOA
 {
+    private final static Logger logger = LoggerFactory.getLogger("corba.gameserver");
+
     /** Identifier generator. */
     private final AtomicInteger idgen = new AtomicInteger(0);
 
@@ -26,11 +29,6 @@ class GameServerServant extends ICGameServerPOA
      * A map of registered players.
      */
     private final Map<Integer, PlayerData> players = Maps.newHashMap();
-
-    /**
-     * Game server logger.
-     */
-    private final static Logger logger = Logger.getLogger("gameserver");
 
     /*
      * Create a new game. 
@@ -48,14 +46,14 @@ class GameServerServant extends ICGameServerPOA
                 final PlayerData data = this.players.get(p.id);
                 if (data == null)
                 {
-                    logger.warning("Player does not exist: " 
+                    logger.warn("Player does not exist: " 
                         + p.id + " (" + p.name + ")");
                     throw new IllegalArgumentException();
                 }
 
                 if (!data.idle)
                 {
-                    logger.warning("Player is not idle: " 
+                    logger.warn("Player is not idle: " 
                         + p.id + " (" + p.name + ")");
                     throw new IllegalArgumentException();
                 }
@@ -80,7 +78,7 @@ class GameServerServant extends ICGameServerPOA
             }
             catch (Exception e)
             {
-                logger.log(Level.SEVERE, "Unexpected game startup problem.", e);
+                logger.error("Unexpected game startup problem.", e);
                 throw new RuntimeException(e);
             }
         }

@@ -1,10 +1,9 @@
 package com.dawidweiss.dyna.corba;
 
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
@@ -106,7 +105,7 @@ public final class CorbaLauncherOneVM
                 }
                 catch (Exception e)
                 {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+                    LoggerFactory.getLogger("anonymous").error(e.getMessage(), e);
                 }
             }
         };

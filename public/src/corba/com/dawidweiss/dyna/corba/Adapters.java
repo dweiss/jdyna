@@ -3,7 +3,6 @@ package com.dawidweiss.dyna.corba;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.*;
-import java.util.logging.Logger;
 
 import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.IPlayerController.Direction;
@@ -137,8 +136,6 @@ public final class Adapters
                     gameEvent.gameStart(adapt((GameStartEvent) ev)); 
                     break;
                 default:
-                    Logger.getAnonymousLogger().info("Unrecognized event: "
-                        + ev.type);
                     continue;
             }
             result.add(gameEvent);

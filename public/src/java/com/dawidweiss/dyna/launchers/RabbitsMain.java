@@ -4,10 +4,12 @@ import java.awt.Dimension;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.Board;
 import com.dawidweiss.dyna.BoardInfo;
@@ -27,9 +29,13 @@ import com.dawidweiss.dyna.view.swing.BoardFrame;
  */
 public final class RabbitsMain
 {
+    private final static Logger logger = LoggerFactory.getLogger(RabbitsMain.class);
+
     /* Command-line entry point. */
     public static void main(String [] args) throws IOException
     {
+        logger.info("Starting the game.");
+
         /*
          * Load board configurations.
          */
@@ -71,7 +77,7 @@ public final class RabbitsMain
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final GameResult result = game.run(Game.Mode.DEATHMATCH);
-        Logger.getAnonymousLogger().info(result.toString());
+        logger.info(result.toString());
 
         SwingUtilities.invokeLater(new Runnable()
         {

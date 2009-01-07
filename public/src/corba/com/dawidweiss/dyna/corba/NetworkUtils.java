@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple socket utilities to expose the initial IOR. We don't need naming service for
@@ -14,6 +16,8 @@ import java.util.logging.Logger;
  */
 public final class NetworkUtils
 {
+    private final static Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
     private NetworkUtils()
     {
         // No instances.
@@ -42,8 +46,7 @@ public final class NetworkUtils
                 }
                 catch (IOException e)
                 {
-                    Logger.getAnonymousLogger()
-                        .severe("I/O problem when publishing IOR.");
+                    logger.error("I/O problem when publishing IOR.");
                 }
             }
         };

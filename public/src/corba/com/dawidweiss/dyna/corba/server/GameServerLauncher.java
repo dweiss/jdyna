@@ -1,10 +1,13 @@
 package com.dawidweiss.dyna.corba.server;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
-import org.kohsuke.args4j.*;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.omg.PortableServer.POA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
@@ -16,7 +19,7 @@ import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
  */
 public class GameServerLauncher
 {
-    private final static Logger logger = Logger.getAnonymousLogger();
+    private final static Logger logger = LoggerFactory.getLogger("server.launcher");
 
     @Option(name = "-p", aliases = "--port",
         required = true, metaVar = "port", usage = "Server IOR bind port.")

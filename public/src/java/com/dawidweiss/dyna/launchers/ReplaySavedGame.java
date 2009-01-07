@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -14,6 +12,8 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
@@ -29,6 +29,8 @@ import com.dawidweiss.dyna.view.swing.BoardFrame;
  */
 public final class ReplaySavedGame
 {
+    private final static Logger logger = LoggerFactory.getLogger(ReplaySavedGame.class);
+
     @Option(required = false, name = "-r", aliases =
     {
         "--frame-rate"
@@ -61,7 +63,7 @@ public final class ReplaySavedGame
         }
         catch (IOException e)
         {
-            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         finally
         {

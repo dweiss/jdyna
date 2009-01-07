@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.h2.compress.LZFOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.IGameEventListener;
@@ -18,6 +19,8 @@ import com.dawidweiss.dyna.IGameEventListener;
  */
 public final class GameWriter implements IGameEventListener
 {
+    private final static Logger logger = LoggerFactory.getLogger(GameWriter.class);
+
     private ObjectOutputStream oos;
 
     public GameWriter(OutputStream os)
@@ -64,8 +67,7 @@ public final class GameWriter implements IGameEventListener
         }
         catch (IOException e)
         {
-            Logger.getAnonymousLogger().severe("Failed writing game log: "
-                + e.getMessage());
+            logger.error("Failed writing game log: " + e.getMessage());
             IOUtils.closeQuietly(oos);
             oos = null;
         }

@@ -11,7 +11,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.google.common.collect.Lists;
@@ -23,6 +25,8 @@ import com.google.common.collect.Sets;
  */
 public final class Game
 {
+    private final static Logger logger = LoggerFactory.getLogger(Game.class); 
+
     /**
      * The game board (playfield cells).
      */
@@ -227,7 +231,7 @@ public final class Game
      */
     private GameResult checkGameOver()
     {
-        if (mode == Game.Mode.DEATHMATCH)
+        if (isDeathMatch())
         {
             // TODO: Add a condition (time? frame count? max. kills?) to the death match mode.
             return null;
@@ -382,7 +386,7 @@ public final class Game
             }
         }
         else
-        if (mode == Mode.DEATHMATCH)
+        if (isDeathMatch())
         {
             /*
              * Bring the dead back to life, if their time has come.
@@ -418,8 +422,23 @@ public final class Game
         // For whom the bell tolls...
         if (c.type.isLethal())
         {
+            logger.debug("Killed: " + pi.getName());
             pi.kill(frame);
             kills.add(pi);
+
+            /*
+             * If the cell below is an explosion update attributions for this fatality.
+             */
+            if (c.type.isExplosion())
+            {
+                final ExplosionCell e = (ExplosionCell) c;
+                for (PlayerInfo sniper : e.flamesBy)
+                {
+                    logger.debug("Collecting kill: " + sniper.getName()
+                        + " [for: " + pi.getName() + "]");
+                    sniper.collectKill();
+                }
+            }
         }
         
         /*
@@ -618,7 +637,7 @@ public final class Game
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < players.length)
         {
-            Logger.getAnonymousLogger().warning("The board has fewer positions than players: "
+            logger.warn("The board has fewer positions than players: "
                 + defaults.length + " < " + players.length);
         }
 
@@ -703,7 +722,7 @@ public final class Game
                     final BombCell bomb = (BombCell) cell;
                     if (bomb.fuseCounter-- <= 0)
                     {
-                        BoardUtilities.explode(board, bombs, crates, x, y, bomb.range);
+                        BoardUtilities.explode(board, bombs, crates, x, y);
                     }
                 }
             }
@@ -735,5 +754,13 @@ public final class Game
                 bomb.player.bombCount++;
             }
         }
+    }
+
+    /**
+     * Returns <code>true</code> if this game is in death match mode.
+     */
+    private boolean isDeathMatch()
+    {
+        return mode == Mode.DEATHMATCH;
     }
 }

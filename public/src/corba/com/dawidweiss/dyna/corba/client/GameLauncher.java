@@ -1,20 +1,26 @@
 package com.dawidweiss.dyna.corba.client;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
-import org.kohsuke.args4j.*;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.corba.CorbaUtils;
 import com.dawidweiss.dyna.corba.NetworkUtils;
-import com.dawidweiss.dyna.corba.bindings.*;
+import com.dawidweiss.dyna.corba.bindings.CPlayer;
+import com.dawidweiss.dyna.corba.bindings.ICGame;
+import com.dawidweiss.dyna.corba.bindings.ICGameServer;
+import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 
 /**
  * Starts a single game between a set of players.
  */
 public class GameLauncher
 {
-    private final static Logger logger = Logger.getAnonymousLogger();
+    private final static Logger logger = LoggerFactory.getLogger("corba.gamelauncher");
 
     @Option(name = "-b", aliases = "--board", required = false, metaVar = "number", 
         usage = "Board number.")
@@ -59,13 +65,13 @@ public class GameLauncher
         CPlayer [] players = gameServer.players();
         if (players.length < 2)
         {
-            logger.warning("Not enough players: " + players.length);
+            logger.warn("Not enough players: " + players.length);
         }
         else
         {
-            logger.warning("Creating game for " + players.length + " players.");
+            logger.warn("Creating game for " + players.length + " players.");
             ICGame game = gameServer.create(board, players);
-            logger.warning("Running the game.");
+            logger.warn("Running the game.");
             game.run();
         }
     }
