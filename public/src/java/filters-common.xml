@@ -1,0 +1,7 @@
+
+<!--
+    Filtering of logs from common packages and libraries (prevent spamming the output).
+-->
+
+<!-- Apache commons -->
+<logger name="org.apache.commons"><level value="warn"/></logger>
