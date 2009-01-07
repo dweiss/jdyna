@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 public final class Rabbit implements IPlayerController, IGameEventListener
 {
     /**
-     * Distance measurement fuziness.
+     * Distance measurement fuzziness.
      */
     private static final int FUZZINESS = Globals.DEFAULT_CELL_SIZE / 3;
 
@@ -86,7 +86,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
                 final GameStateEvent gse = (GameStateEvent) event;
 
                 final IPlayerSprite myself = identifyMyself(gse.getPlayers());
-                if (myself.getAnimationState() == Player.State.DEAD.ordinal())
+                if (myself.isDead())
                 {
                     target = null;
                 }
