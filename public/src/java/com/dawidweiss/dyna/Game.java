@@ -271,6 +271,11 @@ public final class Game
      */
     public void addListener(IGameEventListener listener)
     {
+        if (listeners.contains(listener))
+        {
+            throw new RuntimeException("It is an error to add the same listener more than once: "
+                + listener);
+        }
         listeners.add(listener);
     }
 
@@ -580,7 +585,13 @@ public final class Game
 
         for (int i = 0; i < players.length; i++)
         {
-            final PlayerInfo pi = new PlayerInfo(players[i], i);
+            final Player p = players[i];
+            if (p.controller instanceof IGameEventListener)
+            {
+                addListener((IGameEventListener) p.controller);
+            }
+
+            final PlayerInfo pi = new PlayerInfo(p, i);
             pi.location.setLocation(
                 boardData.gridToPixel(defaults[i % defaults.length]));
 
