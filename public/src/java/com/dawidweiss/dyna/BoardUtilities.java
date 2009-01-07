@@ -200,4 +200,14 @@ public final class BoardUtilities
         final int y = a.y - b.y;
         return Math.sqrt(x * x + y * y);
     }
+
+    /**
+     * Return <code>true</code> if two points are "nearly in the same location". Fuzziness
+     * controls the maximum distance between x and y coordinates. Fuzziness of zero means
+     * the points must be at identical locations.
+     */
+    public static boolean isClose(Point a, Point b, int fuzziness)
+    {
+        return Math.abs(a.x - b.x) <= fuzziness && Math.abs(a.y - b.y) <= fuzziness;
+    }
 }
