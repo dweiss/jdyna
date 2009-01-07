@@ -35,7 +35,8 @@ public final class GameTimer
                 {
                     Thread.sleep(nextFrameStart - now);
                 }
-                this.lastFrameTimestamp = nextFrameStart;
+                this.lastFrameTimestamp = lastFrameTimestamp + 
+                    (1 + (now - nextFrameStart) / framePeriod) * framePeriod;
             }
             else
             {
