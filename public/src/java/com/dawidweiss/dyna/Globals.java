@@ -46,7 +46,7 @@ public final class Globals
     /**
      * Paint player labels by default.
      */
-    public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = false;
+    public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = true;
 
 
     /**
