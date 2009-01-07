@@ -87,4 +87,13 @@ public final class BoardInfo implements Serializable
             location.x * cellSize + cellSize / 2, 
             location.y * cellSize + cellSize / 2);
     }
+
+    /**
+     * Return <code>true</code> if a given location is within board dimensions.
+     */
+    public boolean isOnBoard(Point location)
+    {
+        return location.x >= 0 && location.y >= 0 
+            && location.x < gridSize.width && location.y < gridSize.height;
+    }
 }
