@@ -64,6 +64,8 @@ module bindings {
 	struct CPlayerState {
 	   long animationFrame;
 	   long animationState;
+	   boolean dead;
+	   boolean immortal;
 	   CPoint position;
 	};
 

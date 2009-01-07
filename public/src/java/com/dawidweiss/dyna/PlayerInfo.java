@@ -3,6 +3,7 @@ package com.dawidweiss.dyna;
 import java.awt.Point;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
+import com.dawidweiss.dyna.Player.State;
 
 /**
  * Extra {@link Player} information for the {@link Game}.
@@ -29,12 +30,17 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * An increasing counter of frames if the player is in walking state.
      */
-    public int frame;
+    private int stateFrame;
+
+    /**
+     * An ever-increasing frame counter during the game.
+     */
+    private int frame;
 
     /**
      * Current walking state. 
      */
-    public Player.State state = Player.State.DOWN;
+    private Player.State state = Player.State.DOWN;
 
     /**
      * Current arsenal to use (bomb count).
@@ -47,12 +53,23 @@ final class PlayerInfo implements IPlayerSprite
     public int bombRange = Globals.DEFAULT_BOMB_RANGE;
 
     /**
-     * This field stores the most recent frame number when a bomb was dropped.
+     * This field stores the most recent frame number when a bomb was dropped. The purpose of this
+     * is to avoid dropping two bombs when crossing the line between two grid cells.
      * 
      * @see Globals#BOMB_DROP_DELAY
      */
     public int lastBombFrame = Integer.MIN_VALUE;
 
+    /**
+     * Frame number after which immortality ends for this player.
+     */
+    private int immortalityEndsAtFrame = Integer.MIN_VALUE;
+
+    /**
+     * If the player is dead, this is the frame number of its death.
+     */
+    private int deathAtFrame;
+    
     /*
      * 
      */
@@ -64,21 +81,20 @@ final class PlayerInfo implements IPlayerSprite
 
     /**
      * Update internal frame state with the controller's.
-     * 
-     * @see #frame
      */
-    public void updateState(Direction signal)
+    void nextFrameUpdate(Direction signal)
     {
         /*
-         * Keep on advancing frame counter until dead. 
+         * Keep on advancing frame counter even if dead. 
          */
+        frame++;
         if (state == Player.State.DEAD)
             return;
 
         if (signal == null)
         {
             // No movement at all. Reset to the first frame in the current state.
-            frame = 0;
+            stateFrame = 0;
         }
         else
         {
@@ -99,21 +115,21 @@ final class PlayerInfo implements IPlayerSprite
 
             if (state != prev)
             {
-                frame = 0;
+                stateFrame = 0;
             }
             else
             {
-                if (frame == 0) 
+                if (stateFrame == 0) 
                 {
                     /* 
                      * If changed the mode, start from the first 'active' frame
                      * in the animation sequence.
                      */
-                    frame = 1;
+                    stateFrame = 1;
                 }
                 else
                 {
-                    frame++;
+                    stateFrame++;
                 }
             }
         }
@@ -122,10 +138,16 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Kills the player, initiating the death state's animation. 
      */
-    public void kill()
+    public void kill(int currentFrame)
     {
+        if (this.state == Player.State.DEAD)
+        {
+            return;
+        }
+
         this.state = Player.State.DEAD;
-        this.frame = 0;
+        this.stateFrame = 0;
+        this.deathAtFrame = currentFrame;
     }
 
     /**
@@ -141,7 +163,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     public int getAnimationFrame()
     {
-        return this.frame;
+        return this.stateFrame;
     }
 
     /**
@@ -175,5 +197,34 @@ final class PlayerInfo implements IPlayerSprite
     public String getName()
     {
         return player.name;
+    }
+
+    /**
+     * Temporal immortality is possible when the player is resurrected in deatch match mode.
+     */
+    public boolean isImmortal()
+    {
+        return !isDead() && frame < immortalityEndsAtFrame;
+    }
+
+    /**
+     * Should the player be resurrected?
+     */
+    boolean shouldResurrect()
+    {
+        return frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
+    }
+
+    /**
+     * Ressurect this player.
+     */
+    void resurrect()
+    {
+        this.stateFrame = 0;
+        this.state = State.DOWN;
+        this.bombCount = Globals.DEFAULT_BOMB_COUNT;
+        this.bombRange = Globals.DEFAULT_BOMB_RANGE;
+
+        this.immortalityEndsAtFrame = frame + Globals.DEFAULT_IMMORTALITY_FRAMES;
     }
 }

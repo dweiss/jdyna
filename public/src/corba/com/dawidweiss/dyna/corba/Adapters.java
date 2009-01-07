@@ -185,10 +185,13 @@ public final class Adapters
         for (int i = 0; i < players.length; i++)
         {
             final ISprite.Type t = types[i % types.length];
-            final PlayerSpriteImpl np = new PlayerSpriteImpl(t, names[i].name);
-            np.position.setLocation(adapt(cplayers[i].position));
-            np.animationFrame = cplayers[i].animationFrame;
-            np.animationState = cplayers[i].animationState;
+            final CPlayerState cplayer = cplayers[i];
+
+            final PlayerSpriteImpl np = new PlayerSpriteImpl(t, names[i].name, 
+                cplayer.dead, cplayer.immortal);
+            np.position.setLocation(adapt(cplayer.position));
+            np.animationFrame = cplayer.animationFrame;
+            np.animationState = cplayer.animationState;
             players[i] = np;
         }
 
@@ -276,6 +279,7 @@ public final class Adapters
     public static CPlayerState adapt(IPlayerSprite player)
     {
         return new CPlayerState(player.getAnimationFrame(), player.getAnimationState(),
+            player.isDead(), player.isImmortal(),
             adapt(player.getPosition()));
     }
 

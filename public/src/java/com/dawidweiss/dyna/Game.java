@@ -45,7 +45,11 @@ public final class Game
         LAST_MAN_STANDING,
         
         /**
-         * 
+         * In the death match mode, players compete by bombing each other. When player A
+         * kills player B, then player A gets a reward. It does not matter whose bomb
+         * initiated the explosion, the origin of the first 'flame' that kills player B
+         * earns player A a credit. In case of overlapping flames, the assignment is not predictable
+         * (it could be, but it would require some additional work).
          */
         DEATHMATCH
     }
@@ -112,6 +116,11 @@ public final class Game
     private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
 
     /**
+     * Game mode of the current competition.
+     */
+    private Mode mode;
+
+    /**
      * Creates a single game.
      */
     public Game(Board board, BoardInfo boardInfo, Player... players)
@@ -124,12 +133,9 @@ public final class Game
     /**
      * Starts the main game loop and runs the whole thing.
      */
-    public GameResult run(Mode mode)
+    public GameResult run(final Mode mode)
     {
-        if (mode != Mode.LAST_MAN_STANDING)
-        {
-            throw new UnsupportedOperationException("Mode not yet implemented: " + mode);
-        }
+        this.mode = mode;
 
         setupPlayers();
         lastBonusFrame = bonusPeriod;
@@ -144,8 +150,8 @@ public final class Game
             processBoardCells();
             processPlayers(frame);
             processBonuses(frame);
-            events.add(new GameStateEvent(board.cells, playerInfos));
 
+            events.add(new GameStateEvent(board.cells, playerInfos));
             fireFrameEvent(frame);
             frame++;
 
@@ -221,38 +227,47 @@ public final class Game
      */
     private GameResult checkGameOver()
     {
-        Player winner = null;
-        int dead = 0;
-        int alive = 0;
-        for (PlayerInfo pi : playerInfos)
+        if (mode == Game.Mode.DEATHMATCH)
         {
-            if (pi.isDead())
-            {
-                dead++;
-            }
-            else
-            {
-                alive++;
-                winner = pi.player;
-            }
-        }
-        final int all = playerInfos.size();
-
-        /*
-         * There is one alive player, everyone else is dead. 
-         */
-        if (alive == 1 && dead == all - 1)
-        {
-            standings.add(0, new Standing(winner, 0));
-            return new GameResult(winner, standings);
+            // TODO: Add a condition (time? frame count? max. kills?) to the death match mode.
+            return null;
         }
 
-        /*
-         * Everyone is dead (draw).
-         */
-        if (dead == all)
+        if (mode == Game.Mode.LAST_MAN_STANDING)
         {
-            return new GameResult(null, standings);
+            Player winner = null;
+            int dead = 0;
+            int alive = 0;
+            for (PlayerInfo pi : playerInfos)
+            {
+                if (pi.isDead())
+                {
+                    dead++;
+                }
+                else
+                {
+                    alive++;
+                    winner = pi.player;
+                }
+            }
+            final int all = playerInfos.size();
+    
+            /*
+             * There is one alive player, everyone else is dead. 
+             */
+            if (alive == 1 && dead == all - 1)
+            {
+                standings.add(0, new Standing(winner, 0));
+                return new GameResult(winner, standings);
+            }
+    
+            /*
+             * Everyone is dead (draw).
+             */
+            if (dead == all)
+            {
+                return new GameResult(null, standings);
+            }
         }
 
         return null;
@@ -307,16 +322,17 @@ public final class Game
     {
         final ArrayList<PlayerInfo> killed = Lists.newArrayList();
 
+        /*
+         * Process controller direction signals, drop bombs, check collisions
+         * and bring the dead back to life.  
+         */
         for (int i = 0; i < players.length; i++)
         {
-            /*
-             * Process controller direction signals.
-             */
             final PlayerInfo pi = playerInfos.get(i);
             final IPlayerController c = players[i].controller;
 
             final IPlayerController.Direction signal = c.getCurrent();
-            pi.updateState(signal);
+            pi.nextFrameUpdate(signal);
 
             /*
              * Dead can't dance.
@@ -339,7 +355,7 @@ public final class Game
             /*
              * check collisions against bombs and other active cells.
              */
-            checkCollisions(killed, pi);
+            checkCollisions(frame, killed, pi);
         }
         
         /*
@@ -350,16 +366,34 @@ public final class Game
             events.add(new SoundEffectEvent(SoundEffect.DYING, killed.size()));
         }
 
-        /*
-         * Update standings. Assign <b>the same</b> victim number to all the people
-         * killed in the same round.
-         */
-        if (killed.size() > 0)
+        if (mode == Mode.LAST_MAN_STANDING)
         {
-            final int victimNumber = players.length - standings.size() - 1;
-            for (PlayerInfo pi : killed)
+            /*
+             * Update standings. Assign <b>the same</b> victim number to all the people
+             * killed in the same round.
+             */
+            if (killed.size() > 0)
             {
-                standings.add(0, new Standing(pi.player, victimNumber));
+                final int victimNumber = players.length - standings.size() - 1;
+                for (PlayerInfo pi : killed)
+                {
+                    standings.add(0, new Standing(pi.player, victimNumber));
+                }
+            }
+        }
+        else
+        if (mode == Mode.DEATHMATCH)
+        {
+            /*
+             * Bring the dead back to life, if their time has come.
+             */
+            for (PlayerInfo pi : playerInfos)
+            {
+                if (pi.isDead() && pi.shouldResurrect())
+                {
+                    pi.location.setLocation(getRandomLocation());
+                    pi.resurrect();
+                }
             }
         }
     }
@@ -367,7 +401,7 @@ public final class Game
     /**
      * Check collisions against bombs and other active cells.
      */
-    private void checkCollisions(List<PlayerInfo> kills, PlayerInfo pi)
+    private void checkCollisions(int frame, List<PlayerInfo> kills, PlayerInfo pi)
     {
         /*
          * Check collisions against grid cells. We only care about the cell directly 
@@ -377,9 +411,9 @@ public final class Game
         final Cell c = board.cellAt(xy);
         
         // For whom the bell tolls...
-        if (c.type.isLethal())
+        if (c.type.isLethal() && !pi.isImmortal())
         {
-            pi.kill();
+            pi.kill(frame);
             kills.add(pi);
         }
         
@@ -592,11 +626,28 @@ public final class Game
             }
 
             final PlayerInfo pi = new PlayerInfo(p, i);
-            pi.location.setLocation(
-                boardData.gridToPixel(defaults[i % defaults.length]));
+            pi.location.setLocation(getDefaultLocation(i));
 
             playerInfos.add(pi);
         }
+    }
+
+    /**
+     * Pick default location for player <code>i</code>.
+     */
+    private Point getDefaultLocation(int i)
+    {
+        final Point [] defaults = board.defaultPlayerPositions;        
+        return boardData.gridToPixel(defaults[i % defaults.length]);
+    }
+
+    /**
+     * Pick a new random location for a given player.
+     */
+    private Point getRandomLocation()
+    {
+        final Point [] defaults = board.defaultPlayerPositions;
+        return boardData.gridToPixel(defaults[random.nextInt(defaults.length)]);
     }
 
     /**

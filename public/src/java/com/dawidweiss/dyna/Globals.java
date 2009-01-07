@@ -77,7 +77,17 @@ public final class Globals
      * The default is 15 seconds. Assign to a very large value to effectively prevent
      * bonuses from showing up.
      */
-    public static final int DEFAULT_BONUS_PERIOD = DEFAULT_FRAME_RATE * 15;
+    public static final int DEFAULT_BONUS_PERIOD = 15 * DEFAULT_FRAME_RATE;
+
+    /**
+     * Number of frames it takes for a dead player to be ressurrected in deatch match mode.
+     */
+    public static final int DEFAULT_RESURRECTION_FRAMES = 5 * DEFAULT_FRAME_RATE;
+
+    /**
+     * For how many frames is the player immortal after ressurrection?
+     */
+    public static final int DEFAULT_IMMORTALITY_FRAMES = 5 * DEFAULT_FRAME_RATE;
 
     /*
      * 

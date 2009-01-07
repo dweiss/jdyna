@@ -1,15 +1,6 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -103,6 +94,11 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     private BufferedImageOp magnificationOp;
 
     /**
+     * Global frame counter, used for flickering.
+     */
+    private int globalFrameCounter;
+
+    /**
      * Rendering hints that disable bilinear or bicubic interpolation and in general
      * go for "pixelized" style. 
      */
@@ -151,6 +147,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     public void updateBoard(GameStateEvent gameState)
     {
         final Graphics2D g = background.createGraphics();
+        g.setRenderingHints(hints);
 
         final BufferedImage backgroundImage = getCellImage(CellType.CELL_EMPTY, 0);
         final Color backgroundColor = new Color(backgroundImage.getRGB(0, 0));
@@ -230,11 +227,20 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                     }
                 }
 
-                final BufferedImage image = images.getSpriteImage(
-                    player.getType(), state, animFrame);
-
+                BufferedImage image = images.getSpriteImage(player.getType(), state, animFrame);
+                
                 if (image != null)
                 {
+                    final Composite c = g.getComposite();
+                    if (player.isImmortal())
+                    {
+                        /*
+                         * Flicker immortal players.
+                         */
+                        final float alpha = (globalFrameCounter & 4) != 0 ? 0.25f : 0.8f;
+                        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                    }
+
                     final Point p = new Point(player.getPosition());
                     final Point offset = images.getSpriteOffset(player.getType(), state,
                         frame);
@@ -254,6 +260,8 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                         g.setColor(Color.YELLOW);
                         g.drawString(playerLabel, label.x, label.y);
                     }
+                    
+                    g.setComposite(c);
                 }
             }
         }
@@ -271,11 +279,14 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             {
                 initializeBoard((GameStartEvent) e);
                 fireSizeChanged();
+
+                globalFrameCounter = 0;
             }
 
             if (e.type == GameEvent.Type.GAME_STATE)
             {
                 updateBoard((GameStateEvent) e);                
+                globalFrameCounter++;
             }
         }
         BoardPanel.this.repaint();
