@@ -148,7 +148,7 @@ final class BoardUtilities
                      * Default Dyna behavior: recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
-                    explode(board, bombs, crates, lx, ly, range);
+                    explode(board, bombs, crates, lx, ly, ((BombCell) cell).range);
                     break;
             }
 
