@@ -174,8 +174,7 @@ module bindings {
 	   void onStart(in CBoardInfo boardInfo, in CPlayerSeq players);
 
 	   /**
-	    * An asynchronous callback received on each game frame (some frames may be skipped
-	    * if the connection is slow). 
+	    * An asynchronous callback received on each game frame.
 	    */
 	   oneway void onFrame(in long frame, in CGameEventSeq events);
 
