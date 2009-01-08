@@ -92,5 +92,16 @@
 		</copy>
 		<chmod file="${dist.path}/dyna.sh" perm="a+rx" />
 	</target>
+
+	<target name="package" depends="dist" description="Builds ZIP files with the distribution.">
+		<delete dir="${tmp.path}/jdyna" failonerror="false"/>
+		<copy todir="${tmp.path}/jdyna">
+			<fileset dir="${dist.path}" />
+		</copy>
+		<zip destfile="${tmp.path}/jdyna.zip">
+			<fileset dir="${tmp.path}" includes="jdyna/*" />
+		</zip>
+		<delete dir="${tmp.path}/jdyna" failonerror="false" />
+	</target>
 </project>
 
