@@ -96,7 +96,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
                     final Point gridPosition = boardInfo.pixelToGrid(pixelPosition);
     
                     updateTrail(gridPosition);
-                    if (targetPositionReached(pixelPosition))
+                    if (shouldChangeDirection(gse.getCells(), pixelPosition))
                     {
                         target = pickNewLocation(gse.getCells(), pixelPosition);
                         updateState(pixelPosition, target);
@@ -189,11 +189,19 @@ public final class Rabbit implements IPlayerController, IGameEventListener
     }
 
     /**
-     * Check if we reached the target.
+     * Check if we reached the target or if we should change direction now.
      */
-    private boolean targetPositionReached(Point ourPosition)
+    private boolean shouldChangeDirection(Cell [][] cells, Point ourPosition)
     {
-        return target == null || BoardUtilities.isClose(target, ourPosition, FUZZINESS);
+        if (target == null) return true;
+
+        final Point p = boardInfo.pixelToGrid(target);
+        final CellType type = cells[p.x][p.y].type;
+        if (!type.isWalkable() || type.isLethal())
+        {
+            return true;
+        }
+        return BoardUtilities.isClose(target, ourPosition, FUZZINESS);
     }
 
     /**
