@@ -3,15 +3,12 @@ package com.dawidweiss.dyna.corba.server;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.omg.CORBA.Policy;
+import org.omg.PortableServer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.corba.bindings.CPlayer;
-import com.dawidweiss.dyna.corba.bindings.ICGame;
-import com.dawidweiss.dyna.corba.bindings.ICGameHelper;
-import com.dawidweiss.dyna.corba.bindings.ICGameServer;
-import com.dawidweiss.dyna.corba.bindings.ICGameServerPOA;
-import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
+import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -63,25 +60,47 @@ class GameServerServant extends ICGameServerPOA
             }
 
             // Pass the startup information to all the controllers.
+            POA gamePOA = null;
             try
             {
-                /*
-                 * TODO: Each game should be created on its own POA which should be destroyed
-                 * after the game is over.
-                 */
+                gamePOA = createGamePOA();
 
                 final GameServant gameServant = new GameServant(this, board, gamePlayers);
                 final ICGame game = ICGameHelper.narrow(
-                    _poa().servant_to_reference(gameServant));
+                    gamePOA.servant_to_reference(gameServant));
+
                 logger.info("New game created.");
                 return game;
             }
             catch (Exception e)
             {
                 logger.error("Unexpected game startup problem.", e);
+
+                if (gamePOA != null) gamePOA.destroy(true, false);
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /*
+     * Create a temporary POA for the game and its resources. 
+     */
+    private POA createGamePOA()
+        throws Exception
+    {
+        final POA parentPOA = _poa();
+        final Policy [] filePoaPolicies = new Policy [] {
+            parentPOA.create_id_uniqueness_policy(IdUniquenessPolicyValue.UNIQUE_ID),
+            parentPOA.create_id_assignment_policy(IdAssignmentPolicyValue.SYSTEM_ID),
+            parentPOA.create_lifespan_policy(LifespanPolicyValue.TRANSIENT),
+            parentPOA.create_servant_retention_policy(ServantRetentionPolicyValue.RETAIN),
+            parentPOA.create_request_processing_policy(RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY),
+            parentPOA.create_implicit_activation_policy(ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION)
+        };
+
+        final POA poa = parentPOA.create_POA("GamePOA", parentPOA.the_POAManager(), filePoaPolicies);
+
+        return poa;
     }
 
     /*
@@ -147,7 +166,7 @@ class GameServerServant extends ICGameServerPOA
     /*
      * 
      */
-    public void release(List<PlayerData> players)
+    public void release(GameServant servant, List<PlayerData> players)
     {
         synchronized (this)
         {
@@ -156,5 +175,7 @@ class GameServerServant extends ICGameServerPOA
                 this.players.get(p.info.id).idle = true;
             }
         }
+
+        servant._poa().destroy(true, false);
     }
 }

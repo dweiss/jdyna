@@ -145,7 +145,7 @@ class GameServant extends ICGamePOA
             /*
              * Cleanup after the game and remove the game object.
              */
-            gameServer.release(this.players);
+            gameServer.release(this, this.players);
 
             /*
              * Remove the servant from the POA.
