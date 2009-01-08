@@ -1,16 +1,9 @@
 package com.dawidweiss.dyna;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,11 +60,6 @@ public final class Game
      * Dynamic information about players involved in the game.
      */
     private List<PlayerInfo> playerInfos;
-
-    /**
-     * A list of killed players. 
-     */
-    private final ArrayList<Standing> standings = Lists.newArrayList();
 
     /** Game listeners. */
     private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
@@ -231,50 +219,26 @@ public final class Game
      */
     private GameResult checkGameOver()
     {
-        if (isDeathMatch())
+        int alive = 0;
+        for (PlayerInfo pi : playerInfos)
         {
-            // TODO: Add a condition (time? frame count? max. kills?) to the death match mode.
-            return null;
+            if (!pi.isStoneDead()) alive++;
         }
 
-        if (mode == Game.Mode.LAST_MAN_STANDING)
-        {
-            Player winner = null;
-            int dead = 0;
-            int alive = 0;
-            for (PlayerInfo pi : playerInfos)
-            {
-                if (pi.isDead())
-                {
-                    dead++;
-                }
-                else
-                {
-                    alive++;
-                    winner = pi.player;
-                }
-            }
-            final int all = playerInfos.size();
-    
-            /*
-             * There is one alive player, everyone else is dead. 
-             */
-            if (alive == 1 && dead == all - 1)
-            {
-                standings.add(0, new Standing(winner, 0));
-                return new GameResult(winner, standings);
-            }
-    
-            /*
-             * Everyone is dead (draw).
-             */
-            if (dead == all)
-            {
-                return new GameResult(null, standings);
-            }
-        }
+        /*
+         * At least two players left in the battle.
+         */
+        if (alive > 1) return null;
 
-        return null;
+        /*
+         * Finito, basta, tutti morti. 
+         */
+        final ArrayList<PlayerStatus> stats = Lists.newArrayList();
+        for (PlayerInfo pi : playerInfos)
+        {
+            stats.add(pi.getStatus());
+        }
+        return new GameResult(mode, stats);
     }
 
     /**
@@ -370,22 +334,6 @@ public final class Game
             events.add(new SoundEffectEvent(SoundEffect.DYING, killed.size()));
         }
 
-        if (mode == Mode.LAST_MAN_STANDING)
-        {
-            /*
-             * Update standings. Assign <b>the same</b> victim number to all the people
-             * killed in the same round.
-             */
-            if (killed.size() > 0)
-            {
-                final int victimNumber = players.length - standings.size() - 1;
-                for (PlayerInfo pi : killed)
-                {
-                    standings.add(0, new Standing(pi.player, victimNumber));
-                }
-            }
-        }
-        else
         if (isDeathMatch())
         {
             /*
@@ -397,6 +345,8 @@ public final class Game
                 {
                     pi.location.setLocation(getRandomLocation());
                     pi.resurrect();
+                    
+                    logger.debug("Resurrected: " + pi.getStatus());
                 }
             }
         }
@@ -435,16 +385,11 @@ public final class Game
                 for (PlayerInfo sniper : e.flamesBy)
                 {
                     // No points for killing yourself.
+                    logger.debug(sniper.getName() + " killed " + pi.getName());
                     if (pi != sniper)
                     {
-                        logger.debug("Collecting kill: " + sniper.getName()
-                            + " [for: " + pi.getName() + "]");
                         sniper.collectKill();
                     }
-                    else
-                    {
-                        logger.debug("Collecting kill: " + sniper.getName() + " [suicide]");
-                    }  
                 }
             }
         }
@@ -649,6 +594,7 @@ public final class Game
                 + defaults.length + " < " + players.length);
         }
 
+        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : Globals.DEFAULT_LIVES);
         for (int i = 0; i < players.length; i++)
         {
             final Player p = players[i];
@@ -657,7 +603,7 @@ public final class Game
                 addListener((IGameEventListener) p.controller);
             }
 
-            final PlayerInfo pi = new PlayerInfo(p, i);
+            final PlayerInfo pi = new PlayerInfo(p, i, initialLives);
             pi.location.setLocation(getDefaultLocation(i));
 
             playerInfos.add(pi);

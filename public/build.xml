@@ -53,6 +53,7 @@
 			</classpath>
 		</taskdef>
 
+		<delete dir="${src.idl.stubs}" includes="**/bindings/**/*.java" />
 		<mkdir dir="${src.idl.stubs}" />
 		<idldepend compiler="openorb" force="false" checkAll="false" verbose="basic" 
 			targetDir="${src.idl.stubs}" file="${src.idl}">

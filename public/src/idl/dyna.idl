@@ -21,7 +21,7 @@ module bindings {
 
 	struct CPlayer;
 	struct CPlayerState;
-	struct CStanding;
+	struct CPlayerStatus;
 	struct CControllerState;
 
     /*
@@ -35,7 +35,7 @@ module bindings {
 
 	typedef sequence<CPlayer> CPlayerSeq;
     typedef sequence<CPlayerState> CPlayerStateSeq;
-    typedef sequence<CStanding> CStandingSeq;
+    typedef sequence<CPlayerStatus> CPlayerStatusSeq;
 
 	/**
 	 * A player is described with a name and unique id.
@@ -108,11 +108,15 @@ module bindings {
 	typedef sequence<CGameEvent> CGameEventSeq; 
 
     /**
-     * Standings after game over.
+     * Player status during and after the game.
      */
-    struct CStanding {
+    struct CPlayerStatus {
         long id;
-        long victimNumber;
+        long deathFrame;
+        long killedEnemies;
+        long livesLeft;
+        boolean immortal;
+        boolean dead;
     };
 
 	/*
@@ -178,9 +182,9 @@ module bindings {
 	   /**
 	    * Game over event.
 	    */
-	   void onEnd(in CPlayer winner, in CStandingSeq standings);
+	   void onEnd(in CPlayerStatusSeq standings);
 	};
-	
+
 	/**
 	 * Game controller expects player control signals to be passed via this interface.
 	 */ 

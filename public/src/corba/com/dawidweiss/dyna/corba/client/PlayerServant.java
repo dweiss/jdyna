@@ -9,12 +9,7 @@ import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
 import com.dawidweiss.dyna.corba.Adapters;
-import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
-import com.dawidweiss.dyna.corba.bindings.CGameEvent;
-import com.dawidweiss.dyna.corba.bindings.CPlayer;
-import com.dawidweiss.dyna.corba.bindings.CStanding;
-import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
-import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerPOA;
+import com.dawidweiss.dyna.corba.bindings.*;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
@@ -96,7 +91,7 @@ public class PlayerServant extends ICPlayerControllerPOA
     /*
      * 
      */
-    public synchronized void onEnd(CPlayer winner, CStanding [] standings)
+    public synchronized void onEnd(CPlayerStatus [] players)
     {
         view.dispose();
         view = null;

@@ -1,29 +1,34 @@
 package com.dawidweiss.dyna;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
- * The result of a single game.
+ * The result of a single game. The data contained in the result depends on the
+ * {@link Game.Mode}.
  */
 public final class GameResult
 {
     /**
-     * The winner (last man standing). If <code>null</code>, the game was a draw.
+     * The game mode in which the game was executed.
      */
-    public final Player winner;
+    public final Game.Mode mode;
 
     /**
-     * An array of standings (players and the order in which they were killed).
+     * An array of statistics for players after the game is over. Statistics depend on the
+     * game mode.
      */
-    public final List<Standing> standings;
+    public final List<PlayerStatus> stats;
 
-    /**
+    /*
      * 
      */
-    public GameResult(Player winner, ArrayList<Standing> standings)
+    public GameResult(Game.Mode mode, Collection<PlayerStatus> stats)
     {
-        this.winner = winner;
-        this.standings = Collections.unmodifiableList(standings);
+        this.mode = mode;
+        this.stats = Lists.newArrayList(stats);
     }
 
     /*
@@ -33,14 +38,12 @@ public final class GameResult
     public String toString()
     {
         final StringBuilder b = new StringBuilder();
-
-        b.append("Winner: " + (winner != null ? winner.name : "-- (draw)"));
-        b.append('\n');
-        for (Standing s : standings)
+        b.append("Game result [mode=" + mode + "]\n\n");
+        for (PlayerStatus ps : stats)
         {
-            b.append(String.format("%-3d  %s\n", s.victimNumber, s.player.name));
+            b.append(ps.toString());
+            b.append("\n");
         }
-
         return b.toString();
     }
 }

@@ -88,6 +88,11 @@ public final class Globals
      */
     public static final int DEFAULT_IMMORTALITY_FRAMES = 5 * DEFAULT_FRAME_RATE;
 
+    /**
+     * The default number of lives a player has in the {@link Game.Mode#DEATHMATCH} mode.
+     */
+    public static final int DEFAULT_LIVES = 3;
+
     /*
      * 
      */

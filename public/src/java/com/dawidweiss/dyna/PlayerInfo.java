@@ -20,12 +20,12 @@ final class PlayerInfo implements IPlayerSprite
      * Coordinates of this player (it's centerpoint). The rectangle actually taken by the
      * player and the position of the sprite is determined by the player's implementation.
      */
-    public final Point location = new Point();
+    final Point location = new Point();
 
     /**
      * Movement speed in each direction.
      */
-    public final Point speed = new Point(2, 2);
+    final Point speed = new Point(2, 2);
 
     /**
      * An increasing counter of frames if the player is in walking state.
@@ -45,12 +45,12 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Current arsenal to use (bomb count).
      */
-    public int bombCount = Globals.DEFAULT_BOMB_COUNT;
+    int bombCount = Globals.DEFAULT_BOMB_COUNT;
 
     /**
      * Bomb range for this player. Assigned to {@link BombCell#range}.
      */
-    public int bombRange = Globals.DEFAULT_BOMB_RANGE;
+    int bombRange = Globals.DEFAULT_BOMB_RANGE;
 
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
@@ -80,13 +80,21 @@ final class PlayerInfo implements IPlayerSprite
      */
     private int reincarnations; 
 
+    /**
+     * Number of reincarnations a player has left.  
+     */
+    private int livesLeft; 
+
     /*
      * 
      */
-    PlayerInfo(Player player, int playerIndex)
+    PlayerInfo(Player player, int playerIndex, int lives)
     {
+        assert lives > 0 : "Number of lives must be > 0";
+
         this.player = player;
         this.playerIndex = playerIndex;
+        this.livesLeft = lives;
     }
 
     /**
@@ -158,6 +166,7 @@ final class PlayerInfo implements IPlayerSprite
         this.state = Player.State.DEAD;
         this.stateFrame = 0;
         this.deathAtFrame = currentFrame;
+        this.livesLeft--;        
     }
 
     /**
@@ -166,6 +175,14 @@ final class PlayerInfo implements IPlayerSprite
     public boolean isDead()
     {
         return state == Player.State.DEAD;
+    }
+
+    /**
+     * A stone-dead player is dead and has no chances of coming back to life.
+     */
+    boolean isStoneDead()
+    {
+        return isDead() && livesLeft <= 0;
     }
 
     /**
@@ -214,7 +231,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     public boolean isImmortal()
     {
-        return !isDead() && frame < immortalityEndsAtFrame;
+        return !isStoneDead() && frame < immortalityEndsAtFrame;
     }
 
     /**
@@ -222,7 +239,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     boolean shouldResurrect()
     {
-        return frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
+        return livesLeft > 0 && frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
     }
 
     /**
@@ -234,8 +251,8 @@ final class PlayerInfo implements IPlayerSprite
         this.state = State.DOWN;
         this.bombCount = Globals.DEFAULT_BOMB_COUNT;
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
-        this.reincarnations++;
 
+        this.reincarnations++;
         this.immortalityEndsAtFrame = frame + Globals.DEFAULT_IMMORTALITY_FRAMES;
     }
  
@@ -245,5 +262,19 @@ final class PlayerInfo implements IPlayerSprite
     void collectKill()
     {
         this.killedEnemies++;
+    }
+
+    /**
+     * Return the current status information.
+     */
+    PlayerStatus getStatus()
+    {
+        final PlayerStatus ps = new PlayerStatus(getName());
+        ps.dead = isStoneDead();
+        ps.deathFrame = deathAtFrame;
+        ps.immortal = isImmortal();
+        ps.killedEnemies = killedEnemies;
+        ps.livesLeft = livesLeft;
+        return ps;
     }
 }

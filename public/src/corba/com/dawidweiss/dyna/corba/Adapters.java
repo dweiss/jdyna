@@ -325,4 +325,26 @@ public final class Adapters
         }
         throw new RuntimeException();
     }
+
+    /*
+     * 
+     */
+    public static CPlayerStatus [] adapt(HashMap<String, Integer> nameMapping, GameResult gameResult)
+    {
+        final CPlayerStatus [] result = new CPlayerStatus [gameResult.stats.size()];
+
+        for (int i = 0; i < result.length; i++)
+        {
+            final PlayerStatus ps = gameResult.stats.get(i);
+            result[i] = adapt(nameMapping.get(ps.playerName), ps);
+        }
+
+        return result;
+    }
+
+    private static CPlayerStatus adapt(int id, PlayerStatus ps)
+    {
+        return new CPlayerStatus(id,
+            ps.deathFrame, ps.killedEnemies, ps.livesLeft, ps.immortal, ps.dead);
+    }
 }

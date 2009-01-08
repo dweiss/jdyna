@@ -36,8 +36,6 @@ I1	Implement jMonkeyEngine-based OpenGL view.
     
 GAMEPLAY
     
-I12 Multi-player mode with reincarnating players and 'frag' counters. 
-
 I10	Intelligent opponents and bots. [TWO'2008 homework.]
 
 MISC

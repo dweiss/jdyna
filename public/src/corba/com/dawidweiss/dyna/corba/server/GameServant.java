@@ -2,32 +2,17 @@ package com.dawidweiss.dyna.corba.server;
 
 import java.awt.Dimension;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Boards;
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.Standing;
+import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.Adapters;
-import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
-import com.dawidweiss.dyna.corba.bindings.CGameEvent;
-import com.dawidweiss.dyna.corba.bindings.CPlayer;
-import com.dawidweiss.dyna.corba.bindings.CStanding;
-import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
-import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackHelper;
-import com.dawidweiss.dyna.corba.bindings.ICGame;
-import com.dawidweiss.dyna.corba.bindings.ICGameListener;
-import com.dawidweiss.dyna.corba.bindings.ICGamePOA;
+import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Servant for {@link ICGame}.
@@ -39,8 +24,11 @@ class GameServant extends ICGamePOA
     /** Game server (to release players after game is over). */
     private final GameServerServant gameServer;
 
-    /** Game server (to release players after game is over). */
+    /** */
     private final List<PlayerData> players;
+
+    /** */
+    private final HashMap<String, Integer> playerIndices = Maps.newHashMap();
 
     /** All listeners. */
     private final List<ICGameListener> listeners = Lists.newArrayList();
@@ -70,6 +58,11 @@ class GameServant extends ICGamePOA
         this.gameServer = gameServer;
         this.players = gamePlayers;
         this.board = board;
+        
+        for (PlayerData pd : gamePlayers)
+        {
+            playerIndices.put(pd.info.name, pd.info.id);
+        }
     }
 
     /**
@@ -137,21 +130,10 @@ class GameServant extends ICGamePOA
             final Game game = new Game(board, boardInfo, parray);
             game.setFrameRate(frameRate);
             game.addListener(gameListener);
+            
             final GameResult result = game.run(Game.Mode.LAST_MAN_STANDING);
 
-            /*
-             * Fire game end.
-             */
-            final CPlayer winner = lookup(result.winner);
-            final List<Standing> standings = result.standings;
-            final CStanding [] results = new CStanding [standings.size()];
-            for (int i = 0; i < standings.size(); i++)
-            {
-                final CPlayer p = lookup(standings.get(i).player);
-                results[i] = new CStanding(p.id, standings.get(i).victimNumber);
-            }
-
-            fireGameEnd(winner, results);
+            fireGameEnd(Adapters.adapt(playerIndices, result));
         }
         catch (Throwable t)
         {
@@ -179,29 +161,6 @@ class GameServant extends ICGamePOA
         }
     }
 
-    /**
-     * Lookup player by his or her name.
-     */
-    private CPlayer lookup(Player p)
-    {
-        if (p == null)
-        {
-            return new CPlayer(-1, "<draw>");
-        }
-
-        CPlayer player = null;
-        for (PlayerData pd : this.players)
-        {
-            if (pd.info.name.equals(p.name))
-            {
-                player = pd.info;
-                break;
-            }
-        }
-        
-        return player;
-    }
-
     private void fireGameStart(CBoardInfo bi, CPlayer [] players)
     {
         for (ICGameListener l : listeners)
@@ -210,11 +169,11 @@ class GameServant extends ICGamePOA
         }
     }
 
-    private void fireGameEnd(CPlayer winner, CStanding [] standings)
+    private void fireGameEnd(CPlayerStatus [] players)
     {
         for (ICGameListener l : listeners)
         {
-            l.onEnd(winner, standings);
+            l.onEnd(players);
         }
     }
 
