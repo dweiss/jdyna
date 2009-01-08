@@ -12,8 +12,7 @@ public final class GameOverEvent extends GameEvent
     private static final long serialVersionUID = 0x200812241355L;
 
     /*
-     * TODO: At some point it makes sense to add the game result to this
-     * event. 
+     *  
      */
     public GameOverEvent()
     {
