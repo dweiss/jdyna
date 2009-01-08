@@ -48,7 +48,6 @@ public final class Globals
      */
     public static final boolean SWING_VIEW_PAINT_PLAYER_LABELS = true;
 
-
     /**
      * In classic Dyna, all bombs connected by explosions explode at once. This alters
      * this behavior and only "chains" explosions by speeding up other bombs. This works

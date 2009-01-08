@@ -51,9 +51,9 @@ public final class Game
         /**
          * In the death match mode, players compete by bombing each other. When player A
          * kills player B, then player A gets a reward. It does not matter whose bomb
-         * initiated the explosion, the origin of the first 'flame' that kills player B
-         * earns player A a credit. In case of overlapping flames, the assignment is not predictable
-         * (it could be, but it would require some additional work).
+         * initiated the explosion, the origin (bomb) of any 'flame' that kills player B
+         * earns player A a credit. In case of overlapping flames, the credit is given to
+         * all players that contributed to overlapping flame.
          */
         DEATHMATCH
     }
@@ -135,9 +135,9 @@ public final class Game
     }
 
     /**
-     * Starts the main game loop and runs the whole thing.
+     * Starts the game, does not return until the game ends.
      */
-    public GameResult run(final Mode mode)
+    public GameResult run(Mode mode)
     {
         this.mode = mode;
 
@@ -434,13 +434,21 @@ public final class Game
                 final ExplosionCell e = (ExplosionCell) c;
                 for (PlayerInfo sniper : e.flamesBy)
                 {
-                    logger.debug("Collecting kill: " + sniper.getName()
-                        + " [for: " + pi.getName() + "]");
-                    sniper.collectKill();
+                    // No points for killing yourself.
+                    if (pi != sniper)
+                    {
+                        logger.debug("Collecting kill: " + sniper.getName()
+                            + " [for: " + pi.getName() + "]");
+                        sniper.collectKill();
+                    }
+                    else
+                    {
+                        logger.debug("Collecting kill: " + sniper.getName() + " [suicide]");
+                    }  
                 }
             }
         }
-        
+
         /*
          * Process bonuses. The bonus-assignment is not entirely fair, because if
          * two players touch the bonus at once, the player with lower index will collect
