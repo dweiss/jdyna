@@ -44,16 +44,3 @@ I9	Visual editor for game boards :]
 
 I6	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
 
-
-## DONE
-
-[DONE] I16 Add game recording listener/ replay mode for recorded games. [dep. on I13]
-[DONE] I13 Event packet serialization and packet streams.
-
-[DONE] I11  Rethink event passing, filtering and serialization. [DW; add serialization and I5?]
-
-[DONE] I7	Bonuses (bomb increase, range increase).
-
-[DONE] I8	Add different (than classic) gameboard definitions. This can (should?) include an 
-    alternative reader for board definitions so that, for example, a name can be given to 
-    the board... 
