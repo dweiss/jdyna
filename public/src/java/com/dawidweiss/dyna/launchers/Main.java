@@ -81,7 +81,7 @@ public final class Main
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        final GameResult result = game.run(Game.Mode.LAST_MAN_STANDING);
+        final GameResult result = game.run(Game.Mode.DEATHMATCH);
         logger.info(result.toString());
 
         SwingUtilities.invokeLater(new Runnable()
