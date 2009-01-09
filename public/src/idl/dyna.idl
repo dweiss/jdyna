@@ -23,6 +23,7 @@ module bindings {
 	struct CPlayerState;
 	struct CPlayerStatus;
 	struct CControllerState;
+	struct CGameResult;
 
     /*
      * Cels are int-coded.
@@ -76,9 +77,9 @@ module bindings {
 	};	 
 
 	enum CGameEventType {
-		GAME_STATE, SOUND_EFFECT, GAME_START
+		GAME_STATE, SOUND_EFFECT, GAME_START, GAME_OVER
 	};
-	
+
 	struct CGameState {
 	   CCellSeq cells;
 	   CPlayerStateSeq players;
@@ -87,7 +88,11 @@ module bindings {
 	struct CGameStart {
 	   CBoardInfo boardInfo;
 	};
-	
+
+	struct CGameOver {
+		CGameResult result;
+	};
+
 	enum CSoundEffectType {
 	    BOMB, BONUS, DYING
 	};
@@ -104,6 +109,8 @@ module bindings {
 			CSoundEffect soundEffect;
 	    case GAME_START:
 	        CGameStart gameStart;
+	    case GAME_OVER:
+	    	CGameOver gameOver;
 	};
 	typedef sequence<CGameEvent> CGameEventSeq; 
 
@@ -117,6 +124,15 @@ module bindings {
         long livesLeft;
         boolean immortal;
         boolean dead;
+    };
+
+	/**
+	 * Game result.
+	 */    
+    struct CGameResult {
+    	wstring gameMode;
+    	CPlayerStatusSeq stats;
+    	boolean gameInterrupted;
     };
 
 	/*
@@ -138,8 +154,11 @@ module bindings {
 	 * started. 
 	 */
 	interface ICGameServer {
-	    /** Register a new player in the controller. */
+	    /** Register a new player in the controller. Player name must be unique. */
 	    CPlayer register(in wstring name, in ICPlayerController controller);
+
+	    /** Unregister an existing player. */
+	    void unregister(in wstring name);
 
 	    /** Create a game for a set of players. */
 	    ICGame create(in long boardNumber, in CPlayerSeq players);
@@ -153,9 +172,10 @@ module bindings {
 	 */
 	interface ICGame {
 	    /**
-	     * Starts the game and executes the entire game loop.
+	     * Starts the game and executes the entire game loop or until
+	     * the given number of frames is reached. Zero means no limit is imposed. 
 	     */
-	    void run();
+	    CGameResult run(in long framesLimit);
 
         /** Add an extra game listener. */
 	    void add(in ICGameListener listener);
@@ -181,7 +201,7 @@ module bindings {
 	   /**
 	    * Game over event.
 	    */
-	   void onEnd(in CPlayerStatusSeq standings);
+	   void onEnd(in CGameResult result);
 	};
 
 	/**
