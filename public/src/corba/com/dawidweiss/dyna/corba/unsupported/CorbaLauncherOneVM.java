@@ -1,15 +1,13 @@
-package com.dawidweiss.dyna.corba;
+package com.dawidweiss.dyna.corba.unsupported;
 
 import java.util.concurrent.Callable;
 
 import org.omg.CORBA.ORB;
 import org.slf4j.LoggerFactory;
 
+import com.dawidweiss.dyna.corba.*;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
-import com.dawidweiss.dyna.corba.client.GameClientLauncher;
-import com.dawidweiss.dyna.corba.client.GameLauncher;
-import com.dawidweiss.dyna.corba.server.GameServerLauncher;
 
 /**
  * Development-mode launcher, starting the server and two additional players.

@@ -11,8 +11,11 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 /**
  * OpenORB-related utilities.
  */
-public final class CorbaUtils
+final class CorbaUtils
 {
+    /*
+     * 
+     */
     private CorbaUtils()
     {
         // no instances.

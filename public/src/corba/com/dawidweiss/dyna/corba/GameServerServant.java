@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba.server;
+package com.dawidweiss.dyna.corba;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +15,7 @@ import com.google.common.collect.Maps;
 /**
  * Servant for {@link ICGameServer}.
  */
-class GameServerServant extends ICGameServerPOA
+final class GameServerServant extends ICGameServerPOA
 {
     private final static Logger logger = LoggerFactory.getLogger("corba.gameserver");
 
@@ -151,10 +151,20 @@ class GameServerServant extends ICGameServerPOA
     /*
      * 
      */
+    @Override
     public CPlayer register(String name, ICPlayerController controller)
     {
         synchronized (this)
         {
+            for (PlayerData p : players.values())
+            {
+                if (p.info.name.equals(name))
+                {
+                    logger.info("Player name not unique: " + name);
+                    throw new IllegalArgumentException();
+                }
+            }
+
             final PlayerData p = new PlayerData(
                 new CPlayer(idgen.getAndIncrement(), name), controller);
             players.put(p.info.id, p);
@@ -163,6 +173,25 @@ class GameServerServant extends ICGameServerPOA
         }
     }
 
+    /*
+     * 
+     */
+    @Override
+    public void unregister(String name)
+    {
+        synchronized (this)
+        {
+            for (PlayerData p : players.values())
+            {
+                if (p.info.name.equals(name))
+                {
+                    players.remove(p.info.id);
+                    break;
+                }
+            }
+        }
+    }
+    
     /*
      * 
      */

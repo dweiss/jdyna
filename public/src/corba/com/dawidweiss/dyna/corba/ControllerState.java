@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba.client;
+package com.dawidweiss.dyna.corba;
 
 import org.apache.commons.lang.ObjectUtils;
 
@@ -12,18 +12,27 @@ final class ControllerState
     private final IPlayerController.Direction direction;
     private final boolean dropsBomb;
 
+    /*
+     * 
+     */
     public ControllerState(IPlayerController c)
     {
         this.direction = c.getCurrent();
         this.dropsBomb = c.dropsBomb();
     }
 
+    /*
+     * 
+     */
     @Override
     public int hashCode()
     {
         return (dropsBomb ? 1 : -1) ^ (direction == null ? 0 : direction.hashCode());
     }
 
+    /*
+     * 
+     */
     @Override
     public boolean equals(Object obj)
     {

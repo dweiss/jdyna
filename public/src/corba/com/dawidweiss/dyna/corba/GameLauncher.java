@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba.client;
+package com.dawidweiss.dyna.corba;
 
 import java.io.PrintStream;
 
@@ -8,15 +8,13 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.corba.CorbaUtils;
-import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.dawidweiss.dyna.corba.bindings.ICGame;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 
 /**
- * Starts a single game between a set of players.
+ * Starts a single game between all players registered on the server.
  */
 public class GameLauncher
 {
@@ -69,10 +67,10 @@ public class GameLauncher
         }
         else
         {
-            logger.warn("Creating game for " + players.length + " players.");
+            logger.info("Creating game for " + players.length + " players.");
             ICGame game = gameServer.create(board, players);
-            logger.warn("Running the game.");
-            game.run();
+            logger.info("Running the game.");
+            game.run(Integer.MAX_VALUE);
         }
     }
     

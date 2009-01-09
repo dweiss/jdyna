@@ -1,18 +1,15 @@
-package com.dawidweiss.dyna.corba.server;
+package com.dawidweiss.dyna.corba;
 
 import java.awt.Dimension;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.*;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 
 /**
  * Servant for {@link ICGame}.
@@ -28,7 +25,7 @@ class GameServant extends ICGamePOA
     private final List<PlayerData> players;
 
     /** */
-    private final HashMap<String, Integer> playerIndices = Maps.newHashMap();
+    private final BiMap<String, Integer> playerIndices = Maps.newHashBiMap();
 
     /** All listeners. */
     private final List<ICGameListener> listeners = Lists.newArrayList();
@@ -84,7 +81,7 @@ class GameServant extends ICGamePOA
     /**
      * Run the game.
      */
-    public void run()
+    public CGameResult run(final int framesLimit)
     {
         try
         {
@@ -126,14 +123,17 @@ class GameServant extends ICGamePOA
             /*
              * Run the game loop.
              */
-            final int frameRate = 25;
+            final int frameRate = Globals.DEFAULT_FRAME_RATE;
             final Game game = new Game(board, boardInfo, parray);
             game.setFrameRate(frameRate);
             game.addListener(gameListener);
-            
-            final GameResult result = game.run(Game.Mode.LAST_MAN_STANDING);
+            game.setFrameLimit(framesLimit);
 
-            fireGameEnd(Adapters.adapt(playerIndices, result));
+            final GameResult result = game.run(Game.Mode.DEATHMATCH);
+            final CGameResult adapted = Adapters.adapt(playerIndices, result);
+
+            fireGameEnd(adapted);
+            return adapted;
         }
         catch (Throwable t)
         {
@@ -169,11 +169,11 @@ class GameServant extends ICGamePOA
         }
     }
 
-    private void fireGameEnd(CPlayerStatus [] players)
+    private void fireGameEnd(CGameResult result)
     {
         for (ICGameListener l : listeners)
         {
-            l.onEnd(players);
+            l.onEnd(result);
         }
     }
 

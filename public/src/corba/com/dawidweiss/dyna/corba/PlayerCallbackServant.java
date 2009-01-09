@@ -1,12 +1,11 @@
-package com.dawidweiss.dyna.corba.server;
+package com.dawidweiss.dyna.corba;
 
 import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackPOA;
 
 /**
- * A game controller receiving and storing callback calls from a singleplayer.
+ * A game controller receiving and storing callback calls from a single player.
  */
 final class PlayerCallbackServant extends ICControllerCallbackPOA
     implements IPlayerController

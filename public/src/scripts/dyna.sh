@@ -9,8 +9,8 @@ COMMAND=$1
 shift
 
 case $COMMAND in
-	server) java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.server.GameServerLauncher "$@";;
-	client) java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.client.GameClientLauncher "$@";;
-	game)   java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.client.GameLauncher "$@";;
+	server) java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.GameServerLauncher "$@";;
+	client) java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.GameClientLauncher "$@";;
+	game)   java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.corba.GameLauncher "$@";;
 	localgame) java -cp `dirname $0`/dyna.jar com.dawidweiss.dyna.launchers.Main "$@";;
 esac

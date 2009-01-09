@@ -16,15 +16,15 @@ IF "%COMMAND%" == "localgame" GOTO LOCALGAME
 GOTO HELP
 
 :SERVER
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.server.GameServerLauncher %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameServerLauncher %ARGS%
 	GOTO EXIT
 
 :CLIENT
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.client.GameClientLauncher %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameClientLauncher %ARGS%
 	GOTO EXIT
 
 :GAME
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.client.GameLauncher %ARGS%
+	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameLauncher %ARGS%
 	GOTO EXIT
 
 :LOCALGAME

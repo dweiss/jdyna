@@ -1,4 +1,4 @@
-package com.dawidweiss.dyna.corba.server;
+package com.dawidweiss.dyna.corba;
 
 import java.io.PrintStream;
 
@@ -9,13 +9,11 @@ import org.omg.PortableServer.POA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.corba.CorbaUtils;
-import com.dawidweiss.dyna.corba.NetworkUtils;
 import com.dawidweiss.dyna.corba.bindings.ICGameServer;
 import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
 
 /**
- * Starts the game server and saves its initial reference to a file.
+ * Starts the game server.
  */
 public class GameServerLauncher
 {

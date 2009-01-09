@@ -1,24 +1,17 @@
-package com.dawidweiss.dyna.corba.client;
+package com.dawidweiss.dyna.corba;
 
 import java.io.PrintStream;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.*;
 import org.omg.PortableServer.POA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.corba.CorbaUtils;
-import com.dawidweiss.dyna.corba.NetworkUtils;
-import com.dawidweiss.dyna.corba.bindings.ICGameServer;
-import com.dawidweiss.dyna.corba.bindings.ICGameServerHelper;
-import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
-import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerHelper;
+import com.dawidweiss.dyna.corba.bindings.*;
 
 /**
- * Starts a single game client.
+ * Starts a game client from command line.
  */
 public class GameClientLauncher
 {
@@ -62,14 +55,18 @@ public class GameClientLauncher
                 new String(NetworkUtils.read(host, port), "UTF-8")));
 
         /*
-         * Create game controller, views, register player.
+         * Create game controller, views, proxy events between them, register player.
          */
-        final PlayerServant servant = new PlayerServant(
-            Globals.getDefaultKeyboardController(0));
+        final GameEventsProxy proxy = new GameEventsProxy();
+
+        // Player controller.
+        proxy.add(new ICPlayerControllerAdapter(Globals.getDefaultKeyboardController(0)));
+
+        // View
+        proxy.add(new LocalGameView());
 
         final ICPlayerController player = ICPlayerControllerHelper.narrow(
-            rootPOA.servant_to_reference(servant));
-
+            rootPOA.servant_to_reference(proxy));
         gameServer.register(name, player);
 
         /*
