@@ -79,6 +79,9 @@ public final class Rabbit implements IPlayerController, IGameEventListener
             if (event.type == GameEvent.Type.GAME_START)
             {
                 this.boardInfo = ((GameStartEvent) event).getBoardInfo();
+                this.target = null;
+                this.trail.clear();
+                this.direction = null;
             }
 
             if (event.type == GameEvent.Type.GAME_STATE)
