@@ -5,6 +5,9 @@ package com.dawidweiss.dyna;
  */
 public class Cell
 {
+    private static final Cell EMPTY_CELL = new Cell(CellType.CELL_EMPTY);
+    private static final Cell WALL_CELL = new Cell(CellType.CELL_WALL);
+
     /**
      * Cell type constant.
      */
@@ -36,6 +39,14 @@ public class Cell
         else if (type == CellType.CELL_BOMB)
         {
             return new BombCell();
+        }
+        else if (type == CellType.CELL_EMPTY)
+        {
+            return EMPTY_CELL;
+        }
+        else if (type == CellType.CELL_WALL)
+        {
+            return WALL_CELL;
         }
         else 
         {
