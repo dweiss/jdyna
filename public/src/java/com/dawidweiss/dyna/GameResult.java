@@ -22,6 +22,11 @@ public final class GameResult
      */
     public final List<PlayerStatus> stats;
 
+    /**
+     * The result is not complete (from an interrupted game).
+     */
+    public boolean gameInterrupted;
+
     /*
      * 
      */

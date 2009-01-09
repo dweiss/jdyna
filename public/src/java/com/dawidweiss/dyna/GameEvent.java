@@ -6,22 +6,19 @@ import java.io.Serializable;
  * <p>
  * An event in the game.
  * <p>
- * All events should implement {@link Serializable} interface so that they
- * can be written and read from binary streams. The following things are of
- * importance:
+ * All events should implement {@link Serializable} interface so that they can be written
+ * and read from binary streams. The following things are of importance:
  * <ul>
- *  <li>a unique <code>serialVersionUID</code> is not really required since serialization
- *  will take place at runtime and will not be persisted between game versions with
- *  major changes in the serialization API. That said, it may be a problem to exchange
- *  serialized data between different VMs if the automatically generated
- *  serial UID is different. This will have to be investigated experimentally. I set
- *  a custom UID for now. See {@link #serialVersionUID} for more info.</li>
- *  
- *  <li>strive for performance, if possible. Serializing simple fields is probably easy,
- *  but serialization of complex data structures should be done by hand.</li>
- *  
- *  <li>if the serialization costs are still to large, we may have to switch to entirely
- *  hand-written serialization code. This is a last-resort option, of course.</li>
+ * <li>a unique <code>serialVersionUID</code> is not really required since serialization
+ * will take place at runtime and will not be persisted between game versions with major
+ * changes in the serialization API. That said, it may be a problem to exchange serialized
+ * data between different VMs if the automatically generated serial UID is different. This
+ * will have to be investigated experimentally. I set a custom UID for now. See
+ * {@link #serialVersionUID} for more info.</li>
+ * <li>strive for performance, if possible. Serializing simple fields is probably easy,
+ * but serialization of complex data structures should be done by hand.</li>
+ * <li>if the serialization costs are still to large, we may have to switch to entirely
+ * hand-written serialization code. This is a last-resort option, of course.</li>
  * </ul>
  * 
  * @see IGameEventListener
@@ -43,16 +40,22 @@ public abstract class GameEvent implements Serializable
     public static enum Type
     {
         /** Game state (grid cells, players, sprites) update. */
-        GAME_STATE, 
+        GAME_STATE,
 
         /** A sound effect should be played. */
-        SOUND_EFFECT, 
+        SOUND_EFFECT,
 
         /** A game start event (dispatched at the beginning of a single game). */
         GAME_START,
 
         /** A game over event (dispatched at the end of a single game). */
-        GAME_OVER, 
+        GAME_OVER,
+
+        /**
+         * NO-OP event (marker symbol for events removed from a frame, usually due to
+         * frame dropping).
+         */
+        NO_OP,
     }
 
     /**

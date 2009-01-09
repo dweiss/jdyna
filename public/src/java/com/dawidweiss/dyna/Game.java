@@ -123,7 +123,8 @@ public final class Game
     }
 
     /**
-     * Starts the game, does not return until the game ends.
+     * Starts the game, does not return until the game ends. The game can be interrupted
+     * by setting the running thread's interrupted flag.
      */
     public GameResult run(Mode mode)
     {
@@ -137,6 +138,8 @@ public final class Game
         events.add(new GameStartEvent(boardData));
         do
         {
+            if (Thread.currentThread().isInterrupted()) break;
+
             timer.waitForFrame();
 
             processBoardCells();
@@ -158,6 +161,15 @@ public final class Game
 
             events.clear();
         } while (result == null || lingerFrames-- > 0);
+
+        /*
+         * Check interrupted state and clear it.
+         */
+        if (Thread.interrupted())
+        {
+            if (result == null) result = new GameResult(mode, getPlayerStats());
+            result.gameInterrupted = true;
+        }
 
         /*
          * Dispatch game over.
@@ -233,12 +245,21 @@ public final class Game
         /*
          * Finito, basta, tutti morti. 
          */
+        return new GameResult(mode, getPlayerStats());
+    }
+
+    /**
+     * @return Return current player statistics.
+     */
+    private Collection<PlayerStatus> getPlayerStats()
+    {
         final ArrayList<PlayerStatus> stats = Lists.newArrayList();
         for (PlayerInfo pi : playerInfos)
         {
             stats.add(pi.getStatus());
         }
-        return new GameResult(mode, stats);
+        
+        return stats;
     }
 
     /**
