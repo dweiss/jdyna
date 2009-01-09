@@ -43,7 +43,7 @@ public final class GameResult
     public String toString()
     {
         final StringBuilder b = new StringBuilder();
-        b.append("Game result [mode=" + mode + "]\n\n");
+        b.append("Game result [mode=" + mode + "] " + (gameInterrupted ? "[interrupted]" : "") + "\n\n");
         for (PlayerStatus ps : stats)
         {
             b.append(ps.toString());
