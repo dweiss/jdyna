@@ -113,6 +113,11 @@ public final class Game
     private Mode mode;
 
     /**
+     * Frame limit for the game.
+     */
+    private int frameLimit;
+
+    /**
      * Creates a single game.
      */
     public Game(Board board, BoardInfo boardInfo, Player... players)
@@ -138,7 +143,12 @@ public final class Game
         events.add(new GameStartEvent(boardData));
         do
         {
-            if (Thread.currentThread().isInterrupted()) break;
+            if (Thread.currentThread().isInterrupted()
+                || (result == null && frameLimit > 0 && frame > frameLimit))
+            {
+                Thread.currentThread().interrupt();
+                break;
+            }
 
             timer.waitForFrame();
 
@@ -268,6 +278,17 @@ public final class Game
     public void setFrameRate(double framesPerSecond)
     {
         timer.setFrameRate(framesPerSecond);
+    }
+
+    /**
+     * Sets the frame limit for the game. The game will be interrupted if this
+     * limit is reached. A limit of zero means no limit. 
+     */
+    public void setFrameLimit(int framesLimit)
+    {
+        assert framesLimit >= 0;
+    
+        this.frameLimit = framesLimit;
     }
 
     /*
