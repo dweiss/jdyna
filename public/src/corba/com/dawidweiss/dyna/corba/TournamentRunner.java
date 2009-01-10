@@ -155,7 +155,7 @@ public final class TournamentRunner
     /*
      * 
      */
-    private void cleanup()
+    public void cleanup()
     {
         this.orb.shutdown(true);
         logger.info("Game server stopped.");
