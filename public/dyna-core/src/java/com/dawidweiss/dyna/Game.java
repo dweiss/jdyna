@@ -5,6 +5,7 @@ import static java.lang.Math.*;
 import java.awt.Point;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,26 +41,30 @@ public final class Game
          * @see Standing
          */
         LAST_MAN_STANDING,
-        
+
         /**
          * In the death match mode, players compete by bombing each other. When player A
          * kills player B, then player A gets a reward. It does not matter whose bomb
          * initiated the explosion, the origin (bomb) of any 'flame' that kills player B
          * earns player A a credit. In case of overlapping flames, the credit is given to
-         * all players that contributed to overlapping flame.
+         * all players that contributed to overlapping flame. The game ends when there is
+         * only one player (or zero players) that are still alive. The number of lives (reincarnations)
+         * for each player is controlled separately.
          */
-        DEATHMATCH
+        DEATHMATCH,
+
+        /**
+         * Same as {@link #DEATHMATCH}, but the game never finishes (even if there
+         * are no players on the board).
+         */
+        INFINITE_DEATHMATCH
     }
 
     /**
-     * Static player information. 
+     * Dynamic information about players involved in the game. Indexed identically to 
+     * {@link #players}
      */
-    private Player [] players;
-
-    /**
-     * Dynamic information about players involved in the game.
-     */
-    private List<PlayerInfo> playerInfos;
+    private final List<PlayerInfo> playerInfos = Lists.newArrayList();
 
     /** Game listeners. */
     private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
@@ -118,13 +123,65 @@ public final class Game
     private int frameLimit;
 
     /**
+     * Last fully rendered frame.
+     */
+    private volatile int currentFrame;
+
+    /**
      * Creates a single game.
      */
     public Game(Board board, BoardInfo boardInfo, Player... players)
     {
         this.board = board;
         this.boardData = boardInfo;
-        this.players = players;
+
+        for (Player p : players) addPlayer(p, 0);
+    }
+
+    /**
+     * Dynamically attach a new player to an existing game. If the player with the
+     * given identifier already exists, an exception is thrown.
+     */
+    public synchronized void addPlayer(Player p)
+    {
+        addPlayer(p, Globals.DEFAULT_JOINING_IMMORTALITY_FRAMES);
+    }
+
+    /**
+     * Dynamically attach a new player to an existing game. If the player with the
+     * given identifier already exists, an exception is thrown.
+     */
+    private synchronized void addPlayer(Player p, int immortalityCount)
+    {
+        if (hasPlayer(p.name))
+        {
+            throw new IllegalArgumentException("Player already exists: " + p.name);            
+        }
+
+        setupPlayer(p, immortalityCount);
+    }
+
+    /**
+     * Check if there is a player named <code>name</code> attached to this game.
+     */
+    public synchronized boolean hasPlayer(String name)
+    {
+        for (PlayerInfo p2 : playerInfos)
+        {
+            if (StringUtils.equals(p2.getName(), name))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a single game, without players initially.
+     */
+    public Game(Board board, BoardInfo boardInfo)
+    {
+        this(board, boardInfo, new Player [0]);
     }
 
     /**
@@ -135,7 +192,6 @@ public final class Game
     {
         this.mode = mode;
 
-        setupPlayers();
         lastBonusFrame = bonusPeriod;
 
         int frame = 0;
@@ -152,24 +208,31 @@ public final class Game
 
             timer.waitForFrame();
 
-            processBoardCells();
-            processPlayers(frame);
-            processBonuses(frame);
-
-            events.add(new GameStateEvent(board.cells, playerInfos));
-            fireFrameEvent(frame);
-            frame++;
-
             /*
-             * The game may be finished, but there are still
-             * lingering frames we must replay.
+             * No player fiddling while within frame processing.
              */
-            if (result == null)
+            synchronized (this)
             {
-                result = checkGameOver();
-            }
+                processBoardCells();
+                processPlayers(frame);
+                processBonuses(frame);
+    
+                events.add(new GameStateEvent(board.cells, playerInfos));
+                fireFrameEvent(frame);
+                frame++;
+    
+                /*
+                 * The game may be finished, but there are still
+                 * lingering frames we must replay.
+                 */
+                if (result == null)
+                {
+                    result = checkGameOver();
+                }
 
-            events.clear();
+                events.clear();
+                this.currentFrame = frame;
+            }
         } while (result == null || lingerFrames-- > 0);
 
         /*
@@ -241,6 +304,11 @@ public final class Game
      */
     private GameResult checkGameOver()
     {
+        if (mode == Mode.INFINITE_DEATHMATCH)
+        {
+            return null;
+        }
+
         int alive = 0;
         for (PlayerInfo pi : playerInfos)
         {
@@ -336,10 +404,9 @@ public final class Game
          * Process controller direction signals, drop bombs, check collisions
          * and bring the dead back to life.  
          */
-        for (int i = 0; i < players.length; i++)
+        for (PlayerInfo pi : playerInfos)
         {
-            final PlayerInfo pi = playerInfos.get(i);
-            final IPlayerController c = players[i].controller;
+            final IPlayerController c = pi.player.controller;
 
             final IPlayerController.Direction signal = c.getCurrent();
             pi.nextFrameUpdate(signal);
@@ -415,7 +482,7 @@ public final class Game
         if (c.type.isLethal())
         {
             logger.debug("Killed: " + pi.getName());
-            pi.kill(frame);
+            pi.kill();
             kills.add(pi);
 
             /*
@@ -623,33 +690,33 @@ public final class Game
     }
 
     /**
-     * Assign players to their default board positions.
+     * Add a player to the game.
      */
-    private void setupPlayers()
+    private void setupPlayer(Player p, int immortalityCount)
     {
-        this.playerInfos = Lists.newArrayList();
-
         final Point [] defaults = board.defaultPlayerPositions;
-        if (defaults.length < players.length)
+        if (defaults.length < playerInfos.size())
         {
             logger.warn("The board has fewer positions than players: "
-                + defaults.length + " < " + players.length);
+                + defaults.length + " < " + playerInfos.size());
         }
 
         final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : Globals.DEFAULT_LIVES);
-        for (int i = 0; i < players.length; i++)
+
+        if (p.controller instanceof IGameEventListener)
         {
-            final Player p = players[i];
-            if (p.controller instanceof IGameEventListener)
-            {
-                addListener((IGameEventListener) p.controller);
-            }
-
-            final PlayerInfo pi = new PlayerInfo(p, i, initialLives);
-            pi.location.setLocation(getDefaultLocation(i));
-
-            playerInfos.add(pi);
+            addListener((IGameEventListener) p.controller);
         }
+
+        final int playerIndex = playerInfos.size();
+
+        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
+        final ISprite.Type spriteType = playerSprites[playerIndex % playerSprites.length];
+
+        final PlayerInfo pi = new PlayerInfo(p, initialLives, spriteType, currentFrame);
+        pi.makeImmortal(immortalityCount);
+        pi.location.setLocation(getDefaultLocation(playerIndex));
+        playerInfos.add(pi);
     }
 
     /**
@@ -757,6 +824,6 @@ public final class Game
      */
     private boolean isDeathMatch()
     {
-        return mode == Mode.DEATHMATCH;
+        return mode == Mode.DEATHMATCH || mode == Mode.INFINITE_DEATHMATCH;
     }
 }

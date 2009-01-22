@@ -14,7 +14,7 @@ final class PlayerInfo implements IPlayerSprite
     public final Player player;
     
     /* */
-    public final int playerIndex;
+    public final ISprite.Type spriteType;
 
     /**
      * Coordinates of this player (it's centerpoint). The rectangle actually taken by the
@@ -69,6 +69,11 @@ final class PlayerInfo implements IPlayerSprite
      * If the player is dead, this is the frame number of its death.
      */
     private int deathAtFrame;
+    
+    /**
+     * When did the player join the game?
+     */
+    private final int joinedAtFrame;
 
     /**
      * Number of killed enemies. The more, the better.
@@ -88,13 +93,14 @@ final class PlayerInfo implements IPlayerSprite
     /*
      * 
      */
-    PlayerInfo(Player player, int playerIndex, int lives)
+    PlayerInfo(Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
     {
         assert lives > 0 : "Number of lives must be > 0";
 
         this.player = player;
-        this.playerIndex = playerIndex;
+        this.spriteType = spriteType;
         this.livesLeft = lives;
+        this.joinedAtFrame = joinedAtFrame;
     }
 
     /**
@@ -156,7 +162,7 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Kills the player, initiating the death state's animation. 
      */
-    public void kill(int currentFrame)
+    public void kill()
     {
         if (this.state == Player.State.DEAD)
         {
@@ -165,7 +171,7 @@ final class PlayerInfo implements IPlayerSprite
 
         this.state = Player.State.DEAD;
         this.stateFrame = 0;
-        this.deathAtFrame = currentFrame;
+        this.deathAtFrame = frame;
         this.livesLeft--;        
     }
 
@@ -206,8 +212,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     public ISprite.Type getType()
     {
-        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
-        return playerSprites[playerIndex % playerSprites.length];
+        return spriteType;
     }
 
     /**
@@ -233,6 +238,14 @@ final class PlayerInfo implements IPlayerSprite
     {
         return !isStoneDead() && frame < immortalityEndsAtFrame;
     }
+    
+    /**
+     * Make the given player immortal for a little while.
+     */
+    void makeImmortal(int immortalityFrameCount)
+    {
+        this.immortalityEndsAtFrame = frame + immortalityFrameCount;
+    }
 
     /**
      * Should the player be resurrected?
@@ -253,7 +266,7 @@ final class PlayerInfo implements IPlayerSprite
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
 
         this.reincarnations++;
-        this.immortalityEndsAtFrame = frame + Globals.DEFAULT_IMMORTALITY_FRAMES;
+        makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
     }
  
     /**
@@ -271,7 +284,7 @@ final class PlayerInfo implements IPlayerSprite
     {
         final PlayerStatus ps = new PlayerStatus(getName());
         ps.dead = isStoneDead();
-        ps.deathFrame = deathAtFrame;
+        ps.deathFrame = deathAtFrame + joinedAtFrame;
         ps.immortal = isImmortal();
         ps.killedEnemies = killedEnemies;
         ps.livesLeft = livesLeft;

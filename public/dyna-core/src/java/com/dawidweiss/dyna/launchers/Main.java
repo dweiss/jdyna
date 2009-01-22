@@ -58,10 +58,27 @@ public final class Main
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
 
+        final Game game = new Game(board, boardInfo);
+        game.setFrameRate(25);
+
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        final Game game = new Game(board, boardInfo, p1, p2);
-        game.setFrameRate(25);
+        new Thread() {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e) 
+                {
+                    // Ignore.
+                }
+
+                game.addPlayer(p1);
+                game.addPlayer(p2);
+            }
+        }.start();
 
         /*
          * Attach sounds view to the game.
@@ -81,7 +98,7 @@ public final class Main
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        final GameResult result = game.run(Game.Mode.DEATHMATCH);
+        final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
         logger.info(result.toString());
 
         SwingUtilities.invokeLater(new Runnable()
