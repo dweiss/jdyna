@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SET DYNA_JAR="%~dp0jdyna-corba.jar"
+
 SET COMMAND=%1
 SET ARGS=
 :COLLECT
@@ -16,19 +18,19 @@ IF "%COMMAND%" == "localgame" GOTO LOCALGAME
 GOTO HELP
 
 :SERVER
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameServerLauncher %ARGS%
+	java -cp %DYNA_JAR% com.dawidweiss.dyna.corba.GameServerLauncher %ARGS%
 	GOTO EXIT
 
 :CLIENT
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameClientLauncher %ARGS%
+	java -cp %DYNA_JAR% com.dawidweiss.dyna.corba.GameClientLauncher %ARGS%
 	GOTO EXIT
 
 :GAME
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.corba.GameLauncher %ARGS%
+	java -cp %DYNA_JAR% com.dawidweiss.dyna.corba.GameLauncher %ARGS%
 	GOTO EXIT
 
 :LOCALGAME
-	java -cp %~dp0dyna.jar com.dawidweiss.dyna.launchers.Main %ARGS%
+	java -cp %DYNA_JAR% com.dawidweiss.dyna.launchers.Main %ARGS%
 	GOTO EXIT
 
 :HELP

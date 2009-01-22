@@ -1,0 +1,27 @@
+
+IDE (Eclipse)
+-------------
+
+You will have to compile IDL stubs (they are not versioned).
+
+	ant compile.idl
+
+
+Running the game, understanding the code
+----------------------------------------
+
+For remote mode, Corba is used. There are shells scripts that launch the
+server, attach players to the server and start a game for players registered
+on the server. All these can be launched on a single machine of course.
+
+dyna server                -h localhost -p 50000 
+dyna client --name player1 -h localhost -p 50000 
+dyna client --name player2 -h localhost -p 50000 
+dyna game                  -h localhost -p 50000
+
+All these programs have additional iiop.host and iiop.port options that fix
+Corba traffic to a given port/ network interface. They are useful with 
+firewalls and NAT.
+
+Look at the shell scripts for main classes starting each network component,
+they should be fairly easy to understand (with minor exceptions).

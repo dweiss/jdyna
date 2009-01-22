@@ -1,15 +1,13 @@
 
-<project name="DynaBlaster" default="dist">
-	<property name="tmp.path" value="tmp/build" />
-	<property name="build.path" value="${tmp.path}/classes" />
-	<property name="dist.path" value="${tmp.path}/dist" />
+<project name="dyna-core" default="jar">
+	<property name="tmp.path" location="tmp" />
+	<property name="build.path" location="${tmp.path}/classes-core" />
+	<property name="dist.path" location="${tmp.path}/dist" />
 
 	<property name="debug" value="on" />
 	<property name="optimize" value="off" />
 
 	<property name="src.java" location="src/java" />
-	<property name="src.idl.stubs" location="src/corba" />
-	<property name="src.idl" location="src/idl/dyna.idl" />
 
 	<!-- Paths and filesets. -->
 
@@ -21,18 +19,16 @@
 
 	<fileset dir="lib" includes="runtime*/*.jar" id="classpath.runtime" />
 
-	<target name="prepare">
-		<mkdir dir="${build.path}" />
-	</target>
-
 	<target name="clean" description="Clean generated files.">
 		<delete dir="${build.path}" />
+		<delete dir="${dist.path}" />
 	</target>
 
-	<target name="compile" depends="compile.idl" description="Compile sources.">
+	<target name="compile" description="Compile source code.">
+		<mkdir dir="${build.path}" />
+
 		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
 			<src location="${src.java}" />
-			<src location="${src.idl.stubs}" />
 			<classpath refid="classpath.compile" />
 		</javac>
 
@@ -46,22 +42,7 @@
 		</copy>
 	</target>
 
-	<target name="compile.idl" depends="prepare" description="Compile Corba bindings.">
-		<taskdef name="idldepend" classname="com.byteslooser.idldepend.IDLCheckerTask">
-			<classpath id="classpath.idlcompiler">
-				<fileset dir="lib/" includes="**/*.jar" />
-			</classpath>
-		</taskdef>
-
-		<delete dir="${src.idl.stubs}" includes="**/bindings/**/*.java" />
-		<mkdir dir="${src.idl.stubs}" />
-		<idldepend compiler="openorb" force="false" checkAll="false" verbose="basic" 
-			targetDir="${src.idl.stubs}" file="${src.idl}">
-			<classpath refid="classpath.idlcompiler" />
-		</idldepend>
-	</target>
-
-	<target name="jar" depends="compile" description="Compile an executable JAR">
+	<target name="jar" depends="compile" description="Compile the core JAR.">
 		<mkdir dir="${dist.path}" />
 
 		<pathconvert property="manifest.libs" pathsep=" ">
@@ -73,9 +54,8 @@
 			<fileset refid="classpath.runtime" />
 		</pathconvert>
 
-		<jar jarfile="${dist.path}/dyna.jar" basedir="${build.path}">
+		<jar jarfile="${dist.path}/jdyna-core.jar" basedir="${build.path}">
 			<manifest>
-				<attribute name="Main-Class" value="com.dawidweiss.dyna.Main" />
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Class-Path" value="${manifest.libs}" />
 			</manifest>
@@ -86,22 +66,5 @@
 		</copy>
 	</target>
 
-	<target name="dist" depends="jar" description="Builds the distribution.">
-		<copy todir="${dist.path}">
-			<fileset dir="src/scripts" />
-		</copy>
-		<chmod file="${dist.path}/dyna.sh" perm="a+rx" />
-	</target>
-
-	<target name="package" depends="dist" description="Builds ZIP files with the distribution.">
-		<delete dir="${tmp.path}/jdyna" failonerror="false"/>
-		<copy todir="${tmp.path}/jdyna">
-			<fileset dir="${dist.path}" />
-		</copy>
-		<zip destfile="${tmp.path}/jdyna.zip">
-			<fileset dir="${tmp.path}" includes="jdyna/*" />
-		</zip>
-		<delete dir="${tmp.path}/jdyna" failonerror="false" />
-	</target>
+	<target name="dist" depends="jar" />
 </project>
-
