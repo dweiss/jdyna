@@ -81,4 +81,12 @@ public final class UDPPacketListener
 
         return packet;
     }
+    
+    public void close()
+    {
+        if (!receiver.isClosed())
+        {
+            this.receiver.close();
+        }
+    }
 }

@@ -14,7 +14,7 @@ public final class GameHandle implements Serializable
 
     public BoardInfo info;
     public String gameName;
-    public int id;
+    public int gameID;
 
     /*
      * Serialization. 
@@ -30,6 +30,6 @@ public final class GameHandle implements Serializable
     {
         this.info = info;
         this.gameName = gameName;
-        this.id = id;
+        this.gameID = id;
     }
 }

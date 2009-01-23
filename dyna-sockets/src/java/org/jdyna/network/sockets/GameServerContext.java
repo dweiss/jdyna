@@ -3,6 +3,8 @@ package org.jdyna.network.sockets;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,12 +36,12 @@ public final class GameServerContext
     /**
      * Shared broadcaster.
      */
-    private UDPBroadcaster udpBroadcaster;
+    private UDPPacketEmitter udpBroadcaster;
 
     /**
      * Initialize context.
      */
-    public GameServerContext()
+    public GameServerContext(int broadcastPort)
     {
         /*
          * Load board configurations.
@@ -50,7 +52,14 @@ public final class GameServerContext
             this.boards = Boards.read(new InputStreamReader(cl
                 .getResourceAsStream("boards.conf"), "UTF-8"));
 
-            this.udpBroadcaster = new UDPBroadcaster(GameServer.DEFAULT_UDP_BROADCAST);
+            final DatagramSocket socket = new DatagramSocket();
+            socket.setBroadcast(true);
+            socket.setReuseAddress(true);
+            socket.setSendBufferSize(Packet.MAX_LENGTH);
+            this.udpBroadcaster = new UDPPacketEmitter(socket);
+            this.udpBroadcaster.setDefaultTarget(
+                Inet4Address.getByName("255.255.255.255"), 
+                broadcastPort);
         }
         catch (IOException e)
         {
@@ -66,6 +75,21 @@ public final class GameServerContext
         synchronized (this)
         {
             return games.containsKey(gameName);
+        }
+    }
+
+    /*
+     * 
+     */
+    public boolean hasGame(int gameID)
+    {
+        synchronized (this)
+        {
+            for (GameContext c : games.values())
+            {
+                if (c.getHandle().gameID == gameID) return true;
+            }
+            return false;
         }
     }
 
@@ -103,11 +127,37 @@ public final class GameServerContext
             final GameContext gameContext = new GameContext(handle, new Game(board, boardInfo));
 
             gameContext.addFrameDataListener(
-                new FrameDataBroadcaster(gameContext, this.udpBroadcaster));
+                new FrameDataBroadcaster(gameContext, udpBroadcaster));
             gameContext.startGame();
 
             games.put(gameName, gameContext);
             return games.get(gameName).getHandle();
+        }
+    }
+
+    /*
+     * 
+     */
+    public GameContext getGameContext(int gameID)
+    {
+        synchronized (this)
+        {
+            for (GameContext c : games.values())
+            {
+                if (c.getHandle().gameID == gameID) return c;
+            }
+            throw new IllegalStateException("No such game: " + gameID);
+        }
+    }
+
+    /*
+     * 
+     */
+    public PlayerHandle addPlayer(int gameID, String ip, String playerName)
+    {
+        synchronized (this)
+        {
+            return null;
         }
     }
 }

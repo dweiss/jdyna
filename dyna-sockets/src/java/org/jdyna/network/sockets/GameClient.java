@@ -5,7 +5,12 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import org.jdyna.network.sockets.packets.*;
+import org.apache.commons.lang.StringUtils;
+import org.jdyna.network.sockets.packets.CreateGameRequest;
+import org.jdyna.network.sockets.packets.CreateGameResponse;
+import org.jdyna.network.sockets.packets.FailureResponse;
+import org.jdyna.network.sockets.packets.JoinGameRequest;
+import org.jdyna.network.sockets.packets.JoinGameResponse;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +29,8 @@ public class GameClient
      * Port for the TCP server connection.
      */
     @Option(name = "-p", aliases = "--port", required = false, metaVar = "port", usage = "Server's TCP port (default: "
-        + GameServer.DEFAULT_PORT + ").")
-    public int port = GameServer.DEFAULT_PORT;
+        + GameServer.DEFAULT_TCP_CONTROL_PORT + ").")
+    public int port = GameServer.DEFAULT_TCP_CONTROL_PORT;
 
     /**
      * Host for the server's TCP connection.
@@ -44,6 +49,7 @@ public class GameClient
     public void connect() throws IOException
     {
         if (pe != null) throw new IllegalStateException("Already connected.");
+        if (StringUtils.isEmpty(host)) throw new IllegalStateException("host is required.");
 
         pe = new TCPPacketEmitter(new Socket(InetAddress.getByName(host), port));
         logger.info("Connected.");
@@ -63,8 +69,20 @@ public class GameClient
      */
     public GameHandle createGame(String gameName, String boardName) throws IOException
     {
-        CreateGameResponse response = 
-            sendReceive(CreateGameResponse.class, new CreateGameRequest(gameName, boardName));
+        CreateGameResponse response = sendReceive(CreateGameResponse.class,
+            new CreateGameRequest(gameName, boardName));
+        return response.handle;
+    }
+
+    /**
+     * Join or re-join an existing game. Re-joining will happen if player with tha given
+     * name and the same source IP address was already registered.
+     */
+    public PlayerHandle joinGame(GameHandle gameHandle, String playerName)
+        throws IOException
+    {
+        JoinGameResponse response = sendReceive(JoinGameResponse.class,
+            new JoinGameRequest(gameHandle.gameID, playerName));
         return response.handle;
     }
 

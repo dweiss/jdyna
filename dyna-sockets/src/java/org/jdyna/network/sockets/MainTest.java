@@ -1,5 +1,7 @@
 package org.jdyna.network.sockets;
 
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
@@ -7,7 +9,11 @@ import javax.swing.JFrame;
 import org.jdyna.network.sockets.packets.FrameData;
 
 import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.IPlayerFactory;
+import com.dawidweiss.dyna.players.HumanPlayerFactory;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 public class MainTest
@@ -32,15 +38,33 @@ public class MainTest
         final GameClient client = new GameClient();
         client.host = "127.0.0.1";
 
+        final GameEventListenerProxy proxy = new GameEventListenerProxy();
+
         client.connect();
         final GameHandle handle = client.createGame(gameName, "classic");
+
+        final DatagramSocket socket = new DatagramSocket();
+        final UDPPacketEmitter serverUpdater = new UDPPacketEmitter(socket);
+        serverUpdater.setDefaultTarget(
+            Inet4Address.getByName(client.host), GameServer.DEFAULT_UDP_FEEDBACK_PORT);
+
+        final IPlayerFactory pf1 = new HumanPlayerFactory(
+            Globals.getDefaultKeyboardController(0));
+        final String playerName = pf1.getDefaultPlayerName();
+        final IPlayerController controller = pf1.getController(playerName);
+        final PlayerHandle player1 = client.joinGame(handle, playerName);
+        if (controller instanceof IGameEventListener)
+        {
+            proxy.addListener((IGameEventListener) controller);
+        }
+        proxy.addListener(new ControllerStateDispatch(player1, controller, serverUpdater));
+
         client.disconnect();
 
         /*
          * Create a local listener of game events on the designated UDP broadcast address.
          */
-        final GameEventListenerProxy proxy = new GameEventListenerProxy();
-        proxy.addListener(new GameSoundEffects());
+        // proxy.addListener(new GameSoundEffects());
 
         final BoardFrame frame = new BoardFrame();
         proxy.addListener(frame);
@@ -62,9 +86,12 @@ public class MainTest
          * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
          * 
          * TODO: add feedback UDP port.
+         * 
+         * TODO: add auto-discovery.
          */
 
-        final UDPPacketListener listener = new UDPPacketListener(GameServer.DEFAULT_UDP_BROADCAST);
+        final UDPPacketListener listener = new UDPPacketListener(
+            GameServer.DEFAULT_UDP_BROADCAST);
         Packet p;
         while ((p = listener.receive()) != null)
         {
