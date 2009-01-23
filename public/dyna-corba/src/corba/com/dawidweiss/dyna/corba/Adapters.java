@@ -129,7 +129,7 @@ public final class Adapters
     /*
      * 
      */
-    public static CGameEvent [] adapt(List<GameEvent> events)
+    public static CGameEvent [] adapt(List<? extends GameEvent> events)
     {
         final ArrayList<CGameEvent> result = Lists.newArrayList();
 

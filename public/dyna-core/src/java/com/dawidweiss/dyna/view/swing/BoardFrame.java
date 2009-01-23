@@ -49,7 +49,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         setTitle("Play responsibly.");
     }
 
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         gamePanel.onFrame(frame, events);
     }

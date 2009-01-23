@@ -3,5 +3,10 @@
     Filtering of logs from common packages and libraries (prevent spamming the output).
 -->
 
+<!-- Filter out certain jdyna logs -->
+<logger name="org.jdyna.network.sockets.UDPPacketListener"><level value="info" /></logger>
+<logger name="org.jdyna.network.sockets.TCPPacketEmitter"><level value="info" /></logger>
+
 <!-- Apache commons -->
 <logger name="org.apache.commons"><level value="warn"/></logger>
+

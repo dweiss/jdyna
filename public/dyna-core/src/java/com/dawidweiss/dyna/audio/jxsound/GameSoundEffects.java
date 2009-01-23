@@ -36,7 +36,7 @@ public final class GameSoundEffects implements IGameEventListener
     /*
      * 
      */
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         for (GameEvent e : events)
         {

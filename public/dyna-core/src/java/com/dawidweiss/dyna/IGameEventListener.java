@@ -15,5 +15,5 @@ public interface IGameEventListener
      * @param frame The current frame number.
      * @param events All events that occurred during the frame.
      */
-    void onFrame(int frame, List<GameEvent> events);
+    void onFrame(int frame, List<? extends GameEvent> events);
 }

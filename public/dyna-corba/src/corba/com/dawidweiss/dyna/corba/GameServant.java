@@ -35,7 +35,7 @@ class GameServant extends ICGamePOA
      */
     private IGameEventListener gameListener = new IGameEventListener()
     {
-        public void onFrame(int frame, List<GameEvent> events)
+        public void onFrame(int frame, List<? extends GameEvent> events)
         {
             fireFrame(frame, Adapters.adapt(events));
         }

@@ -212,4 +212,12 @@ public final class Boards
 
         return positions;
     }
+
+    /**
+     * Return available board names.
+     */
+    public Set<String> getBoardNames()
+    {
+        return this.byName.keySet();
+    }
 }

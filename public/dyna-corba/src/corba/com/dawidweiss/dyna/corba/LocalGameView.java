@@ -16,7 +16,7 @@ final class LocalGameView implements IGameEventListener
     private BoardFrame view;
 
     @Override
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         for (GameEvent ge : events)
         {

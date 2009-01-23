@@ -38,7 +38,7 @@ public final class GameWriter implements IGameEventListener
     }
 
     @Override
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         if (oos == null)
             return;

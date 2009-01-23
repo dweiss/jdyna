@@ -274,7 +274,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /**
      * @see IGameEventListener
      */
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         for (GameEvent e : events)
         {

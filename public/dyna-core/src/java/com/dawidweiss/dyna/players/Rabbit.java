@@ -72,7 +72,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
      * 
      */
     @Override
-    public void onFrame(int frame, List<GameEvent> events)
+    public void onFrame(int frame, List<? extends GameEvent> events)
     {
         for (GameEvent event : events)
         {
