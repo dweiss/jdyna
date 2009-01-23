@@ -55,8 +55,15 @@ public class MainTest
         /*
          * TODO: add a timeout to udp packet listener? If no events appear on input, check
          * if the server still runs the game.
+         * 
+         * TODO: UDP packets should contain game id so that they can be filtered without deserializing
+         * other stuff.
+         * 
+         * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
+         * 
+         * TODO: add feedback UDP port.
          */
-        
+
         final UDPPacketListener listener = new UDPPacketListener(GameServer.DEFAULT_UDP_BROADCAST);
         Packet p;
         while ((p = listener.receive()) != null)
