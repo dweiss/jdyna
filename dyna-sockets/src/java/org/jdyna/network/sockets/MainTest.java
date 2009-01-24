@@ -83,9 +83,6 @@ public class MainTest
          * TODO: add a timeout to udp packet listener? If no events appear on input, check
          * if the server still runs the game.
          * 
-         * TODO: UDP packets should contain game id so that they can be filtered without deserializing
-         * other stuff.
-         * 
          * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
          * 
          * TODO: add feedback UDP port.
@@ -98,11 +95,10 @@ public class MainTest
         SerializablePacket p = new SerializablePacket();
         while ((p = listener.receive(p)) != null)
         {
-            final Object o = p.deserialize(Object.class);
-            if (o instanceof FrameData)
+            if (p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
+                && p.getCustom2() == handle.gameID)
             {
-                // TODO: filter start game from the event stream?
-                final FrameData fd = (FrameData) o;
+                final FrameData fd = p.deserialize(FrameData.class);
                 proxy.onFrame(fd.frame, fd.events);
             }
         }

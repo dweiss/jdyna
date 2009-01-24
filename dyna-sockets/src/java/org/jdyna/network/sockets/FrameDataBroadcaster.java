@@ -9,29 +9,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * Broadcasts data received from {@link IFrameDataListener} to a {@link Packet} sent using
+ * {@link UDPPacketEmitter}.
  */
-class FrameDataBroadcaster implements IFrameDataListener
+final class FrameDataBroadcaster implements IFrameDataListener
 {
-    private final static Logger logger = LoggerFactory.getLogger(FrameDataBroadcaster.class);
+    private final static Logger logger = LoggerFactory
+        .getLogger(FrameDataBroadcaster.class);
 
     private GameContext gameContext;
     private UDPPacketEmitter broadcaster;
     private final SerializablePacket packet = new SerializablePacket();
 
-    public FrameDataBroadcaster(GameContext gameContext, UDPPacketEmitter udpBroadcaster)
+    /*
+     * 
+     */
+    FrameDataBroadcaster(GameContext gameContext, UDPPacketEmitter udpBroadcaster)
     {
         this.gameContext = gameContext;
         this.broadcaster = udpBroadcaster;
     }
 
+    /*
+     * 
+     */
     @Override
     public void onFrame(FrameData fd)
     {
         try
         {
-            // TODO: add game ID here.
-            packet.serialize(0, 0, fd);
+            packet.serialize(PacketIdentifiers.GAME_FRAME_DATA, gameContext.getHandle().gameID, fd);
             broadcaster.send(packet);
         }
         catch (IOException e)
