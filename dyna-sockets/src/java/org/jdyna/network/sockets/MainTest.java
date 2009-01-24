@@ -6,6 +6,9 @@ import java.util.Arrays;
 
 import javax.swing.JFrame;
 
+import org.jdyna.network.packetio.SerializablePacket;
+import org.jdyna.network.packetio.UDPPacketEmitter;
+import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.FrameData;
 
 import com.dawidweiss.dyna.GameStartEvent;
@@ -83,7 +86,7 @@ public class MainTest
          * TODO: UDP packets should contain game id so that they can be filtered without deserializing
          * other stuff.
          * 
-         * TODO: Serialize to a subclass of byte array output stream and reuse byte buffer.
+         * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
          * 
          * TODO: add feedback UDP port.
          * 
@@ -92,10 +95,10 @@ public class MainTest
 
         final UDPPacketListener listener = new UDPPacketListener(
             GameServer.DEFAULT_UDP_BROADCAST);
-        Packet p;
-        while ((p = listener.receive()) != null)
+        SerializablePacket p = new SerializablePacket();
+        while ((p = listener.receive(p)) != null)
         {
-            final Object o = ObjectPacket.deserialize(p);
+            final Object o = p.deserialize(Object.class);
             if (o instanceof FrameData)
             {
                 // TODO: filter start game from the event stream?

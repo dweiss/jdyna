@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdyna.network.packetio.SerializablePacket;
+import org.jdyna.network.packetio.TCPPacketEmitter;
 import org.jdyna.network.sockets.packets.CreateGameRequest;
 import org.jdyna.network.sockets.packets.CreateGameResponse;
 import org.jdyna.network.sockets.packets.FailureResponse;
@@ -44,12 +46,18 @@ public class GameClient
     private TCPPacketEmitter pe;
 
     /**
+     * Reusable packet.
+     */
+    final SerializablePacket packet = new SerializablePacket();
+
+    /**
      * Connect to the server.
      */
     public void connect() throws IOException
     {
         if (pe != null) throw new IllegalStateException("Already connected.");
-        if (StringUtils.isEmpty(host)) throw new IllegalStateException("host is required.");
+        if (StringUtils.isEmpty(host)) throw new IllegalStateException(
+            "host is required.");
 
         pe = new TCPPacketEmitter(new Socket(InetAddress.getByName(host), port));
         logger.info("Connected.");
@@ -87,19 +95,22 @@ public class GameClient
     }
 
     /**
-     * Check if the received packet is of the required type.
+     * Send a given object, receive another object and check if the received packet is of
+     * the required type.
      */
-    private <T> T sendReceive(Class<T> clazz, Serializable packet) throws IOException
+    private <T> T sendReceive(Class<T> clazz, Serializable object) throws IOException
     {
-        logger.debug("Sending: " + packet.getClass().getSimpleName());
+        logger.debug("Sending: " + object.getClass().getSimpleName());
 
-        final Packet p = pe.sendAndReceive(ObjectPacket.serialize(packet));
-        if (p == null)
+        packet.serialize(0, 0, object);
+        pe.send(packet);
+
+        if (pe.receive(packet) == null)
         {
             throw new IOException("Server connection closed.");
         }
-        final Object result = ObjectPacket.deserialize(p);
 
+        final Object result = packet.deserialize(Object.class);
         logger.debug("Received: " + result.getClass().getSimpleName());
 
         if (result instanceof FailureResponse)

@@ -1,15 +1,15 @@
-package org.jdyna.network.sockets;
+package org.jdyna.network.packetio;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * 
+/** 
+ * Packet sender over UDP protocol.
  */
 public final class UDPPacketEmitter
 {
@@ -52,8 +52,6 @@ public final class UDPPacketEmitter
         send(packet, defaultTarget, defaultPort);
     }
     
-    static int index = 0;
-
     /**
      * 
      */
@@ -61,30 +59,19 @@ public final class UDPPacketEmitter
     {
         synchronized (this)
         {
-            final byte [] buf = datagram.getData();
-            buf[0] = (byte) (Packet.HEADER_MAGIC >>> 24);
-            buf[1] = (byte) (Packet.HEADER_MAGIC >>> 16);
-            buf[2] = (byte) (Packet.HEADER_MAGIC >>> 8);
-            buf[3] = (byte) (Packet.HEADER_MAGIC);
-            buf[4] = (byte) (packet.length >>> 24);
-            buf[5] = (byte) (packet.length >>> 16);
-            buf[6] = (byte) (packet.length >>> 8);
-            buf[7] = (byte) (packet.length);
-            final int header = 8;
-            System.arraycopy(packet.buffer, packet.start, buf, header, packet.length);
-            
-            datagram.setLength(packet.length + header);
+            final byte [] buf = packet.getSendBuffer();
+            final int length = packet.getLength();
+            final int start = packet.getStart();
+
+            datagram.setData(buf, start, length);
             datagram.setAddress(target);
             datagram.setPort(port);
-            
-            byte [] content = new byte [packet.length + header];
-            System.arraycopy(buf, 0, content, 0, packet.length + header);
-            FileUtils.writeByteArrayToFile(new File("packet-" + index++), content);
 
             if (logger.isDebugEnabled())
             {
-                logger.debug("USNT: [" + (packet.length + header) + "]");
+                logger.debug("USNT: [" + (length) + "]");
             }
+
             socket.send(datagram);
         }
     }

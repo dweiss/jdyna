@@ -5,7 +5,13 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import org.jdyna.network.sockets.packets.*;
+import org.jdyna.network.packetio.SerializablePacket;
+import org.jdyna.network.packetio.TCPPacketEmitter;
+import org.jdyna.network.sockets.packets.CreateGameRequest;
+import org.jdyna.network.sockets.packets.CreateGameResponse;
+import org.jdyna.network.sockets.packets.FailureResponse;
+import org.jdyna.network.sockets.packets.JoinGameRequest;
+import org.jdyna.network.sockets.packets.JoinGameResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,31 +20,22 @@ import org.slf4j.LoggerFactory;
  */
 final class ServerControlConnectionHandler extends Thread
 {
-    /*
-     * 
-     */
     private final Logger logger;
 
-    /*
-     * 
-     */
+    /** Client socket connection. */
     private final Socket client;
 
-    /**
-     * Shared game server context.
-     */
+    /** Shared game server context. */
     private GameServerContext context;
 
-    /**
-     * IP address of the client.
-     */
+    /** IP address of the client. */
     private String clientAddress;
 
-    /**
-     * Packet emitter.
-     */
+    /** Packet emitter. */
     private TCPPacketEmitter pe;
 
+    /** Reusable packet. */
+    private SerializablePacket p = new SerializablePacket();
     /*
      * 
      */
@@ -61,7 +58,7 @@ final class ServerControlConnectionHandler extends Thread
     @Override
     public void run()
     {
-        logger.info("TCP connection started.");
+        logger.info("Link started.");
 
         try
         {
@@ -70,13 +67,12 @@ final class ServerControlConnectionHandler extends Thread
             /*
              * Exchange control packets with the client.
              */
-            Packet p;
-            while ((p = pe.receive()) != null)
+            while ((p = pe.receive(p)) != null)
             {
-                final Object o = ObjectPacket.deserialize(p);
-
                 try
                 {
+                    final Object o = p.deserialize(Object.class);
+
                     if (o instanceof FailureResponse)
                     {
                         logger.warn("Failure response from the client: "
@@ -114,7 +110,7 @@ final class ServerControlConnectionHandler extends Thread
             pe = null;
         }
 
-        logger.info("TCP connection closed.");
+        logger.info("Link closed.");
     }
 
     /*
@@ -160,11 +156,12 @@ final class ServerControlConnectionHandler extends Thread
         send(new CreateGameResponse(handle));
     }
 
-    /*
-     * 
+    /**
+     * Serialize and send a packet.
      */
     private void send(Serializable object) throws IOException
     {
-        pe.send(ObjectPacket.serialize(object));        
+        p.serialize(0, 0, object);
+        pe.send(p);
     }
 }

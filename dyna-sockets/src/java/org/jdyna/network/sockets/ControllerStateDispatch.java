@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.jdyna.network.packetio.SerializablePacket;
+import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.packets.UpdateControllerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +14,8 @@ import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.IGameEventListener;
 import com.dawidweiss.dyna.IPlayerController;
 
-/*
- * 
+/**
+ * Dispatch local {@link IPlayerController} state to a remote server using UDP.
  */
 class ControllerStateDispatch implements IGameEventListener
 {
@@ -23,6 +25,7 @@ class ControllerStateDispatch implements IGameEventListener
     private final IPlayerController controller;
     private final UDPPacketEmitter serverUpdate;
     private final PlayerHandle playerHandle;
+    private final SerializablePacket packet = new SerializablePacket();
 
     private ControllerState previous;
 
@@ -51,9 +54,13 @@ class ControllerStateDispatch implements IGameEventListener
                 final int validityFrames = 0;
 
                 logger.info("Updating controller state: " + previous);
-                serverUpdate.send(ObjectPacket.serialize(new UpdateControllerState(
+
+                final UpdateControllerState state = new UpdateControllerState(
                     playerHandle.gameID, playerHandle.playerID, previous.direction,
-                    previous.dropsBomb, validityFrames)));
+                    previous.dropsBomb, validityFrames);
+
+                packet.serialize(0, 0, state);
+                serverUpdate.send(packet);
             }
             catch (IOException e)
             {

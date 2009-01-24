@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.jdyna.network.packetio.SerializablePacket;
+import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.UpdateControllerState;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
@@ -86,10 +88,11 @@ public final class GameServer
         {
             try
             {
+                final SerializablePacket p = new SerializablePacket();
                 while (true)
                 {
-                    final Packet p = feedbackSocket.receive();
-                    final Object message = ObjectPacket.deserialize(p);
+                    feedbackSocket.receive(p);
+                    final Object message = p.deserialize(Object.class);
                     if (message instanceof UpdateControllerState)
                     {
                         final UpdateControllerState s = (UpdateControllerState) message;
