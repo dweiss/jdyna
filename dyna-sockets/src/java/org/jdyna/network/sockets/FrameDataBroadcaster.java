@@ -13,12 +13,18 @@ class FrameDataBroadcaster implements IFrameDataListener
     private GameContext gameContext;
     private UDPPacketEmitter broadcaster;
 
+    /*
+     * 
+     */
     public FrameDataBroadcaster(GameContext gameContext, UDPPacketEmitter udpBroadcaster)
     {
         this.gameContext = gameContext;
         this.broadcaster = udpBroadcaster;
     }
 
+    /*
+     * 
+     */
     @Override
     public void onFrame(FrameData fd)
     {

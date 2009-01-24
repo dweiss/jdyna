@@ -1,10 +1,10 @@
 package org.jdyna.network.sockets;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +52,8 @@ public final class UDPPacketEmitter
         send(packet, defaultTarget, defaultPort);
     }
     
+    static int index = 0;
+
     /**
      * 
      */
@@ -74,10 +76,14 @@ public final class UDPPacketEmitter
             datagram.setLength(packet.length + header);
             datagram.setAddress(target);
             datagram.setPort(port);
+            
+            byte [] content = new byte [packet.length + header];
+            System.arraycopy(buf, 0, content, 0, packet.length + header);
+            FileUtils.writeByteArrayToFile(new File("packet-" + index++), content);
 
             if (logger.isDebugEnabled())
             {
-                logger.debug("USNT: [" + packet.length + header + "]");
+                logger.debug("USNT: [" + (packet.length + header) + "]");
             }
             socket.send(datagram);
         }

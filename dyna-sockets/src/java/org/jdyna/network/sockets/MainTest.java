@@ -83,7 +83,7 @@ public class MainTest
          * TODO: UDP packets should contain game id so that they can be filtered without deserializing
          * other stuff.
          * 
-         * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
+         * TODO: Serialize to a subclass of byte array output stream and reuse byte buffer.
          * 
          * TODO: add feedback UDP port.
          * 

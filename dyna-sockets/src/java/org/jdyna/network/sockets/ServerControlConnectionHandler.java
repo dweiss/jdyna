@@ -61,7 +61,7 @@ final class ServerControlConnectionHandler extends Thread
     @Override
     public void run()
     {
-        logger.info("Link started.");
+        logger.info("TCP connection started.");
 
         try
         {
@@ -114,7 +114,7 @@ final class ServerControlConnectionHandler extends Thread
             pe = null;
         }
 
-        logger.info("Link closed.");
+        logger.info("TCP connection closed.");
     }
 
     /*
