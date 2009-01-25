@@ -18,7 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * A set of utilities facilitating talking to a remote {@link GameServer} and running a
+ * game.
  */
 public class GameClient
 {
@@ -30,8 +31,8 @@ public class GameClient
     /**
      * Port for the TCP server connection.
      */
-    @Option(name = "-p", aliases = "--port", required = false, metaVar = "port", usage = "Server's TCP port (default: "
-        + GameServer.DEFAULT_TCP_CONTROL_PORT + ").")
+    @Option(name = "-p", aliases = "--port", required = false, metaVar = "port", 
+        usage = "Server's TCP port (default: " + GameServer.DEFAULT_TCP_CONTROL_PORT + ").")
     public int port = GameServer.DEFAULT_TCP_CONTROL_PORT;
 
     /**
@@ -51,7 +52,7 @@ public class GameClient
     final SerializablePacket packet = new SerializablePacket();
 
     /**
-     * Connect to the server.
+     * Establish a control link to the remote server.
      */
     public void connect() throws IOException
     {
@@ -77,19 +78,23 @@ public class GameClient
      */
     public GameHandle createGame(String gameName, String boardName) throws IOException
     {
-        CreateGameResponse response = sendReceive(CreateGameResponse.class,
+        checkConnected();
+
+        final CreateGameResponse response = sendReceive(CreateGameResponse.class,
             new CreateGameRequest(gameName, boardName));
         return response.handle;
     }
 
     /**
-     * Join or re-join an existing game. Re-joining will happen if player with tha given
+     * Join or re-join an existing game. Re-joining will happen if player with the given
      * name and the same source IP address was already registered.
      */
     public PlayerHandle joinGame(GameHandle gameHandle, String playerName)
         throws IOException
     {
-        JoinGameResponse response = sendReceive(JoinGameResponse.class,
+        checkConnected();
+
+        final JoinGameResponse response = sendReceive(JoinGameResponse.class,
             new JoinGameRequest(gameHandle.gameID, playerName));
         return response.handle;
     }
@@ -130,4 +135,15 @@ public class GameClient
             + result.getClass().getSimpleName() + " (expected: " + clazz.getSimpleName()
             + ")");
     }
+    
+    /**
+     * Check if there is a valid control link.
+     */
+    private void checkConnected()
+    {
+        if (pe == null)
+        {
+            throw new IllegalArgumentException("Not connected.");
+        }
+    }    
 }

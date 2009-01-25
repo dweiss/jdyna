@@ -17,9 +17,9 @@ final class FrameDataBroadcaster implements IFrameDataListener
     private final static Logger logger = LoggerFactory
         .getLogger(FrameDataBroadcaster.class);
 
-    private GameContext gameContext;
-    private UDPPacketEmitter broadcaster;
     private final SerializablePacket packet = new SerializablePacket();
+    private final GameContext gameContext;
+    private final UDPPacketEmitter broadcaster;
 
     /*
      * 
@@ -30,15 +30,16 @@ final class FrameDataBroadcaster implements IFrameDataListener
         this.broadcaster = udpBroadcaster;
     }
 
-    /*
-     * 
+    /**
+     * Broadcast frame data to clients.
      */
     @Override
     public void onFrame(FrameData fd)
     {
         try
         {
-            packet.serialize(PacketIdentifiers.GAME_FRAME_DATA, gameContext.getHandle().gameID, fd);
+            packet.serialize(PacketIdentifiers.GAME_FRAME_DATA,
+                gameContext.getHandle().gameID, fd);
             broadcaster.send(packet);
         }
         catch (IOException e)

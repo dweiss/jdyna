@@ -15,10 +15,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
- * 
+ * A game context holds all the data structures required to run and dispatch information
+ * from a single game running on the server.
  */
 final class GameContext
 {
+    /**
+     * A combination of player name and IP address.
+     */
     private static class PlayerAddress
     {
         private final String IP, name;
@@ -28,8 +32,7 @@ final class GameContext
             this.IP = remoteIP;
             this.name = name;
         }
-        
-        @Override
+
         public boolean equals(Object obj)
         {
             if (obj instanceof PlayerAddress)
@@ -40,14 +43,17 @@ final class GameContext
             return false;
         }
 
-        @Override
         public int hashCode()
         {
             return IP.hashCode() ^ name.hashCode();
         }
     }
 
+    /**
+     * Unique player ID generator (across all games).
+     */
     private final static AtomicInteger playerIdGenerator = new AtomicInteger();
+
     private final GameHandle handle;
     private final Game game;
     private final List<IFrameDataListener> listeners = Lists.newArrayList();
@@ -57,7 +63,11 @@ final class GameContext
 
     private GameThread thread;
 
-    private final IGameEventListener frameDataBroadcaster = new IGameEventListener() { 
+    /**
+     * Broadcast frame data to all listeners.
+     */
+    private final IGameEventListener frameDataBroadcaster = new IGameEventListener()
+    {
         public void onFrame(int frame, List<? extends GameEvent> events)
         {
             final FrameData fd = new FrameData(frame, events);
@@ -69,12 +79,18 @@ final class GameContext
         }
     };
 
-    private final IGameEventListener controllersUpdater = new IGameEventListener() { 
+    /**
+     * A hook listener attached to a running game and updating player controllers state
+     * from the game thread. This ensures we have synchronous updates in the game and
+     * count frame validity of the incoming states as well.
+     */
+    private final IGameEventListener controllersUpdater = new IGameEventListener()
+    {
         public void onFrame(int frame, List<? extends GameEvent> events)
         {
             /*
-             * Apply pending controller updates or reset current state if
-             * valid frame count reached 0.
+             * Apply pending controller updates or reset current state if valid frame
+             * count reached 0.
              */
             synchronized (controllerUpdates)
             {
@@ -83,13 +99,14 @@ final class GameContext
                     final ControllerState newState = controllerUpdates.get(ph.playerID);
                     if (newState != null)
                     {
-                        ph.controller.update(newState.direction, newState.dropsBomb, newState.validFrames);
+                        ph.controller.update(newState.direction, newState.dropsBomb,
+                            newState.validFrames);
                     }
                     else
                     {
                         if (ph.controller.validFrames > 0)
                         {
-                            if (--ph.controller.validFrames == 0)                            
+                            if (--ph.controller.validFrames == 0)
                             {
                                 // Reset controller state.
                                 ph.controller.update(null, false, 0);
@@ -100,7 +117,7 @@ final class GameContext
             }
         }
     };
-    
+
     /*
      * 
      */
@@ -110,13 +127,16 @@ final class GameContext
         this.game = game;
     }
 
+    /*
+     * 
+     */
     public GameHandle getHandle()
     {
         return handle;
     }
 
-    /*
-     * 
+    /**
+     * Start the game thread and message broadcast.
      */
     public synchronized void startGame()
     {
@@ -131,18 +151,24 @@ final class GameContext
         this.thread.start();
     }
 
-    final Game getGame()
+    /*
+     * 
+     */
+    public final Game getGame()
     {
         return game;
     }
 
+    /**
+     * Attach a frame data listener to this context.
+     */
     public void addFrameDataListener(IFrameDataListener l)
     {
         this.listeners.add(l);
     }
-    
-    /*
-     * 
+
+    /**
+     * Destroy the game and all associated resources.
      */
     public void dispose()
     {
@@ -152,8 +178,8 @@ final class GameContext
         }
     }
 
-    /*
-     * 
+    /**
+     * Return the player handle of an existing (or new) player.
      */
     public PlayerHandle getOrCreatePlayer(String ip, String playerName)
     {
@@ -165,12 +191,13 @@ final class GameContext
             {
                 if (game.hasPlayer(playerName))
                 {
-                    throw new FailureResponseException("This game already has" +
-                    		" a player named: " + playerName); 
+                    throw new FailureResponseException("This game already has"
+                        + " a player named: " + playerName);
                 }
 
-                playerHandle = new PlayerHandle(
-                    playerIdGenerator.incrementAndGet(), getHandle().gameID, playerName);
+                playerHandle = new PlayerHandle(playerIdGenerator.incrementAndGet(),
+                    getHandle().gameID, playerName);
+                playerHandle.address = ip;
 
                 game.addPlayer(new Player(playerName, playerHandle.controller));
                 players.put(address, playerHandle);
@@ -181,8 +208,8 @@ final class GameContext
         }
     }
 
-    /*
-     * 
+    /**
+     * Return the player handle associated with the given ID.
      */
     public PlayerHandle getPlayer(int playerID)
     {
@@ -192,15 +219,27 @@ final class GameContext
         }
     }
 
-    /*
-     * 
+    /**
+     * Return the player handle associated with the given ID.
+     */
+    public String getPlayerAddress(int playerID)
+    {
+        synchronized (this)
+        {
+            return playersByID.get(playerID).address;
+        }
+    }
+
+    /**
+     * Update controller state of a given player in the subsequent frame.
      */
     public void updateControllerState(int playerID, Direction direction,
         boolean dropsBomb, int validFrames)
     {
         synchronized (controllerUpdates)
         {
-            controllerUpdates.put(playerID, new ControllerState(direction, dropsBomb, validFrames));
+            controllerUpdates.put(playerID, new ControllerState(direction, dropsBomb,
+                validFrames));
         }
     }
 }

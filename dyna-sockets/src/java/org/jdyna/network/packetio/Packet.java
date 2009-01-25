@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
+import java.net.InetAddress;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -78,6 +79,11 @@ public class Packet
      * Packet length in the buffer.
      */
     private int length;
+    
+    /**
+     * Source address from which this packet arrived, if any.
+     */
+    InetAddress source; 
 
     /**
      * Reusable array output stream.
@@ -147,6 +153,23 @@ public class Packet
         return new DataInputStream(new ByteArrayInputStream(this.buffer, this.start,
             this.length));
     }
+
+    /**
+     * Set the source of the most recent data packet received.
+     */
+    final void setSource(InetAddress address)
+    {
+        this.source = address;
+    }
+    
+    /**
+     * Return the source address of the most recently received message in this packet,
+     * or null if not available.
+     */
+    public final InetAddress getSource()
+    {
+        return source;
+    }    
 
     /**
      * Read packet data from a stream. 

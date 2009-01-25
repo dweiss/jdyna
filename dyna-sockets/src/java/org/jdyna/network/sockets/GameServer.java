@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.UpdateControllerState;
@@ -14,9 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.CmdLine;
 
-
 /**
- * A socket server for jdyna. Broadcasts itself on the local network automatically.
+ * A socket server for jdyna. Broadcasts itself on the local network for automatic
+ * detection by clients. Uses TCP, UDP and broadcast UDP connections. At least three ports
+ * must be open in the local network.
  */
 public final class GameServer
 {
@@ -39,34 +41,32 @@ public final class GameServer
      * Internal logger.
      */
     private final static Logger logger = LoggerFactory.getLogger(GameServer.class);
-    
+
     /**
      * Binding port for the TCP connection server.
      */
-    @Option(name = "-cp", aliases = "--control-port", required = false, metaVar = "ports", 
-        usage = "TCP control port (default: " + DEFAULT_TCP_CONTROL_PORT + ").")
+    @Option(name = "-cp", aliases = "--control-port", required = false, metaVar = "ports", usage = "TCP control port (default: "
+        + DEFAULT_TCP_CONTROL_PORT + ").")
     public int TCPport = DEFAULT_TCP_CONTROL_PORT;
 
     /**
      * Binding port for the asynchronous UDP feedback packets.
      */
-    @Option(name = "-fp", aliases = "--feedback-port", required = false, metaVar = "port", 
-        usage = "UDP feedback port (default: " + DEFAULT_UDP_FEEDBACK_PORT + ").")
+    @Option(name = "-fp", aliases = "--feedback-port", required = false, metaVar = "port", usage = "UDP feedback port (default: "
+        + DEFAULT_UDP_FEEDBACK_PORT + ").")
     public int UDPport = DEFAULT_UDP_FEEDBACK_PORT;
 
     /**
      * Broadcast port for distributing game events.
      */
-    @Option(name = "-bp", aliases = "--broadcast-port", required = false, metaVar = "port", 
-        usage = "UDP broadcast port (default: " + DEFAULT_UDP_BROADCAST + ").")
+    @Option(name = "-bp", aliases = "--broadcast-port", required = false, metaVar = "port", usage = "UDP broadcast port (default: "
+        + DEFAULT_UDP_BROADCAST + ").")
     public int UDPBroadcastPort = DEFAULT_UDP_BROADCAST;
 
     /**
      * Binding network interface for the TCP control and UDP feedback ports.
      */
-    @Option(name = "-i", aliases = "--interface", 
-        required = false, metaVar = "address", 
-        usage = "Binding TCP interface (default: all interfaces).")
+    @Option(name = "-i", aliases = "--interface", required = false, metaVar = "address", usage = "Binding TCP interface (default: all interfaces).")
     public String iface = "0.0.0.0";
 
     /**
@@ -79,8 +79,9 @@ public final class GameServer
      */
     private UDPPacketListener feedbackSocket;
 
-    /*
-     * 
+    /**
+     * A thread accepting feedback UDP packets from clients and updating controller
+     * states.
      */
     private Thread feedbackSocketListener = new Thread()
     {
@@ -92,24 +93,21 @@ public final class GameServer
                 while (true)
                 {
                     feedbackSocket.receive(p);
-                    final Object message = p.deserialize(Object.class);
-                    if (message instanceof UpdateControllerState)
+
+                    if (p.getCustom1() != PacketIdentifiers.PLAYER_CONTROLLER_STATE)
                     {
-                        final UpdateControllerState s = (UpdateControllerState) message;
-                        handle(s);
+                        logger.warn("Junk packet received on feedback port.");
+                        continue;
                     }
-                    else
-                    {
-                        logger.warn("Junk packet received on feedback port: "
-                            + message.getClass().getSimpleName());
-                    }
+
+                    handle(p);
                 }
             }
             catch (IOException e)
             {
                 logger.error("Error on feedback socket.", e);
             }
-        }  
+        }
     };
 
     /*
@@ -120,17 +118,33 @@ public final class GameServer
         // Empty, for command-line use.
     }
 
-    /*
+    /**
+     * Handle a controller update message.
      * 
+     * @param inetAddress
      */
-    protected void handle(UpdateControllerState s)
+    protected void handle(SerializablePacket p) throws IOException
     {
-        // TODO: Add IP-based check against cheating?
-        GameContext gameContext = context.getGameContext(s.gameID);
-        if (gameContext == null) return;
+        final GameContext gameContext = context.getGameContext(p.getCustom2());
+        if (gameContext == null)
+        {
+            logger.warn("Packet received for a non-existing game: " + p.getCustom2());
+            return;
+        }
 
-        gameContext.updateControllerState(
-            s.playerID, s.direction, s.dropsBomb, s.validFrames);
+        final UpdateControllerState s = p.deserialize(UpdateControllerState.class);
+
+        if (p.getSource() == null
+            || !ObjectUtils.equals(gameContext.getPlayerAddress(s.playerID), p
+                .getSource().getHostAddress()))
+        {
+            logger.warn("Controller update received from a different address "
+                + "than the player registered from: [" + p.getSource() + "]");
+            return;
+        }
+
+        gameContext.updateControllerState(s.playerID, s.direction, s.dropsBomb,
+            s.validFrames);
     }
 
     /**
@@ -180,7 +194,7 @@ public final class GameServer
     }
 
     /**
-     * Command line entry point. 
+     * Command line entry point.
      */
     public static void main(String [] args)
     {

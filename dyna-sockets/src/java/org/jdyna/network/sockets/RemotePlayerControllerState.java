@@ -2,10 +2,10 @@ package org.jdyna.network.sockets;
 
 import com.dawidweiss.dyna.IPlayerController;
 
-/*
- * 
+/**
+ * Remote {@link IPlayerController} state used by the game thread and by the server-side.
  */
-class RemotePlayerController implements IPlayerController
+final class RemotePlayerControllerState implements IPlayerController
 {
     private volatile boolean dropsBombs;
     private volatile Direction direction;

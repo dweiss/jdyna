@@ -17,7 +17,7 @@ import com.dawidweiss.dyna.IPlayerController;
 /**
  * Dispatch local {@link IPlayerController} state to a remote server using UDP.
  */
-class ControllerStateDispatch implements IGameEventListener
+public final class ControllerStateDispatch implements IGameEventListener
 {
     private final static Logger logger = LoggerFactory
         .getLogger(ControllerStateDispatch.class);
@@ -29,6 +29,9 @@ class ControllerStateDispatch implements IGameEventListener
 
     private ControllerState previous;
 
+    /*
+     * 
+     */
     public ControllerStateDispatch(PlayerHandle handle, IPlayerController controller,
         UDPPacketEmitter serverUpdate)
     {
@@ -37,6 +40,9 @@ class ControllerStateDispatch implements IGameEventListener
         this.serverUpdate = serverUpdate;
     }
 
+    /*
+     * 
+     */
     @Override
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
@@ -59,7 +65,9 @@ class ControllerStateDispatch implements IGameEventListener
                     playerHandle.gameID, playerHandle.playerID, previous.direction,
                     previous.dropsBomb, validityFrames);
 
-                packet.serialize(0, 0, state);
+                packet.serialize(PacketIdentifiers.PLAYER_CONTROLLER_STATE,
+                    playerHandle.gameID, state);
+
                 serverUpdate.send(packet);
             }
             catch (IOException e)

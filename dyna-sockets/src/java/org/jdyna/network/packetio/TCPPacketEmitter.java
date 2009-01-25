@@ -46,6 +46,8 @@ public final class TCPPacketEmitter
         try
         {
             packet.read(input);
+            packet.source = this.socket.getInetAddress();
+
             if (logger.isDebugEnabled()) logger.debug("TRCV: [" + packet.getLength() + "]");
             return packet;
         }

@@ -2,7 +2,11 @@ package org.jdyna.network.sockets;
 
 import java.io.Serializable;
 
-public class PlayerHandle implements Serializable
+/**
+ * Unique player identifier, game identifier and other player-related information. Player
+ * names should be unique within one game.
+ */
+public final class PlayerHandle implements Serializable
 {
     /**  */
     private static final long serialVersionUID = 1L;
@@ -14,10 +18,15 @@ public class PlayerHandle implements Serializable
     /**
      * Player controller (only on the server side).
      */
-    transient RemotePlayerController controller = new RemotePlayerController();
+    transient RemotePlayerControllerState controller = new RemotePlayerControllerState();
+
+    /**
+     * Player address (only on the server side).
+     */
+    transient String address;
 
     /*
-     * Serialization. 
+     * Serialization.
      */
     protected PlayerHandle()
     {

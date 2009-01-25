@@ -61,6 +61,8 @@ public final class UDPPacketListener
             try
             {
                 packet.read(input);
+                packet.source = udpPacket.getAddress();
+
                 return packet;
             }
             catch (StreamCorruptedException e)

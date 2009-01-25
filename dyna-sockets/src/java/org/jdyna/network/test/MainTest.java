@@ -1,4 +1,4 @@
-package org.jdyna.network.sockets;
+package org.jdyna.network.test;
 
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -9,6 +9,13 @@ import javax.swing.JFrame;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.packetio.UDPPacketListener;
+import org.jdyna.network.sockets.ControllerStateDispatch;
+import org.jdyna.network.sockets.GameClient;
+import org.jdyna.network.sockets.GameEventListenerMultiplexer;
+import org.jdyna.network.sockets.GameHandle;
+import org.jdyna.network.sockets.GameServer;
+import org.jdyna.network.sockets.PacketIdentifiers;
+import org.jdyna.network.sockets.PlayerHandle;
 import org.jdyna.network.sockets.packets.FrameData;
 
 import com.dawidweiss.dyna.GameStartEvent;
@@ -19,6 +26,9 @@ import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.players.HumanPlayerFactory;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
+/**
+ * Set up a server and two clients locally.
+ */
 public class MainTest
 {
     public static void main(final String [] args) throws Exception
@@ -41,18 +51,18 @@ public class MainTest
         final GameClient client = new GameClient();
         client.host = "127.0.0.1";
 
-        final GameEventListenerProxy proxy = new GameEventListenerProxy();
+        final GameEventListenerMultiplexer proxy = new GameEventListenerMultiplexer();
 
         client.connect();
         final GameHandle handle = client.createGame(gameName, "classic");
 
         final DatagramSocket socket = new DatagramSocket();
         final UDPPacketEmitter serverUpdater = new UDPPacketEmitter(socket);
-        serverUpdater.setDefaultTarget(
-            Inet4Address.getByName(client.host), GameServer.DEFAULT_UDP_FEEDBACK_PORT);
+        serverUpdater.setDefaultTarget(Inet4Address.getByName(client.host),
+            GameServer.DEFAULT_UDP_FEEDBACK_PORT);
 
-        final IPlayerFactory pf1 = new HumanPlayerFactory(
-            Globals.getDefaultKeyboardController(0));
+        final IPlayerFactory pf1 = new HumanPlayerFactory(Globals
+            .getDefaultKeyboardController(0));
         final String playerName = pf1.getDefaultPlayerName();
         final IPlayerController controller = pf1.getController(playerName);
         final PlayerHandle player1 = client.joinGame(handle, playerName);
@@ -60,7 +70,8 @@ public class MainTest
         {
             proxy.addListener((IGameEventListener) controller);
         }
-        proxy.addListener(new ControllerStateDispatch(player1, controller, serverUpdater));
+        proxy
+            .addListener(new ControllerStateDispatch(player1, controller, serverUpdater));
 
         client.disconnect();
 
@@ -68,7 +79,6 @@ public class MainTest
          * Create a local listener of game events on the designated UDP broadcast address.
          */
         // proxy.addListener(new GameSoundEffects());
-
         final BoardFrame frame = new BoardFrame();
         proxy.addListener(frame);
         frame.setVisible(true);
@@ -81,11 +91,7 @@ public class MainTest
 
         /*
          * TODO: add a timeout to udp packet listener? If no events appear on input, check
-         * if the server still runs the game.
-         * 
-         * TODO: serialize to a subclass of byte array output stream and reuse byte buffer.
-         * 
-         * TODO: add feedback UDP port.
+         * if the server still runs the game. 
          * 
          * TODO: add auto-discovery.
          */

@@ -12,12 +12,17 @@ public final class ControllerState
     final IPlayerController.Direction direction;
     final boolean dropsBomb;
 
+    /**
+     * Number of frames this state should be valid for. If zero, the state is valid
+     * indefinitely.
+     */
     final int validFrames;
 
     /*
      * 
      */
-    public ControllerState(IPlayerController.Direction direction, boolean dropsBomb, int validFrames)
+    public ControllerState(IPlayerController.Direction direction, boolean dropsBomb,
+        int validFrames)
     {
         this.direction = direction;
         this.dropsBomb = dropsBomb;
@@ -41,9 +46,18 @@ public final class ControllerState
     {
         if (obj == this) return true;
         if (!(obj instanceof ControllerState)) return false;
-        
+
         final ControllerState other = (ControllerState) obj;
         return other.dropsBomb == this.dropsBomb
             && ObjectUtils.equals(other.direction, this.direction);
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public String toString()
+    {
+        return "dropsBomb: " + dropsBomb + " direction: " + direction + " valid: " + validFrames;
     }
 }

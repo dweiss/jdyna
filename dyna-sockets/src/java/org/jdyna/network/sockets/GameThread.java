@@ -3,9 +3,9 @@ package org.jdyna.network.sockets;
 import com.dawidweiss.dyna.Game;
 
 /**
- * Threads running games on the server.
+ * A thread running a game on the server.
  */
-public class GameThread extends Thread
+final class GameThread extends Thread
 {
     private final GameContext context;
 

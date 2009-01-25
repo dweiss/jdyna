@@ -36,6 +36,7 @@ final class ServerControlConnectionHandler extends Thread
 
     /** Reusable packet. */
     private SerializablePacket p = new SerializablePacket();
+
     /*
      * 
      */
@@ -58,7 +59,7 @@ final class ServerControlConnectionHandler extends Thread
     @Override
     public void run()
     {
-        logger.info("Link started.");
+        logger.info("Control connection started.");
 
         try
         {
@@ -110,7 +111,7 @@ final class ServerControlConnectionHandler extends Thread
             pe = null;
         }
 
-        logger.info("Link closed.");
+        logger.info("Control connection closed.");
     }
 
     /*

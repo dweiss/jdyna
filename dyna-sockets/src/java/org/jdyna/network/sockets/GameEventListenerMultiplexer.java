@@ -11,15 +11,16 @@ import com.dawidweiss.dyna.IGameEventListener;
 import com.google.common.collect.Lists;
 
 /**
- * A proxy interface to a remote game.
+ * A multiplexer of events from one {@link IGameEventListener} source to multiple clients.
  */
-public class GameEventListenerProxy implements IGameEventListener
+public final class GameEventListenerMultiplexer implements IGameEventListener
 {
-    private final static Logger logger = LoggerFactory.getLogger(GameEventListenerProxy.class);
+    private final static Logger logger = LoggerFactory
+        .getLogger(GameEventListenerMultiplexer.class);
 
     /** Game listeners. */
     private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
-    
+
     /**
      * 
      */
