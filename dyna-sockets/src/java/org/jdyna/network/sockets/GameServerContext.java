@@ -100,12 +100,19 @@ public final class GameServerContext
     };
 
     /**
+     * Maximum number of concurrent games running on the server.
+     */
+    private final int maximumGames;
+
+    /**
      * Initialize context.
      */
-    public GameServerContext(ServerInfo serverInfo)
+    public GameServerContext(ServerInfo serverInfo, int maxGames)
     {
         try
         {
+            this.maximumGames = maxGames;
+
             /*
              * Load board configurations.
              */
@@ -181,6 +188,13 @@ public final class GameServerContext
         synchronized (this)
         {
             assert !hasGame(gameName);
+
+            if (this.games.size() + 1 > maximumGames)
+            {
+                throw new FailureResponseException("Maximum number of concurrent games" +
+                		" on the server reached (" + games.size() + "). Use one" +
+                				" of the active games."); 
+            }
 
             final Board board;
             if (!StringUtils.isEmpty(boardName))

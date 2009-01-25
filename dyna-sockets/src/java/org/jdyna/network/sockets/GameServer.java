@@ -71,6 +71,13 @@ public final class GameServer
     public String iface = "0.0.0.0";
 
     /**
+     * Broadcast port for distributing game events.
+     */
+    @Option(name = "-mg", aliases = "--max-games", required = false, metaVar = "int", 
+        usage = "Maximum number of concurrent games.")
+    public int maxGames = 1;
+
+    /**
      * Shared context object (all games, their progress, etc.).
      */
     private GameServerContext context;
@@ -165,7 +172,7 @@ public final class GameServer
             final ServerInfo serverInfo = new ServerInfo(
                 serverAddress.getHostAddress(), TCPport, UDPBroadcastPort, UDPport);
 
-            this.context = new GameServerContext(serverInfo);
+            this.context = new GameServerContext(serverInfo, maxGames);
 
             /*
              * Start UDP socket listener.
