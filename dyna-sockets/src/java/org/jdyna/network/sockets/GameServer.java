@@ -8,6 +8,7 @@ import java.net.Socket;
 import org.apache.commons.lang.ObjectUtils;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketListener;
+import org.jdyna.network.sockets.packets.ServerInfo;
 import org.jdyna.network.sockets.packets.UpdateControllerState;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
@@ -23,19 +24,19 @@ import com.dawidweiss.dyna.CmdLine;
 public final class GameServer
 {
     /**
+     * Default UDP broadcast port (for auto-discovery as well).
+     */
+    public final static int DEFAULT_UDP_BROADCAST = 50001;
+
+    /**
      * Default server port (TCP connections).
      */
-    public final static int DEFAULT_TCP_CONTROL_PORT = 50000;
+    private final static int DEFAULT_TCP_CONTROL_PORT = 50000;
 
     /**
      * Default feedback port (UDP).
      */
-    public final static int DEFAULT_UDP_FEEDBACK_PORT = 50000;
-
-    /**
-     * Default UDP broadcast port.
-     */
-    public final static int DEFAULT_UDP_BROADCAST = 50001;
+    private final static int DEFAULT_UDP_FEEDBACK_PORT = 50000;
 
     /**
      * Internal logger.
@@ -157,10 +158,14 @@ public final class GameServer
         {
             logger.info("Server initializing...");
 
-            socket = new ServerSocket(TCPport, 0, InetAddress.getByName(iface));
+            final InetAddress serverAddress = InetAddress.getByName(iface);
+            socket = new ServerSocket(TCPport, 0, serverAddress);
             logger.info("TCP listener bound to: " + socket.getInetAddress());
 
-            this.context = new GameServerContext(UDPBroadcastPort);
+            final ServerInfo serverInfo = new ServerInfo(
+                serverAddress.getHostAddress(), TCPport, UDPBroadcastPort, UDPport);
+
+            this.context = new GameServerContext(serverInfo);
 
             /*
              * Start UDP socket listener.

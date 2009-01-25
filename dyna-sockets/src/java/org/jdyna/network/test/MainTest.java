@@ -3,6 +3,7 @@ package org.jdyna.network.test;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -17,6 +18,8 @@ import org.jdyna.network.sockets.GameServer;
 import org.jdyna.network.sockets.PacketIdentifiers;
 import org.jdyna.network.sockets.PlayerHandle;
 import org.jdyna.network.sockets.packets.FrameData;
+import org.jdyna.network.sockets.packets.ServerInfo;
+import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.GameStartEvent;
 import com.dawidweiss.dyna.Globals;
@@ -33,6 +36,11 @@ public class MainTest
 {
     public static void main(final String [] args) throws Exception
     {
+        LoggerFactory.getLogger(MainTest.class).debug("Discovering servers...");
+
+        /*
+         * Start the game server. 
+         */
         new Thread()
         {
             public void run()
@@ -41,25 +49,36 @@ public class MainTest
             };
         }.start();
 
-        Thread.sleep(1000);
+        /*
+         * Auto-discovery of running servers for at most five seconds. Take the
+         * first server available.
+         */
+        final List<ServerInfo> si = GameClient.lookup(GameServer.DEFAULT_UDP_BROADCAST, 1, 5000);
+        if (si.size() < 0)
+        {
+            throw new Exception("No available servers.");
+        }
 
         /*
          * Create a game room and join it.
          */
 
+        final ServerInfo server = si.get(0);
         final String gameName = "polska-niemcy-klapa";
-        final GameClient client = new GameClient();
-        client.host = "127.0.0.1";
+
+        /*
+         * Connect to the server. 
+         */
+        final GameClient client = new GameClient(server);
+        client.connect();
 
         final GameEventListenerMultiplexer proxy = new GameEventListenerMultiplexer();
-
-        client.connect();
         final GameHandle handle = client.createGame(gameName, "classic");
 
         final DatagramSocket socket = new DatagramSocket();
         final UDPPacketEmitter serverUpdater = new UDPPacketEmitter(socket);
-        serverUpdater.setDefaultTarget(Inet4Address.getByName(client.host),
-            GameServer.DEFAULT_UDP_FEEDBACK_PORT);
+        serverUpdater.setDefaultTarget(
+            Inet4Address.getByName(server.serverAddress), server.UDPFeedbackPort);
 
         final IPlayerFactory pf1 = new HumanPlayerFactory(Globals
             .getDefaultKeyboardController(0));
@@ -92,12 +111,9 @@ public class MainTest
         /*
          * TODO: add a timeout to udp packet listener? If no events appear on input, check
          * if the server still runs the game. 
-         * 
-         * TODO: add auto-discovery.
          */
 
-        final UDPPacketListener listener = new UDPPacketListener(
-            GameServer.DEFAULT_UDP_BROADCAST);
+        final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);
         SerializablePacket p = new SerializablePacket();
         while ((p = listener.receive(p)) != null)
         {

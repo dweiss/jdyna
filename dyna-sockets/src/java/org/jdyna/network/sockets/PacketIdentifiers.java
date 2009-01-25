@@ -18,6 +18,11 @@ public final class PacketIdentifiers
      */
     public static final int PLAYER_CONTROLLER_STATE = 1 << 1;
 
+    /**
+     * Packet for auto-discovery of the server.
+     */
+    public static final int SERVER_BEACON = 1 << 2;
+
     /*
      * 
      */

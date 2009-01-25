@@ -10,7 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.network.packetio.Packet;
+import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketEmitter;
+import org.jdyna.network.sockets.packets.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,12 @@ public final class GameServerContext
      * Broadcast address for dispatching frame events.
      */
     public final static String BROADCAST_ADDRESS = "255.255.255.255";
-    
+
+    /**
+     * How frequently should auto-discovery messages be sent?
+     */
+    public final static int AUTO_DISCOVERY_INTERVAL = 1000 * 2;
+
     /**
      * Active gameHandles.
      */
@@ -55,9 +62,47 @@ public final class GameServerContext
     private UDPPacketEmitter udpBroadcaster;
 
     /**
+     * Server information.
+     */
+    private final ServerInfo serverInfo; 
+
+    /**
+     * Auto-discovery daemon.
+     */
+    private final Thread autoDiscoveryDaemon = new Thread()
+    {
+        {
+            this.setDaemon(true);
+        }
+
+        public void run()
+        {
+            try
+            {
+                final SerializablePacket autodiscoveryPacket = new SerializablePacket();
+                autodiscoveryPacket.serialize(PacketIdentifiers.SERVER_BEACON, 0, serverInfo);
+
+                while (!interrupted())
+                {
+                    sleep(AUTO_DISCOVERY_INTERVAL);
+                    udpBroadcaster.send(autodiscoveryPacket);
+                }
+            }
+            catch (IOException e)
+            {
+                logger.warn("Auto-discovery daemon failed.", e);
+            }
+            catch (InterruptedException e)
+            {
+                // Do nothing.
+            }
+        }
+    };
+
+    /**
      * Initialize context.
      */
-    public GameServerContext(int broadcastPort)
+    public GameServerContext(ServerInfo serverInfo)
     {
         try
         {
@@ -77,7 +122,13 @@ public final class GameServerContext
             socket.setSendBufferSize(Packet.MAX_LENGTH);
             this.udpBroadcaster = new UDPPacketEmitter(socket);
             this.udpBroadcaster.setDefaultTarget(Inet4Address
-                .getByName(BROADCAST_ADDRESS), broadcastPort);
+                .getByName(BROADCAST_ADDRESS), serverInfo.UDPBroadcastPort);
+
+            /*
+             * Start the auto-discovery daemon.
+             */
+            this.serverInfo = serverInfo;
+            autoDiscoveryDaemon.start();
         }
         catch (IOException e)
         {

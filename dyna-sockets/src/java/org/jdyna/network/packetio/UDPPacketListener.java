@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +48,26 @@ public final class UDPPacketListener
      */
     public <T extends Packet> T receive(T packet) throws IOException
     {
+        return receive(packet, 0);
+    }
+
+    /**
+     * Receive the next packet from the network. Filter out junk.
+     */
+    public <T extends Packet> T receive(T packet, int timeout) throws IOException
+    {
         do
         {
-            receiver.receive(udpPacket);
+            try
+            {
+                receiver.setSoTimeout(timeout);
+                receiver.receive(udpPacket);
+            }
+            catch (SocketTimeoutException e)
+            {
+                return null;
+            }
+
             if (logger.isDebugEnabled())
             {
                 logger.debug("URCV: [" + udpPacket.getLength() + "]");

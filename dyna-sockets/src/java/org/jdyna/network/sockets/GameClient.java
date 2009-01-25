@@ -4,18 +4,24 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.TCPPacketEmitter;
+import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.CreateGameRequest;
 import org.jdyna.network.sockets.packets.CreateGameResponse;
 import org.jdyna.network.sockets.packets.FailureResponse;
 import org.jdyna.network.sockets.packets.JoinGameRequest;
 import org.jdyna.network.sockets.packets.JoinGameResponse;
-import org.kohsuke.args4j.Option;
+import org.jdyna.network.sockets.packets.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * A set of utilities facilitating talking to a remote {@link GameServer} and running a
@@ -31,15 +37,12 @@ public class GameClient
     /**
      * Port for the TCP server connection.
      */
-    @Option(name = "-p", aliases = "--port", required = false, metaVar = "port", 
-        usage = "Server's TCP port (default: " + GameServer.DEFAULT_TCP_CONTROL_PORT + ").")
-    public int port = GameServer.DEFAULT_TCP_CONTROL_PORT;
+    private int serverTCPControlPort;
 
     /**
      * Host for the server's TCP connection.
      */
-    @Option(name = "-s", aliases = "--server", required = true, metaVar = "address", usage = "Server's host address.")
-    public String host;
+    private String serverAddress;
 
     /**
      * Server connection.
@@ -52,15 +55,68 @@ public class GameClient
     final SerializablePacket packet = new SerializablePacket();
 
     /**
-     * Establish a control link to the remote server.
+     * @see #lookup(int, int, int) 
+     */
+    public GameClient(ServerInfo info)
+    {
+        this(info.serverAddress, info.TCPControlPort);
+    }
+
+    /**
+     * Create a game client connecting to a given server.
+     */
+    public GameClient(String serverAddress, int controlPort)
+    {
+        this.serverAddress = serverAddress;
+        this.serverTCPControlPort = controlPort;
+    }
+
+    /**
+     * Lookup available servers broadcasting on the local network.
+     */
+    public static List<ServerInfo> lookup(int udpBroadcastPort, int minServers, int timeout) throws IOException
+    {
+        final HashMap<String, ServerInfo> servers = Maps.newHashMap();
+        final long deadline = System.currentTimeMillis() + timeout;
+        final UDPPacketListener listener = new UDPPacketListener(udpBroadcastPort);
+        SerializablePacket packet = new SerializablePacket();
+
+        while (minServers > 0)
+        {
+            final int delay = (int) (deadline - System.currentTimeMillis());
+            if (delay <= 0 || (packet = listener.receive(packet, delay)) == null)
+            {
+                break;
+            }
+
+            if (packet.getCustom1() == PacketIdentifiers.SERVER_BEACON)
+            {
+                final ServerInfo si = packet.deserialize(ServerInfo.class);
+                si.serverAddress = packet.getSource().getHostAddress();
+                if (!servers.containsKey(si.serverAddress))
+                {
+                    minServers--;
+                    servers.put(si.serverAddress, si);
+                    logger.info("Discovered server: " + si);
+                }
+            }
+        }
+
+        listener.close();
+        return Lists.newArrayList(servers.values());
+    }
+
+    /**
+     * Establish a control link to a remote server.
      */
     public void connect() throws IOException
     {
         if (pe != null) throw new IllegalStateException("Already connected.");
-        if (StringUtils.isEmpty(host)) throw new IllegalStateException(
+        if (StringUtils.isEmpty(serverAddress)) throw new IllegalStateException(
             "host is required.");
 
-        pe = new TCPPacketEmitter(new Socket(InetAddress.getByName(host), port));
+        pe = new TCPPacketEmitter(new Socket(InetAddress.getByName(serverAddress),
+            serverTCPControlPort));
         logger.info("Connected.");
     }
 
@@ -135,7 +191,7 @@ public class GameClient
             + result.getClass().getSimpleName() + " (expected: " + clazz.getSimpleName()
             + ")");
     }
-    
+
     /**
      * Check if there is a valid control link.
      */
@@ -145,5 +201,5 @@ public class GameClient
         {
             throw new IllegalArgumentException("Not connected.");
         }
-    }    
+    }
 }

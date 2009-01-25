@@ -59,7 +59,7 @@ public final class ControllerStateDispatch implements IGameEventListener
             {
                 final int validityFrames = 0;
 
-                logger.info("Updating controller state: " + previous);
+                logger.debug("Updating controller state: " + previous);
 
                 final UpdateControllerState state = new UpdateControllerState(
                     playerHandle.gameID, playerHandle.playerID, previous.direction,
