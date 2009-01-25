@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 
 import org.slf4j.Logger;
@@ -34,10 +35,11 @@ public final class UDPPacketListener
     public UDPPacketListener(int port)
         throws IOException
     {
-        final DatagramSocket receiver = new DatagramSocket(port);
+        final DatagramSocket receiver = new DatagramSocket(null);
         receiver.setBroadcast(true);
         receiver.setReuseAddress(true);
         receiver.setReceiveBufferSize(Packet.MAX_LENGTH);
+        receiver.bind(new InetSocketAddress(port));
 
         this.receiver = receiver;
         this.udpPacket = new DatagramPacket(new byte [Packet.MAX_LENGTH], Packet.MAX_LENGTH);

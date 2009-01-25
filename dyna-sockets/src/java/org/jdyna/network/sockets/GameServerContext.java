@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,6 +23,7 @@ import com.dawidweiss.dyna.BoardInfo;
 import com.dawidweiss.dyna.Boards;
 import com.dawidweiss.dyna.Game;
 import com.dawidweiss.dyna.Globals;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -237,6 +240,22 @@ public final class GameServerContext
                 if (c.getHandle().gameID == gameID) return c;
             }
             throw new IllegalStateException("No such game: " + gameID);
+        }
+    }
+
+    /*
+     * 
+     */
+    public List<GameHandle> getGameHandles()
+    {
+        synchronized (this)
+        {
+            ArrayList<GameHandle> handles = Lists.newArrayListWithExpectedSize(games.size());
+            for (GameContext c : games.values())
+            {
+                handles.add(c.getHandle());
+            }
+            return handles;
         }
     }
 }

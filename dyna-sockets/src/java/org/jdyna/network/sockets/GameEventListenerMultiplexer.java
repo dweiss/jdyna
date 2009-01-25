@@ -24,7 +24,7 @@ public final class GameEventListenerMultiplexer implements IGameEventListener
     /**
      * 
      */
-    public void addListener(IGameEventListener l)
+    public synchronized void addListener(IGameEventListener l)
     {
         listeners.add(l);
     }
@@ -35,16 +35,27 @@ public final class GameEventListenerMultiplexer implements IGameEventListener
     @Override
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        for (IGameEventListener l : listeners)
+        synchronized (this)
         {
-            try
+            for (IGameEventListener l : listeners)
             {
-                l.onFrame(frame, events);
-            }
-            catch (Throwable t)
-            {
-                logger.warn("Listener dispatch error: " + t.getMessage(), t);
+                try
+                {
+                    l.onFrame(frame, events);
+                }
+                catch (Throwable t)
+                {
+                    logger.warn("Listener dispatch error: " + t.getMessage(), t);
+                }
             }
         }
+    }
+
+    /*
+     * 
+     */
+    public synchronized void removeListener(IGameEventListener l)
+    {
+        listeners.remove(l);
     }
 }

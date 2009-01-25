@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.TCPPacketEmitter;
@@ -12,6 +13,8 @@ import org.jdyna.network.sockets.packets.CreateGameResponse;
 import org.jdyna.network.sockets.packets.FailureResponse;
 import org.jdyna.network.sockets.packets.JoinGameRequest;
 import org.jdyna.network.sockets.packets.JoinGameResponse;
+import org.jdyna.network.sockets.packets.ListGamesRequest;
+import org.jdyna.network.sockets.packets.ListGamesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +92,10 @@ final class ServerControlConnectionHandler extends Thread
                         final JoinGameRequest req = (JoinGameRequest) o;
                         handleRequest(req);
                     }
+                    else if (o instanceof ListGamesRequest)
+                    {
+                        handleRequest((ListGamesRequest) o);
+                    }
                     else
                     {
                         logger.warn("Unrecognized packet: " + o.getClass().getSimpleName());
@@ -112,6 +119,15 @@ final class ServerControlConnectionHandler extends Thread
         }
 
         logger.info("Control connection closed.");
+    }
+
+    /*
+     * 
+     */
+    private void handleRequest(ListGamesRequest o) throws IOException
+    {
+        final List<GameHandle> handles = context.getGameHandles();
+        send(new ListGamesResponse(handles));
     }
 
     /*
@@ -148,7 +164,7 @@ final class ServerControlConnectionHandler extends Thread
             throw new FailureResponseException("Game already exists: " + req.gameName);
         }
 
-        if (!context.hasBoard(req.boardName))
+        if (req.boardName != null && !context.hasBoard(req.boardName))
         {
             throw new FailureResponseException("Board does not exist: " + req.boardName);
         }

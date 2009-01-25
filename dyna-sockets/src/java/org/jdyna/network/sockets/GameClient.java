@@ -16,6 +16,8 @@ import org.jdyna.network.sockets.packets.CreateGameResponse;
 import org.jdyna.network.sockets.packets.FailureResponse;
 import org.jdyna.network.sockets.packets.JoinGameRequest;
 import org.jdyna.network.sockets.packets.JoinGameResponse;
+import org.jdyna.network.sockets.packets.ListGamesRequest;
+import org.jdyna.network.sockets.packets.ListGamesResponse;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +155,36 @@ public class GameClient
         final JoinGameResponse response = sendReceive(JoinGameResponse.class,
             new JoinGameRequest(gameHandle.gameID, playerName));
         return response.handle;
+    }
+
+    /**
+     * Get an existing game handle or <code>null</code> if it does not exist. 
+     */
+    public GameHandle getGame(String gameName) throws IOException
+    {
+        checkConnected();
+        
+        final List<GameHandle> handles = listGames();
+        for (GameHandle handle : handles)
+        {
+            if (StringUtils.equals(handle.gameName, gameName))
+            {
+                return handle;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * List all games available on the server.
+     */
+    private List<GameHandle> listGames() throws IOException
+    {
+        final ListGamesResponse response = sendReceive(ListGamesResponse.class,
+            new ListGamesRequest());
+
+        return response.handles;
     }
 
     /**
