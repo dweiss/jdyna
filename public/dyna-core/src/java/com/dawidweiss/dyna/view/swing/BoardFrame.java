@@ -3,13 +3,16 @@ package com.dawidweiss.dyna.view.swing;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.view.resources.*;
+import com.dawidweiss.dyna.GameEvent;
+import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.view.resources.ImageUtilities;
+import com.dawidweiss.dyna.view.resources.Images;
+import com.dawidweiss.dyna.view.resources.ImagesFactory;
 
 /**
  * Swing board view.
@@ -45,7 +48,14 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         getRootPane().setDoubleBuffered(false);
         setResizable(false);
         pack();
-        setIconImage(new BufferedImage(16, 16, BufferedImage.TRANSLUCENT));
+        try
+        {
+            setIconImage(ImageUtilities.loadResourceImage("icons/window-icon.png"));
+        }
+        catch (IOException e)
+        {
+            // Ignore.
+        }
         setTitle("Play responsibly.");
     }
 
