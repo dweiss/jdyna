@@ -1,6 +1,7 @@
 package org.jdyna.network.test;
 
 import org.jdyna.network.sockets.GameServer;
+import org.jdyna.network.sockets.PlayerFactoryClient;
 import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.players.HumanPlayerFactory;

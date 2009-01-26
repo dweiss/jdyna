@@ -1,4 +1,4 @@
-package org.jdyna.network.test;
+package org.jdyna.network.sockets;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jdyna.network.packetio.*;
-import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.FrameData;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.kohsuke.args4j.Argument;
@@ -196,7 +195,6 @@ public class PlayerFactoryClient
 
         /*
          * TODO: Detect if the game is still in progress on the server. If not, close.
-         * TODO: Passing messages to the client should be asynchronous (queued).
          */
 
         final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);
