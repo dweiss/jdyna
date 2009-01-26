@@ -1,7 +1,7 @@
 package org.jdyna.network.test;
 
 import org.jdyna.network.sockets.GameServer;
-import org.jdyna.network.sockets.PlayerFactoryClient;
+import org.jdyna.network.sockets.BotClient;
 import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.players.HumanPlayerFactory;
@@ -34,7 +34,7 @@ public class MainTest
         {
             public void run()
             {
-                PlayerFactoryClient.main(new String [] {
+                BotClient.main(new String [] {
                     "--game", "testgame",
                     "--player-name", "player1",
                     "--board", "classic",
@@ -53,7 +53,7 @@ public class MainTest
             {
                 System.setProperty("rabbit.slowdown", "250");
 
-                PlayerFactoryClient.main(new String [] {
+                BotClient.main(new String [] {
                     "--game", "testgame",
                     "--player-name", "rabbit",
                     "--no-sound",

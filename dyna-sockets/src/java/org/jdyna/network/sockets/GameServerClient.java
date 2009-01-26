@@ -29,12 +29,12 @@ import com.google.common.collect.Maps;
  * A set of utilities facilitating talking to a remote {@link GameServer} and running a
  * game.
  */
-public class GameClient
+public class GameServerClient
 {
     /**
      * Internal logger.
      */
-    private final static Logger logger = LoggerFactory.getLogger(GameClient.class);
+    private final static Logger logger = LoggerFactory.getLogger(GameServerClient.class);
 
     /**
      * Port for the TCP server connection.
@@ -59,7 +59,7 @@ public class GameClient
     /**
      * @see #lookup(int, int, int) 
      */
-    public GameClient(ServerInfo info)
+    public GameServerClient(ServerInfo info)
     {
         this(info.serverAddress, info.TCPControlPort);
     }
@@ -67,7 +67,7 @@ public class GameClient
     /**
      * Create a game client connecting to a given server.
      */
-    public GameClient(String serverAddress, int controlPort)
+    public GameServerClient(String serverAddress, int controlPort)
     {
         this.serverAddress = serverAddress;
         this.serverTCPControlPort = controlPort;
@@ -179,7 +179,7 @@ public class GameClient
     /**
      * List all games available on the server.
      */
-    private List<GameHandle> listGames() throws IOException
+    public List<GameHandle> listGames() throws IOException
     {
         final ListGamesResponse response = sendReceive(ListGamesResponse.class,
             new ListGamesRequest());

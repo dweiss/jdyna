@@ -23,10 +23,10 @@ import com.dawidweiss.dyna.view.swing.BoardFrame;
  * A client that wraps {@link IPlayerFactory} and connects to the server, creating or
  * joining a game with the given name.
  */
-public class PlayerFactoryClient
+public class BotClient
 {
     private final static Logger logger = LoggerFactory
-        .getLogger(PlayerFactoryClient.class);
+        .getLogger(BotClient.class);
 
     /**
      * Server broadcast port.
@@ -36,7 +36,7 @@ public class PlayerFactoryClient
     public int UDPBroadcastPort = GameServer.DEFAULT_UDP_BROADCAST;
 
     /**
-     * Server broadcast port.
+     * Discovery timeout.
      */
     @Option(name = "-dt", aliases = "--discovery-timeout", required = false, metaVar = "port", usage = "Server discovery timeout (milliseconds).")
     public int discoveryTimeout = 5000;
@@ -104,7 +104,7 @@ public class PlayerFactoryClient
          * server available.
          */
         logger.info("Discovering servers...");
-        final List<ServerInfo> si = GameClient.lookup(UDPBroadcastPort, 1,
+        final List<ServerInfo> si = GameServerClient.lookup(UDPBroadcastPort, 1,
             discoveryTimeout);
 
         if (si.size() != 1)
@@ -117,7 +117,7 @@ public class PlayerFactoryClient
          * Connect to the first available server.
          */
         final ServerInfo server = si.get(0);
-        final GameClient client = new GameClient(server);
+        final GameServerClient client = new GameServerClient(server);
         client.connect();
 
         // Create a game room or join an existing game room of the given name.
@@ -215,7 +215,7 @@ public class PlayerFactoryClient
      */
     public static void main(String [] args)
     {
-        final PlayerFactoryClient me = new PlayerFactoryClient();
+        final BotClient me = new BotClient();
         if (CmdLine.parseArgs(me, args))
         {
             try
