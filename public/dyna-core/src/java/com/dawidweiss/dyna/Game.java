@@ -229,16 +229,21 @@ public final class Game
                 processBonuses(frame);
     
                 events.add(new GameStateEvent(board.cells, playerInfos));
-                fireFrameEvent(frame);
-                frame++;
-    
+                
                 /*
                  * Check if player status should be dispatched. 
                  */
-                if (dispatchPlayerStatuses)
+                if (dispatchPlayerStatuses || (frame % 50) == 0)
                 {
                     events.add(new GameStatusEvent(getPlayerStats()));
                 }
+                
+                /*
+                 * Fire frame events.
+                 */
+
+                fireFrameEvent(frame);
+                frame++;
 
                 /*
                  * The game may be finished, but there are still
