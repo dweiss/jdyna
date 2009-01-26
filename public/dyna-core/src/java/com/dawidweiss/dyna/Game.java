@@ -129,6 +129,11 @@ public final class Game
      * Last fully rendered frame.
      */
     private volatile int currentFrame;
+    
+    /**
+     * If <code>true</code>, a {@link GameStatusEvent} should be dispatched.
+     */
+    private boolean dispatchPlayerStatuses;
 
     /**
      * Creates a single game.
@@ -217,6 +222,8 @@ public final class Game
             firePreFrameEvent(frame);
             synchronized (this)
             {
+                this.currentFrame = frame;
+
                 processBoardCells();
                 processPlayers(frame);
                 processBonuses(frame);
@@ -225,6 +232,14 @@ public final class Game
                 fireFrameEvent(frame);
                 frame++;
     
+                /*
+                 * Check if player status should be dispatched. 
+                 */
+                if (dispatchPlayerStatuses)
+                {
+                    events.add(new GameStatusEvent(getPlayerStats()));
+                }
+
                 /*
                  * The game may be finished, but there are still
                  * lingering frames we must replay.
@@ -235,7 +250,7 @@ public final class Game
                 }
 
                 events.clear();
-                this.currentFrame = frame;
+                this.dispatchPlayerStatuses = false;
             }
             firePostFrameEvent(frame);
 
@@ -335,7 +350,7 @@ public final class Game
     /**
      * @return Return current player statistics.
      */
-    private Collection<PlayerStatus> getPlayerStats()
+    private List<PlayerStatus> getPlayerStats()
     {
         final ArrayList<PlayerStatus> stats = Lists.newArrayList();
         for (PlayerInfo pi : playerInfos)
@@ -497,7 +512,8 @@ public final class Game
                 {
                     pi.location.setLocation(getRandomLocation());
                     pi.resurrect();
-                    
+                    dispatchPlayerStatuses = true;
+
                     logger.debug("Resurrected: " + pi.getStatus());
                 }
             }
@@ -527,6 +543,7 @@ public final class Game
             logger.debug("Killed: " + pi.getName());
             pi.kill();
             kills.add(pi);
+            dispatchPlayerStatuses = true;
 
             /*
              * If the cell below is an explosion update attributions for this fatality.
@@ -567,6 +584,7 @@ public final class Game
 
         if (bonusCollected)
         {
+            dispatchPlayerStatuses = true;
             board.cellAt(xy, Cell.getInstance(CellType.CELL_EMPTY));
             events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
         }

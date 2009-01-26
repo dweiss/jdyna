@@ -365,7 +365,7 @@ public final class Adapters
         for (int i = 0; i < result.length; i++)
         {
             final PlayerStatus ps = gameResult.stats.get(i);
-            result[i] = adapt(playerMapping.get(ps.playerName), ps);
+            result[i] = adapt(playerMapping.get(ps.getPlayerName()), ps);
         }
 
         return new CGameResult(gameResult.mode.name(), result, gameResult.gameInterrupted);
@@ -373,8 +373,8 @@ public final class Adapters
 
     private static CPlayerStatus adapt(int id, PlayerStatus ps)
     {
-        return new CPlayerStatus(id, ps.deathFrame, ps.killedEnemies, ps.livesLeft,
-            ps.immortal, ps.dead);
+        return new CPlayerStatus(id, ps.getDeathFrame(), ps.getKilledEnemies(), ps.getLivesLeft(),
+            ps.isImmortal(), ps.isDead());
     }
 
     private static Map<CGameEventType, GameEvent.Type> eventTypes;
@@ -416,12 +416,8 @@ public final class Adapters
         final ArrayList<PlayerStatus> result = Lists.newArrayList();
         for (CPlayerStatus c : stats)
         {
-            final PlayerStatus p = new PlayerStatus(playerMapping.get(c.id));
-            p.dead = c.dead;
-            p.deathFrame = c.deathFrame;
-            p.immortal = c.immortal;
-            p.killedEnemies = c.killedEnemies;
-            p.livesLeft = c.livesLeft;
+            final PlayerStatus p = new PlayerStatus(playerMapping.get(c.id), 
+                c.deathFrame, c.killedEnemies, c.immortal, c.dead, c.livesLeft);
             result.add(p);
         }
         return result;

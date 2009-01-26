@@ -1,39 +1,42 @@
 package com.dawidweiss.dyna;
 
+import java.io.Serializable;
+
 /**
  * Statistics and status of a single player during and after the game.
  */
-public final class PlayerStatus
+@SuppressWarnings("serial")
+public final class PlayerStatus implements Serializable
 {
     /**
      * Player name.
      */
-    public final String playerName;
+    String playerName;
 
     /**
      * Frame number when the last life was lost.
      */
-    public int deathFrame;
+    int deathFrame;
 
     /**
      * Number of killed enemies.
      */
-    public int killedEnemies;
+    int killedEnemies;
 
     /**
      * Immortal status. 
      */
-    public boolean immortal; 
+    boolean immortal; 
 
     /**
      * Dead status.
      */
-    public boolean dead; 
+    boolean dead; 
 
     /**
      * Number of lives left.
      */
-    public int livesLeft; 
+    int livesLeft; 
     
     /*
      * 
@@ -41,6 +44,20 @@ public final class PlayerStatus
     public PlayerStatus(String playerName)
     {
         this.playerName = playerName;
+    }
+
+    /*
+     * 
+     */
+    public PlayerStatus(String playerName, int deathFrame, int killedEnemies,
+        boolean immortal, boolean dead, int livesLeft)
+    {
+        this.playerName = playerName;
+        this.deathFrame = deathFrame;
+        this.killedEnemies = killedEnemies;
+        this.immortal = immortal;
+        this.dead = dead;
+        this.livesLeft = livesLeft;
     }
 
     @Override
@@ -53,5 +70,35 @@ public final class PlayerStatus
             + " lives=" + livesLeft
             + " enemies=" + killedEnemies
             + " deathFrame=" + deathFrame;
+    }
+
+    public String getPlayerName()
+    {
+        return playerName;
+    }
+
+    public int getDeathFrame()
+    {
+        return deathFrame;
+    }
+
+    public int getKilledEnemies()
+    {
+        return killedEnemies;
+    }
+
+    public boolean isImmortal()
+    {
+        return immortal;
+    }
+
+    public boolean isDead()
+    {
+        return dead;
+    }
+
+    public int getLivesLeft()
+    {
+        return livesLeft;
     }
 }

@@ -55,7 +55,12 @@ public abstract class GameEvent implements Serializable
          * NO-OP event (marker symbol for events removed from a frame, usually due to
          * frame dropping).
          */
-        NO_OP,
+        NO_OP, 
+        
+        /**
+         * Game status event (dispatched throughout the game and before game over).
+         */
+        GAME_STATUS,
     }
 
     /**
