@@ -19,6 +19,9 @@ public final class HumanPlayerFactory implements IPlayerFactory
         this.controller = controller;
     }
 
+    /**
+     * Returns an implementation of {@link IPlayerController2} and {@link IPlayerController}.
+     */
     @Override
     public IPlayerController getController(String playerName)
     {

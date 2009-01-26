@@ -69,6 +69,9 @@ public final class Game
     /** Game listeners. */
     private final ArrayList<IGameEventListener> listeners = Lists.newArrayList();
 
+    /** Frame listeners. */
+    private final ArrayList<IFrameListener> frameListeners = Lists.newArrayList();
+
     /** Board dimensions. */
     private BoardInfo boardData;
 
@@ -209,8 +212,9 @@ public final class Game
             timer.waitForFrame();
 
             /*
-             * No player fiddling while within frame processing.
+             * No player-related data structure fiddling while within frame processing.
              */
+            firePreFrameEvent(frame);
             synchronized (this)
             {
                 processBoardCells();
@@ -233,6 +237,8 @@ public final class Game
                 events.clear();
                 this.currentFrame = frame;
             }
+            firePostFrameEvent(frame);
+
         } while (result == null || lingerFrames-- > 0);
 
         /*
@@ -380,6 +386,27 @@ public final class Game
         listeners.remove(listener);
     }
 
+    /*
+     * 
+     */
+    public void addListener(IFrameListener listener)
+    {
+        if (frameListeners.contains(listener))
+        {
+            throw new RuntimeException("It is an error to add the same listener more than once: "
+                + listener);
+        }
+        frameListeners.add(listener);
+    }
+
+    /*
+     * 
+     */
+    public void removeListener(IFrameListener listener)
+    {
+        frameListeners.remove(listener);
+    }
+
     /**
      * Dispatch frame events to listeners.
      */
@@ -392,6 +419,22 @@ public final class Game
         }
     }
 
+    /*
+     * Dispatch frame event.
+     */
+    private void firePostFrameEvent(int frame)
+    {
+        for (IFrameListener l : frameListeners) l.postFrame(frame);
+    }
+
+    /*
+     * Dispatch frame event.
+     */
+    private void firePreFrameEvent(final int frame)
+    {
+        for (IFrameListener l : frameListeners) l.preFrame(frame);
+    }
+    
     /**
      * Move players according to their controller signals, drop bombs,
      * check collisions.

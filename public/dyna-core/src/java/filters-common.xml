@@ -5,7 +5,7 @@
 
 <!-- Filter out certain jdyna logs -->
 <logger name="org.jdyna.network.packetio"><level value="info" /></logger>
-<logger name="org.jdyna.network.sockets.ControllerStateDispatch"><level value="info" /></logger>
+<logger name="org.jdyna.network.sockets"><level value="info" /></logger>
 
 <!-- Apache commons -->
 <logger name="org.apache.commons"><level value="warn"/></logger>

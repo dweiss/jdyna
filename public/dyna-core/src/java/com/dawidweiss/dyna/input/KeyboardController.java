@@ -6,13 +6,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.*;
 import com.google.common.collect.Maps;
 
 /**
  * Player controller ({@link IPlayerController}) based on keyboard events.
  */
-public final class KeyboardController implements IPlayerController
+public final class KeyboardController implements IPlayerController, IPlayerController2
 {
     /**
      * Global lock for accessing static data structures.
@@ -68,15 +68,7 @@ public final class KeyboardController implements IPlayerController
      */
     public boolean dropsBomb()
     {
-        synchronized (lock)
-        {
-            for (int index = pressedCodes.size() - 1; index >= 0; index--)
-            {
-                if (pressedCodes.get(index) == vk_bomb) return true;
-            }
-        }
-
-        return false;
+        return getState().dropsBomb;
     }
 
     /*
@@ -84,21 +76,37 @@ public final class KeyboardController implements IPlayerController
      */
     public Direction getCurrent()
     {
+        return getState().direction;
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public ControllerState getState()
+    {
         synchronized (lock)
         {
+            boolean dropsBomb = false;
+            Direction direction = null;
+
+            for (int index = pressedCodes.size() - 1; index >= 0; index--)
+            {
+                if (pressedCodes.get(index) == vk_bomb) dropsBomb = true;
+            }
+            
             for (int index = pressedCodes.size() - 1; index >= 0; index--)
             {
                 final int i = pressedCodes.get(index);
 
-                if (i == vk_left) return Direction.LEFT;
-                if (i == vk_right) return Direction.RIGHT;
-                if (i == vk_down) return Direction.DOWN;
-                if (i == vk_up) return Direction.UP;
+                if (i == vk_left) direction = Direction.LEFT;
+                else if (i == vk_right) direction = Direction.RIGHT;
+                else if (i == vk_down) direction = Direction.DOWN;
+                else if (i == vk_up) direction = Direction.UP;
             }
-        }
 
-        // No direction key pressed.
-        return null;
+            return new ControllerState(direction, dropsBomb, /* Valid one frame. */ 1);
+        }
     }
 
     /*

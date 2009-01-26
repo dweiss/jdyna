@@ -3,6 +3,8 @@ package com.dawidweiss.dyna.players;
 import java.awt.Point;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.dawidweiss.dyna.*;
 import com.google.common.collect.Lists;
 
@@ -74,6 +76,22 @@ public final class Rabbit implements IPlayerController, IGameEventListener
     @Override
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
+        /*
+         * Slowdown rabbit if a system property is set.
+         */
+        try
+        {
+            final String rabbitSlowdown = System.getProperty("rabbit.slowdown");
+            if (!StringUtils.isEmpty(rabbitSlowdown))
+            {
+                Thread.sleep(Integer.parseInt(rabbitSlowdown));
+            }
+        }
+        catch (InterruptedException e)
+        {
+            // Ignore interrupts.
+        }
+
         for (GameEvent event : events)
         {
             if (event.type == GameEvent.Type.GAME_START)
@@ -97,7 +115,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
                 {
                     final Point pixelPosition = myself.getPosition();
                     final Point gridPosition = boardInfo.pixelToGrid(pixelPosition);
-    
+
                     updateTrail(gridPosition);
                     if (shouldChangeDirection(gse.getCells(), pixelPosition))
                     {
