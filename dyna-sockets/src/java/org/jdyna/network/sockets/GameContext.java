@@ -6,11 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdyna.network.sockets.packets.FrameData;
 
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import com.dawidweiss.dyna.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -84,9 +80,14 @@ final class GameContext
      * from the game thread. This ensures we have synchronous updates in the game and
      * count frame validity of the incoming states as well.
      */
-    private final IGameEventListener controllersUpdater = new IGameEventListener()
+    private final IFrameListener controllersUpdater = new IFrameListener()
     {
-        public void onFrame(int frame, List<? extends GameEvent> events)
+        public void postFrame(int frame)
+        {
+            // Do nothing.
+        }
+
+        public void preFrame(int frame)
         {
             /*
              * Apply pending controller updates or reset current state if valid frame
@@ -96,23 +97,7 @@ final class GameContext
             {
                 for (PlayerHandle ph : players.values())
                 {
-                    final ControllerState newState = controllerUpdates.get(ph.playerID);
-                    if (newState != null)
-                    {
-                        ph.controller.update(newState.direction, newState.dropsBomb,
-                            newState.validFrames);
-                    }
-                    else
-                    {
-                        if (ph.controller.validFrames > 0)
-                        {
-                            if (--ph.controller.validFrames == 0)
-                            {
-                                // Reset controller state.
-                                ph.controller.update(null, false, 0);
-                            }
-                        }
-                    }
+                    ph.controller.update(controllerUpdates.remove(ph.playerID));
                 }
             }
         }
@@ -233,13 +218,11 @@ final class GameContext
     /**
      * Update controller state of a given player in the subsequent frame.
      */
-    public void updateControllerState(int playerID, Direction direction,
-        boolean dropsBomb, int validFrames)
+    public void updateControllerState(int playerID, ControllerState state)
     {
         synchronized (controllerUpdates)
         {
-            controllerUpdates.put(playerID, new ControllerState(direction, dropsBomb,
-                validFrames));
+            controllerUpdates.put(playerID, state);
         }
     }
 }

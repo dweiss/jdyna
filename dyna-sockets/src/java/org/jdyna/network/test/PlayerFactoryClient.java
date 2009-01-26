@@ -7,16 +7,8 @@ import java.net.Inet4Address;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jdyna.network.packetio.SerializablePacket;
-import org.jdyna.network.packetio.UDPPacketEmitter;
-import org.jdyna.network.packetio.UDPPacketListener;
-import org.jdyna.network.sockets.ControllerStateDispatch;
-import org.jdyna.network.sockets.GameClient;
-import org.jdyna.network.sockets.GameEventListenerMultiplexer;
-import org.jdyna.network.sockets.GameHandle;
-import org.jdyna.network.sockets.GameServer;
-import org.jdyna.network.sockets.PacketIdentifiers;
-import org.jdyna.network.sockets.PlayerHandle;
+import org.jdyna.network.packetio.*;
+import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.FrameData;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.kohsuke.args4j.Argument;
@@ -24,11 +16,7 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.CmdLine;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
 import com.dawidweiss.dyna.view.swing.BoardFrame;
 
@@ -165,17 +153,19 @@ public class PlayerFactoryClient
         serverUpdater.setDefaultTarget(
             Inet4Address.getByName(server.serverAddress), server.UDPFeedbackPort);
 
+        // Join the remote game.
+        final PlayerHandle playerHandle = client.joinGame(handle, playerName);
+
         // Event proxy to local clients.
         final GameEventListenerMultiplexer proxy = new GameEventListenerMultiplexer();
 
-        final IPlayerController controller = factory.getController(playerName);
-        final PlayerHandle playerHandle = client.joinGame(handle, playerName);
-        if (controller instanceof IGameEventListener)
-        {
-            proxy.addListener((IGameEventListener) controller);
-        }
-        proxy.addListener(
-            new ControllerStateDispatch(playerHandle, controller, serverUpdater));
+        // Create local asynchronous controller wrapper.
+        final IPlayerController localController = factory.getController(playerName);
+
+        // Asynchronous mode.
+        final AsyncPlayerController asyncController = new AsyncPlayerController(localController);
+        proxy.addListener(asyncController); 
+        proxy.addListener(new ControllerStateDispatch(playerHandle, asyncController, serverUpdater));
 
         // Disconnect the control link, we don't need it anymore.
         client.disconnect();

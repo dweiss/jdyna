@@ -42,7 +42,7 @@ public class MainTest
                 });
             };
         }.start();
-        
+
         /*
          * Start a rabbit.
          */
@@ -50,6 +50,8 @@ public class MainTest
         {
             public void run()
             {
+                System.setProperty("rabbit.slowdown", "250");
+
                 PlayerFactoryClient.main(new String [] {
                     "--game", "testgame",
                     "--player-name", "rabbit",

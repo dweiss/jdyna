@@ -10,9 +10,7 @@ import org.jdyna.network.sockets.packets.UpdateControllerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.*;
 
 /**
  * Dispatch local {@link IPlayerController} state to a remote server using UDP.
@@ -22,7 +20,7 @@ public final class ControllerStateDispatch implements IGameEventListener
     private final static Logger logger = LoggerFactory
         .getLogger(ControllerStateDispatch.class);
 
-    private final IPlayerController controller;
+    private final IPlayerController2 controller;
     private final UDPPacketEmitter serverUpdate;
     private final PlayerHandle playerHandle;
     private final SerializablePacket packet = new SerializablePacket();
@@ -32,7 +30,7 @@ public final class ControllerStateDispatch implements IGameEventListener
     /*
      * 
      */
-    public ControllerStateDispatch(PlayerHandle handle, IPlayerController controller,
+    public ControllerStateDispatch(PlayerHandle handle, IPlayerController2 controller,
         UDPPacketEmitter serverUpdate)
     {
         this.playerHandle = handle;
@@ -46,24 +44,26 @@ public final class ControllerStateDispatch implements IGameEventListener
     @Override
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        if (previous == null || previous.dropsBomb != controller.dropsBomb()
-            || !ObjectUtils.equals(previous.direction, controller.getCurrent()))
-        {
-            previous = new ControllerState(controller.getCurrent(), controller
-                .dropsBomb(), 0);
+        final ControllerState current = controller.getState();
 
-            /*
-             * Dispatch new state.
-             */
+        if (current == null)
+        {
+            previous = null;
+        }
+        else if (ObjectUtils.equals(current, previous) && previous != null && previous.validFrames == 0)
+        {
+            return;
+        }
+        else
+        {
+            previous = current;
+
             try
             {
-                final int validityFrames = 0;
-
-                logger.debug("Updating controller state: " + previous);
+                logger.debug("Updating controller state: " + current);
 
                 final UpdateControllerState state = new UpdateControllerState(
-                    playerHandle.gameID, playerHandle.playerID, previous.direction,
-                    previous.dropsBomb, validityFrames);
+                    playerHandle.gameID, playerHandle.playerID, current);
 
                 packet.serialize(PacketIdentifiers.PLAYER_CONTROLLER_STATE,
                     playerHandle.gameID, state);

@@ -18,7 +18,7 @@ public final class PlayerHandle implements Serializable
     /**
      * Player controller (only on the server side).
      */
-    transient RemotePlayerControllerState controller = new RemotePlayerControllerState();
+    transient PlayerControllerState controller = new PlayerControllerState();
 
     /**
      * Player address (only on the server side).

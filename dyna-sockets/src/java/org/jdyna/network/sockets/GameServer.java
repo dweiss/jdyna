@@ -151,8 +151,7 @@ public final class GameServer
             return;
         }
 
-        gameContext.updateControllerState(s.playerID, s.direction, s.dropsBomb,
-            s.validFrames);
+        gameContext.updateControllerState(s.playerID, s.state);
     }
 
     /**
