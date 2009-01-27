@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
 	exit 1
 fi
 
-DYNA_JAR="`dirname $0`/jdyna-sockets.jar"
+DYNA_JAR="`dirname $0`/jdyna-sockets.jar:`dirname $0`/player.jar"
 
 COMMAND=$1
 shift
