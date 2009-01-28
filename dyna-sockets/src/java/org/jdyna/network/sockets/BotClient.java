@@ -1,23 +1,19 @@
 package org.jdyna.network.sockets;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
-import java.util.Arrays;
 import java.util.List;
 
-import org.jdyna.network.packetio.*;
-import org.jdyna.network.sockets.packets.FrameData;
+import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
+import com.dawidweiss.dyna.CmdLine;
+import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.IPlayerFactory;
 
 /**
  * A client that wraps {@link IPlayerFactory} and connects to the server, creating or
@@ -76,12 +72,6 @@ public class BotClient
      */
     @Argument(index = 0, metaVar = "class", required = true, usage = "Fully qualified class name implementing IPlayerFactory.")
     public String clientClass;
-
-    /*
-     * Views, if enabled. 
-     */
-    private GameSoundEffects soundEffects;
-    private BoardFrame boardFrame;
 
     /*
      * 
@@ -151,6 +141,9 @@ public class BotClient
             }
         }
 
+        // Game client.
+        final GameClient gameClient = new GameClient(handle, server);
+
         /*
          * Create: the client controller, feedback UDP port, proxy for local listeners.
          */
@@ -161,16 +154,13 @@ public class BotClient
         // Join the remote game.
         final PlayerHandle playerHandle = client.joinGame(handle, playerName);
 
-        // Event proxy to local clients.
-        final GameEventListenerMultiplexer proxy = new GameEventListenerMultiplexer();
-
         // Create local asynchronous controller wrapper.
         final IPlayerController localController = factory.getController(playerName);
 
         // Asynchronous mode.
         final AsyncPlayerController asyncController = new AsyncPlayerController(localController);
-        proxy.addListener(asyncController); 
-        proxy.addListener(new ControllerStateDispatch(playerHandle, asyncController, serverUpdater));
+        gameClient.addListener(asyncController); 
+        gameClient.addListener(new ControllerStateDispatch(playerHandle, asyncController, serverUpdater));
 
         // Disconnect the control link, we don't need it anymore.
         client.disconnect();
@@ -178,73 +168,10 @@ public class BotClient
         /*
          * Create a local listeners - sound, view.
          */
-        if (!noSound) 
-        {
-            soundEffects = new GameSoundEffects();
-            proxy.addListener(soundEffects);
-        }
+        if (!noSound) gameClient.attachSound();
+        if (!noView) gameClient.attachView(playerHandle.playerName);
 
-        if (!noView)
-        {
-            boardFrame = new BoardFrame();
-            proxy.addListener(boardFrame);
-            boardFrame.getGamePanel().trackPlayer(playerHandle.playerName);
-            boardFrame.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent e)
-                {
-                    proxy.removeListener(boardFrame);
-                    boardFrame.dispose();
-                }
-            });
-            boardFrame.setVisible(true);
-        }
-
-        /*
-         * Propagate board info to all listeners if joining to a game.
-         */
-        proxy.onFrame(0, Arrays.asList(new GameStartEvent(handle.info)));
-
-        final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);
-        SerializablePacket p = new SerializablePacket();
-
-        final int PACKET_TIMEOUT = 1000;
-        final int INITIAL_RETRIES = 3;
-        long retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
-        int retries = INITIAL_RETRIES;
-
-        while (true)
-        {
-            p = listener.receive(p, PACKET_TIMEOUT);
-
-            if (p != null 
-                && p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
-                && p.getCustom2() == handle.gameID)
-            {
-                final FrameData fd = p.deserialize(FrameData.class);
-                proxy.onFrame(fd.frame, fd.events);
-
-                retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
-                retries = INITIAL_RETRIES;
-            }
-            else
-            {
-                if (System.currentTimeMillis() > retryDeadline)
-                {
-                    retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
-                    if (--retries > 0)
-                    {
-                        logger.warn("Receiving no packets from the server... retries: " + retries);                        
-                    }
-                    else break;
-                }
-            }
-        }
-
-        logger.info("Shutting down...");
-        listener.close();
-        proxy.onFrame(0, Arrays.asList(new GameOverEvent()));
-        if (boardFrame != null) boardFrame.dispose();
-        if (soundEffects != null) soundEffects.dispose();
+        gameClient.runLoop();
     }
 
     /**

@@ -1,10 +1,13 @@
 package org.jdyna.network.sockets;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.network.sockets.packets.ServerInfo;
-import org.kohsuke.args4j.*;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +23,10 @@ public class Admin
     public enum Command
     {
         games,
-        newgame
+        newgame,
+        seegame,
     }
-    
+
     /**
      * Server broadcast port.
      */
@@ -49,9 +53,15 @@ public class Admin
     public String boardName;
 
     /**
+     * Disable local sound.
+     */
+    @Option(name = "--no-sound", required = false, usage = "Disable sound output.")
+    public boolean noSound;    
+    
+    /**
      * Command to run.
      */
-    @Argument(index = 0, metaVar = "command", required = true, usage = "Command: [games | newgame]")
+    @Argument(index = 0, metaVar = "command", required = true)
     public Command command;
 
     /*
@@ -97,9 +107,20 @@ public class Admin
                     if (StringUtils.isEmpty(gameName)) 
                         throw new CmdLineException("Game name is required.");
 
-                    final GameHandle gh = client.createGame(gameName, boardName);
+                    GameHandle gh = client.createGame(gameName, boardName);
                     logger.info("Game created [id=" + gh.gameID + "]");
 
+                    break;
+                    
+                case seegame:
+                    if (StringUtils.isEmpty(gameName)) 
+                        throw new CmdLineException("Game name is required.");
+
+                    gh = client.getGame(gameName);
+                    client.disconnect();
+
+                    logger.info("Attaching views to game [id=" + gh.gameID + "]");
+                    attachView(gh, server);
                     break;
             }
         }
@@ -107,6 +128,18 @@ public class Admin
         {
             client.disconnect();
         }
+    }
+
+    /**
+     * Attach a view to the given game and update it continuously.
+     */
+    private void attachView(GameHandle gh, ServerInfo server)
+        throws IOException
+    {
+        final GameClient client = new GameClient(gh, server);
+        if (!noSound) client.attachSound();
+        client.attachView();
+        client.runLoop();
     }
 
     /**
