@@ -16,10 +16,15 @@ public final class GameStatusEvent extends GameEvent
     private static final long serialVersionUID = 0x200901261355L;
 
     /**
-     * An array of statistics for players after the game is over. Statistics depend on the
-     * game mode.
+     * An array of statistics for individual players.
      */
     public List<PlayerStatus> stats;
+
+    /**
+     * An array of statistics for teams. May be empty if there
+     * are no teams.
+     */
+    public List<TeamStatus> teamStats;
 
     /*
      * Serialization.
@@ -32,10 +37,19 @@ public final class GameStatusEvent extends GameEvent
     /*
      *  
      */
-    public GameStatusEvent(List<PlayerStatus> stats)
+    public GameStatusEvent(List<PlayerStatus> stats, List<TeamStatus> teamStats)
     {
         super(GameEvent.Type.GAME_STATUS);
 
         this.stats = Collections.unmodifiableList(stats);
+        this.teamStats = Collections.unmodifiableList(teamStats);
+    }
+
+    /*
+     *  
+     */
+    public GameStatusEvent(List<PlayerStatus> stats)
+    {
+        this(stats, Collections.<TeamStatus> emptyList());
     }
 }

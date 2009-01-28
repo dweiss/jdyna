@@ -9,31 +9,31 @@ import javax.swing.table.*;
 import com.dawidweiss.dyna.*;
 
 /**
- * Swing component displaying player status information.
+ * Swing component displaying team status information.
  */
 @SuppressWarnings("serial")
-public final class ScorePanel extends JPanel implements IGameEventListener
+public final class TeamScorePanel extends JPanel implements IGameEventListener
 {
     /**
-     * Player stats model for JTable
+     * Team stats model.
      */
-    private static class PlayersTableModel extends AbstractTableModel
+    private static class TeamsTableModel extends AbstractTableModel
     {
-        private List<PlayerStatus> modelData;
+        private List<TeamStatus> modelData;
 
         private Class<?> [] columns =
         {
-            String.class, Integer.class, Integer.class, String.class
+            String.class, Integer.class, Integer.class, Integer.class, Integer.class
         };
         
         private String [] columnNames =
         {
-            "Player", "Lives", "Enemies", "Status"
+            "Team", "Players", "Alive", "Kills", "Lives" 
         };
         
         private int [] columnWeights = 
         {
-            90, 10, 10, 10 
+            90, 10, 10, 10, 10 
         };
 
         @Override
@@ -63,31 +63,30 @@ public final class ScorePanel extends JPanel implements IGameEventListener
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
-            final PlayerStatus status = modelData.get(rowIndex);
+            final TeamStatus status = modelData.get(rowIndex);
             switch (columnIndex)
             {
                 case 0:
-                    return status.getPlayerName();
+                    return status.getTeamName();
                 case 1:
-                    return status.getLivesLeft();
+                    return status.getPlayersTotal();
                 case 2:
-                    return status.getKilledEnemies();
+                    return status.getPlayersLeft();
                 case 3:
-                    if (status.isStoneDead()) return "DEAD&OUT";
-                    if (status.isDead()) return "DEAD";
-                    if (status.isImmortal()) return "IMMORTAL";
-                    return "";
+                    return status.getKilledEnemies();
+                case 4:
+                    return status.getLivesLeft();
             }
             return null;
         }
 
-        public void setModelData(final List<PlayerStatus> modelData)
+        public void setModelData(final List<TeamStatus> modelData)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
                 {
-                    PlayersTableModel.this.modelData = modelData;
+                    TeamsTableModel.this.modelData = modelData;
                     fireTableDataChanged();
                 }
             });
@@ -103,18 +102,18 @@ public final class ScorePanel extends JPanel implements IGameEventListener
     }
 
     private JTable table;
-    private TableRowSorter<PlayersTableModel> sorter;
-    private PlayersTableModel model;
+    private TableRowSorter<TeamsTableModel> sorter;
+    private TeamsTableModel model;
 
     /**
      * 
      */
-    public ScorePanel()
+    public TeamScorePanel()
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        this.model = new PlayersTableModel();
-        sorter = new TableRowSorter<PlayersTableModel>(model);
+        this.model = new TeamsTableModel();
+        sorter = new TableRowSorter<TeamsTableModel>(model);
         table = new JTable(model);
         table.setRowSorter(sorter);
         table.setPreferredScrollableViewportSize(new Dimension(50, 70));
@@ -136,7 +135,7 @@ public final class ScorePanel extends JPanel implements IGameEventListener
         {
             if (e.type == GameEvent.Type.GAME_STATUS)
             {
-                model.setModelData(((GameStatusEvent) e).stats);
+                model.setModelData(((GameStatusEvent) e).teamStats);
             }
         }
     }

@@ -1,16 +1,26 @@
 package com.dawidweiss.dyna;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.awt.Point;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dawidweiss.dyna.IPlayerController.Direction;
+import com.dawidweiss.dyna.ISprite.Type;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -136,6 +146,11 @@ public final class Game
     private boolean dispatchPlayerStatuses;
 
     /**
+     * Unique mapping of team names.
+     */
+    private Map<String, Integer> teams = Maps.newHashBiMap();
+
+    /**
      * Creates a single game.
      */
     public Game(Board board, BoardInfo boardInfo, Player... players)
@@ -227,15 +242,17 @@ public final class Game
                 processBoardCells();
                 processPlayers(frame);
                 processBonuses(frame);
-    
+
                 events.add(new GameStateEvent(board.cells, playerInfos));
                 
                 /*
-                 * Check if player status should be dispatched. 
+                 * Check if player status should be dispatched. Dispatch
+                 * every 50 frames or so anyway, so that clients that have
+                 * just joined the game have their status updated. 
                  */
                 if (dispatchPlayerStatuses || (frame % 50) == 0)
                 {
-                    events.add(new GameStatusEvent(getPlayerStats()));
+                    events.add(new GameStatusEvent(getPlayerStats(), getTeamStats()));
                 }
                 
                 /*
@@ -363,6 +380,35 @@ public final class Game
             stats.add(pi.getStatus());
         }
         
+        return stats;
+    }
+
+    /**
+     * @return Return current team statistics (if any).
+     */
+    private List<TeamStatus> getTeamStats()
+    {
+        if (teams.size() == 0) return Collections.emptyList();
+
+        final ArrayList<TeamStatus> stats = Lists.newArrayListWithExpectedSize(teams.size());
+        for (String teamName : teams.keySet())
+        {
+            stats.add(new TeamStatus(teamName));
+        }
+
+        for (PlayerInfo pi : playerInfos)
+        {
+            final String teamName = pi.player.team;
+            for (TeamStatus ts : stats)
+            {
+                if (ts.getTeamName().equals(teamName))
+                {
+                    ts.add(pi.getStatus());
+                    break;
+                }
+            }
+        }
+
         return stats;
     }
 
@@ -775,14 +821,34 @@ public final class Game
         }
 
         final int playerIndex = playerInfos.size();
-
-        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
-        final ISprite.Type spriteType = playerSprites[playerIndex % playerSprites.length];
+        final ISprite.Type spriteType = getSpriteType(p, playerIndex);
 
         final PlayerInfo pi = new PlayerInfo(p, initialLives, spriteType, currentFrame);
         pi.makeImmortal(immortalityCount);
         pi.location.setLocation(getDefaultLocation(playerIndex));
         playerInfos.add(pi);
+    }
+
+    /**
+     * Return the sprite type (color and shape) for a given player. 
+     */
+    private Type getSpriteType(Player p, int playerIndex)
+    {
+        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
+        if (StringUtils.isEmpty(p.team))
+        {
+            return playerSprites[playerIndex % playerSprites.length]; 
+        }
+        else
+        {
+            Integer key = teams.get(p.team);
+            if (key == null)
+            {
+                key = teams.size();
+                teams.put(p.team, key);
+            }
+            return playerSprites[key % playerSprites.length];
+        }
     }
 
     /**

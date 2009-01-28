@@ -1,15 +1,15 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.view.resources.*;
+import com.dawidweiss.dyna.view.resources.ImageUtilities;
 
 /**
  * Swing scoreboard view.
@@ -17,21 +17,28 @@ import com.dawidweiss.dyna.view.resources.*;
 @SuppressWarnings("serial")
 public final class ScoreFrame extends JFrame implements IGameEventListener
 {
-    private ScorePanel scorePanel;
+    private PlayerScorePanel playerScorePanel;
+    private TeamScorePanel teamScorePanel;
 
     /*
      * 
      */
     public ScoreFrame()
     {
-        scorePanel = new ScorePanel();
+        playerScorePanel = new PlayerScorePanel();
+        teamScorePanel = new TeamScorePanel();
 
-        final JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        // Set preferred sizes only to have proportional divider in place.
+        playerScorePanel.setPreferredSize(new Dimension(200, 200));
+        teamScorePanel.setPreferredSize(new Dimension(200, 50));
+
+        final JSplitPane panel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         getContentPane().add(panel);
-        panel.add(scorePanel, BorderLayout.CENTER);
 
-        setLocationByPlatform(true);
+        panel.setTopComponent(playerScorePanel);
+        panel.setBottomComponent(teamScorePanel);
+
+        setLocationByPlatform(false);
         setFocusTraversalKeysEnabled(false);
         setResizable(true);
 
@@ -51,6 +58,7 @@ public final class ScoreFrame extends JFrame implements IGameEventListener
      */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        scorePanel.onFrame(frame, events);
+        playerScorePanel.onFrame(frame, events);
+        teamScorePanel.onFrame(frame, events);
     }
 }
