@@ -108,7 +108,7 @@ public final class Boards
                     }
                     else
                     {
-                        boardLines.add(line.replace("\\s+$", ""));
+                        boardLines.add(line.replaceAll("\\s+$", ""));
                     }
                 }
             }
