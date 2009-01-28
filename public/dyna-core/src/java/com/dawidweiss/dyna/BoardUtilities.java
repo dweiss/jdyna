@@ -176,6 +176,7 @@ public final class BoardUtilities
         final ExplosionCell cell2 = (ExplosionCell) cell;
         if (cell2.type == explosion.type)
         {
+            cell2.mergeAttributions(explosion);
             cell2.addAttribution(bomb.player);
             return cell2;
         }
