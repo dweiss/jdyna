@@ -1,6 +1,7 @@
 @ECHO OFF
 
 SET DYNA_JAR="%~dp0jdyna-sockets.jar;%~dp0jdyna-corba.jar;%~dp0player.jar;%CLASSPATH%"
+SET SERVER_OPTS="-Dlog4j.configuration=log4j-server.xml %SERVER_OPTS%"
 
 SET COMMAND=%1
 SET ARGS=
@@ -18,7 +19,7 @@ IF "%COMMAND%" == "admin" GOTO ADMIN
 GOTO HELP
 
 :SERVER
-	java -cp %DYNA_JAR% org.jdyna.network.sockets.GameServer %ARGS%
+	java -cp %DYNA_JAR% %SERVER_OPTS% org.jdyna.network.sockets.GameServer %ARGS%
 	GOTO EXIT
 
 :BOT
