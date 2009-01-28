@@ -109,6 +109,8 @@ public final class BoardPanel extends JPanel implements IGameEventListener
      */
     private VisibilityTracker tracker;
 
+    private String trackedPlayer;
+
     /**
      * Rendering hints that disable bilinear or bicubic interpolation and in general
      * go for "pixelized" style. 
@@ -258,8 +260,27 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                 if (image != null)
                 {
                     final Composite c = g.getComposite();
+                    final Point p = new Point(player.getPosition());
+                    final Point offset = images.getSpriteOffset(player.getType(), state, frame);
+
                     if (player.isImmortal())
                     {
+                        /*
+                         * Add a tracked, if this is our player.
+                         */
+                        if (trackedPlayer != null && StringUtils.equals(trackedPlayer, player.getName()))
+                        {
+                            final float alpha = (globalFrameCounter & 4) != 0 ? 0.25f : 0.8f;
+                            final int BAR = cellSize;
+                            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+
+                            g.setColor(Color.RED);
+                            g.fillRect(p.x - BAR * 2, p.y - BAR/2, BAR * 4, BAR);
+                            g.fillRect(p.x - BAR/2,   p.y - BAR * 2, BAR, BAR * 4);
+
+                            g.setComposite(c);
+                        }
+
                         /*
                          * Flicker immortal players.
                          */
@@ -267,16 +288,11 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
                     }
 
-                    final Point p = new Point(player.getPosition());
-                    final Point offset = images.getSpriteOffset(player.getType(), state,
-                        frame);
-                    final Point label = new Point(p);
-
-                    p.translate(offset.x, offset.y);
-                    g.drawImage(image, null, p.x, p.y);
+                    g.drawImage(image, null, p.x + offset.x, p.y + offset.y);
 
                     if (paintPlayerLabels)
                     {
+                        final Point label = p;
                         final String playerLabel = StringUtils.abbreviate(
                             player.getName().toUpperCase(), MAX_PLAYER_NAME_WIDTH);
                         g.setFont(labelFont);
@@ -455,5 +471,13 @@ public final class BoardPanel extends JPanel implements IGameEventListener
         {
             SwingUtilities.invokeLater(r);
         }
+    }
+
+    /**
+     * Enable player position tracker (in immutable state) for player named <code>name</code>.
+     */
+    public void trackPlayer(String playerName)
+    {
+        this.trackedPlayer = playerName; 
     }
 }

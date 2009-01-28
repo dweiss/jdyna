@@ -178,7 +178,7 @@ public class BotClient
         {
             final BoardFrame frame = new BoardFrame();
             proxy.addListener(frame);
-            frame.setVisible(true);
+            frame.getGamePanel().trackPlayer(playerHandle.playerName);
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e)
                 {
@@ -186,6 +186,7 @@ public class BotClient
                     frame.dispose();
                 }
             });
+            frame.setVisible(true);
         }
 
         /*

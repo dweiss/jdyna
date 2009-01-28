@@ -101,12 +101,20 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         pack();
     }
 
-    /*
-     * 
+    /**
+     * React to on-frame events.
      */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
         this.gamePanel.onFrame(frame, events);
         this.scoreFrame.onFrame(frame, events);
+    }
+
+    /**
+     * Return the game panel associated with this frame.
+     */
+    public BoardPanel getGamePanel()
+    {
+        return gamePanel;
     }
 }
