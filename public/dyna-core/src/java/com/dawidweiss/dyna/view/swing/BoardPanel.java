@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.dawidweiss.dyna.BoardInfo;
 import com.dawidweiss.dyna.Cell;
@@ -27,6 +28,7 @@ import com.dawidweiss.dyna.IGameEventListener;
 import com.dawidweiss.dyna.IPlayerSprite;
 import com.dawidweiss.dyna.Player;
 import com.dawidweiss.dyna.view.resources.Images;
+import com.dawidweiss.dyna.view.swing.SwingUtils.VisibilityTracker;
 import com.google.common.collect.Maps;
 
 /**
@@ -36,6 +38,11 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("serial")
 public final class BoardPanel extends JPanel implements IGameEventListener
 {
+    /**
+     * Maximum width for the displayed player name.
+     */
+    private final static int MAX_PLAYER_NAME_WIDTH = 10;
+    
     /**
      * Exclusive lock so that drawing and updating does not take place at the same time.
      */
@@ -98,6 +105,11 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     private int globalFrameCounter;
 
     /**
+     * Visibility tracker.
+     */
+    private VisibilityTracker tracker;
+
+    /**
      * Rendering hints that disable bilinear or bicubic interpolation and in general
      * go for "pixelized" style. 
      */
@@ -117,6 +129,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     {
         this.images = images.createCompatible(conf);
         this.conf = conf;
+        this.tracker = SwingUtils.createVisibilityTracker(this);
 
         InputStream is = null;
         try
@@ -264,7 +277,8 @@ public final class BoardPanel extends JPanel implements IGameEventListener
 
                     if (paintPlayerLabels)
                     {
-                        final String playerLabel = player.getName().toUpperCase();
+                        final String playerLabel = StringUtils.abbreviate(
+                            player.getName().toUpperCase(), MAX_PLAYER_NAME_WIDTH);
                         g.setFont(labelFont);
                         final FontMetrics fm = g.getFontMetrics();
                         label.translate(0, -image.getHeight() / 2);
@@ -296,9 +310,9 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                 globalFrameCounter = 0;
             }
 
-            if (e.type == GameEvent.Type.GAME_STATE)
+            if (e.type == GameEvent.Type.GAME_STATE && tracker.isVisibleNotMinimized())
             {
-                updateBoard((GameStateEvent) e);                
+                updateBoard((GameStateEvent) e);
                 globalFrameCounter++;
             }
         }

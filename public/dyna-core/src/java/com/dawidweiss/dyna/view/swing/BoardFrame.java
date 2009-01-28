@@ -1,20 +1,15 @@
 package com.dawidweiss.dyna.view.swing;
 
-import java.awt.BorderLayout;
-import java.awt.GraphicsConfiguration;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.view.resources.ImageUtilities;
-import com.dawidweiss.dyna.view.resources.Images;
-import com.dawidweiss.dyna.view.resources.ImagesFactory;
+import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.view.resources.*;
 
 /**
  * Swing board view.
@@ -24,13 +19,23 @@ public final class BoardFrame extends JFrame implements IGameEventListener
 {
     private final GraphicsConfiguration conf;
     private BoardPanel gamePanel;
-    private ScorePanel scorePanel;
 
+    /**
+     * Attached score frame, if any.
+     */
+    private ScoreFrame scoreFrame;
+
+    /*
+     * 
+     */
     private BoardFrame(GraphicsConfiguration conf)
     {
         this.conf = conf;
     }
 
+    /*
+     * 
+     */
     public BoardFrame()
     {
         this(ImageUtilities.getGraphicsConfiguration());
@@ -40,24 +45,31 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         gamePanel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e)
             {
+                /*
+                 * Resize the entire frame when the game panel changes size.
+                 */
                 pack();
             }
         });
+
+        /*
+         * Create the score frame.
+         */
+        this.scoreFrame = new ScoreFrame();
+        scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        scoreFrame.setSize(new Dimension(300, 500));
+        scoreFrame.setFocusable(false);
+        scoreFrame.setFocusableWindowState(false);
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         getContentPane().add(panel);
         panel.add(gamePanel, BorderLayout.CENTER);
 
-        scorePanel = new ScorePanel();
-        panel.add(scorePanel, BorderLayout.SOUTH);
-
         setLocationByPlatform(true);
-        setIgnoreRepaint(true);
         setFocusTraversalKeysEnabled(false);
         getRootPane().setDoubleBuffered(false);
         setResizable(false);
-        pack();
         try
         {
             setIconImage(ImageUtilities.loadResourceImage("icons/window-icon.png"));
@@ -67,11 +79,34 @@ public final class BoardFrame extends JFrame implements IGameEventListener
             // Ignore.
         }
         setTitle("Play responsibly.");
+
+        /*
+         * Add a dependent frame. Whenever this frame is opened, the dependent frame is also opened.  
+         */
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowOpened(WindowEvent e)
+            {
+                scoreFrame.setVisible(true);
+                SwingUtils.glueTo(BoardFrame.this, scoreFrame, SwingUtils.SnapSide.RIGHT);
+                SwingUtils.snapFrame(BoardFrame.this, scoreFrame);
+            }
+
+            public void windowClosing(WindowEvent e)
+            {
+                scoreFrame.dispose();
+            }
+        });
+
+        pack();
     }
 
+    /*
+     * 
+     */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        gamePanel.onFrame(frame, events);
-        scorePanel.onFrame(frame, events);
+        this.gamePanel.onFrame(frame, events);
+        this.scoreFrame.onFrame(frame, events);
     }
 }
