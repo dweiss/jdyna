@@ -62,5 +62,10 @@
 		<chmod perm="a+rx">
 			<fileset dir="${dist.path}" includes="*.sh" /> 
 		</chmod>
+		<zip zipfile="jdyna.zip" update="false">
+		    <zipfileset dir="${dist.path}" prefix="jdyna">
+		        <exclude name="*.log" />
+	        </zipfileset>
+	    </zip>
 	</target>
 </project>
