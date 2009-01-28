@@ -45,6 +45,22 @@ public class MainTest
         }.start();
 
         /*
+         * Start a human client.
+         */
+        new Thread()
+        {
+            public void run()
+            {
+                BotClient.main(new String [] {
+                    "--game", "testgame",
+                    "--player-name", "player2",
+                    "--no-sound", "--no-view",
+                    HumanPlayerFactory.class.getName()
+                });
+            };
+        }.start();
+
+        /*
          * Start a rabbit.
          */
         new Thread()
@@ -56,7 +72,7 @@ public class MainTest
                 BotClient.main(new String [] {
                     "--game", "testgame",
                     "--player-name", "rabbit",
-                    "--no-sound",
+                    "--no-sound", "--no-view",
                     RabbitFactory.class.getName()
                 });
             };
