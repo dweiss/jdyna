@@ -48,7 +48,16 @@ final class GameContext
     /**
      * Unique player ID generator (across all games).
      */
-    private final static AtomicInteger playerIdGenerator = new AtomicInteger();
+    private final static AtomicInteger playerIdGenerator;
+    static
+    {
+        /*
+         * We want to avoid collisions between servers and players that possibly started
+         * some time ago. We start from the player number that is the lower 4 bytes of the
+         * current time. Should be very unlikely to clash with anything else.
+         */
+        playerIdGenerator = new AtomicInteger((int) System.currentTimeMillis());
+    }
 
     private final GameHandle handle;
     private final Game game;
@@ -90,8 +99,7 @@ final class GameContext
         public void preFrame(int frame)
         {
             /*
-             * Apply pending controller updates or reset current state if valid frame
-             * count reached 0.
+             * Apply pending controller updates.
              */
             synchronized (controllerUpdates)
             {

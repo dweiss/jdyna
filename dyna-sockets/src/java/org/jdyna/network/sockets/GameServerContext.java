@@ -5,24 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
-import org.jdyna.network.packetio.Packet;
-import org.jdyna.network.packetio.SerializablePacket;
-import org.jdyna.network.packetio.UDPPacketEmitter;
+import org.jdyna.network.packetio.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Boards;
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -49,10 +41,11 @@ public final class GameServerContext
      */
     private Map<String, GameContext> games = Maps.newHashMap();
 
-    /**
-     * 
+    /*
+     * We want to avoid collisions between servers and games that possibly started
+     * some time ago. We start with a random game ID.
      */
-    private final AtomicInteger gameID = new AtomicInteger();
+    private final AtomicInteger gameID = new AtomicInteger(new Random().nextInt());
 
     /**
      * Loaded boards.
