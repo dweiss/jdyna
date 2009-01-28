@@ -211,7 +211,11 @@ final class GameContext
     {
         synchronized (this)
         {
-            return playersByID.get(playerID).address;
+            final PlayerHandle playerHandle = playersByID.get(playerID);
+            if (playerHandle == null)
+                return null;
+            else
+                return playerHandle.address;
         }
     }
 
