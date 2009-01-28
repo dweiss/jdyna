@@ -1,18 +1,34 @@
 package com.dawidweiss.dyna.players;
 
 import java.awt.Point;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.BoardInfo;
+import com.dawidweiss.dyna.BoardUtilities;
+import com.dawidweiss.dyna.Cell;
+import com.dawidweiss.dyna.CellType;
+import com.dawidweiss.dyna.ControllerState;
+import com.dawidweiss.dyna.GameEvent;
+import com.dawidweiss.dyna.GameStartEvent;
+import com.dawidweiss.dyna.GameStateEvent;
+import com.dawidweiss.dyna.Globals;
+import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.IPlayerController;
+import com.dawidweiss.dyna.IPlayerController2;
+import com.dawidweiss.dyna.IPlayerSprite;
+import com.dawidweiss.dyna.Player;
 import com.google.common.collect.Lists;
 
 /**
  * Rabbits are shy and kind animals. A rabbit never drops any bombs, it just runs like
  * hell.
  */
-public final class Rabbit implements IPlayerController, IGameEventListener
+public final class Rabbit implements IPlayerController, IPlayerController2,
+    IGameEventListener
 {
     /**
      * Distance measurement fuzziness.
@@ -58,7 +74,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
     @Override
     public boolean dropsBomb()
     {
-        return false;
+        return getState().dropsBomb;
     }
 
     /*
@@ -67,7 +83,7 @@ public final class Rabbit implements IPlayerController, IGameEventListener
     @Override
     public Direction getCurrent()
     {
-        return direction;
+        return getState().direction;
     }
 
     /*
@@ -246,5 +262,15 @@ public final class Rabbit implements IPlayerController, IGameEventListener
     public static Player createPlayer(String name)
     {
         return new Player(name, new Rabbit(name));
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public ControllerState getState()
+    {
+        return new ControllerState(this.direction, false, 
+            /* We go for at most 4 frames. */ 4);
     }
 }
