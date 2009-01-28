@@ -179,6 +179,7 @@ public final class AsyncPlayerController implements IGameEventListener, IPlayerC
     {
         pendingEvents.addLast(new FrameData(frame, events.toArray(new GameEvent [events
             .size()])));
+        Thread.yield();
     }
 
     /**

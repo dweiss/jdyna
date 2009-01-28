@@ -14,6 +14,8 @@ the server.
 - Launching a "human" (keyboard-controlled) client, joining existing game room. 
 
 	jdyna human -n MY_NAME -g GAMEROOM_NAME
+	
+  Keyboard control buttons: arrow-keys -> movement, ctrl -> bomb.
 
 
 - Launching a "human" (keyboard-controlled) client, creating a new game room. 
