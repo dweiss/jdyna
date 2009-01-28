@@ -35,7 +35,7 @@ final class ExplosionCell extends Cell
          * Avoid duplicates. Because we have a small number of players, naive scan through
          * the array should be fine.
          */
-        if (!flamesBy.contains(flamesBy))
+        if (!flamesBy.contains(player))
         {
             flamesBy.add(player);
         }

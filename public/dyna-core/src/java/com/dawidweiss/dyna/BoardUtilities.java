@@ -186,6 +186,7 @@ public final class BoardUtilities
          */
         if (cell2.counter > 0)
         {
+            explosion.addAttribution(bomb.player);
             explosion.mergeAttributions(cell2);
             return explosion;
         }
@@ -193,6 +194,7 @@ public final class BoardUtilities
         final ExplosionCell cell3 = (ExplosionCell) Cell.getInstance(
             EXPLOSION_OVERLAPS.get(cell2.type).get(explosion.type));
         cell3.mergeAttributions(cell2, explosion);
+        cell3.addAttribution(bomb.player);
         return cell3;
     }
 
