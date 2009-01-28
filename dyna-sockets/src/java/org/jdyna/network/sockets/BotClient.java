@@ -78,6 +78,12 @@ public class BotClient
     public String clientClass;
 
     /*
+     * Views, if enabled. 
+     */
+    private GameSoundEffects soundEffects;
+    private BoardFrame boardFrame;
+
+    /*
      * 
      */
     public void start() throws Exception
@@ -172,21 +178,25 @@ public class BotClient
         /*
          * Create a local listeners - sound, view.
          */
-        if (!noSound) proxy.addListener(new GameSoundEffects());
+        if (!noSound) 
+        {
+            soundEffects = new GameSoundEffects();
+            proxy.addListener(soundEffects);
+        }
 
         if (!noView)
         {
-            final BoardFrame frame = new BoardFrame();
-            proxy.addListener(frame);
-            frame.getGamePanel().trackPlayer(playerHandle.playerName);
-            frame.addWindowListener(new WindowAdapter() {
+            boardFrame = new BoardFrame();
+            proxy.addListener(boardFrame);
+            boardFrame.getGamePanel().trackPlayer(playerHandle.playerName);
+            boardFrame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e)
                 {
-                    proxy.removeListener(frame);
-                    frame.dispose();
+                    proxy.removeListener(boardFrame);
+                    boardFrame.dispose();
                 }
             });
-            frame.setVisible(true);
+            boardFrame.setVisible(true);
         }
 
         /*
@@ -194,21 +204,47 @@ public class BotClient
          */
         proxy.onFrame(0, Arrays.asList(new GameStartEvent(handle.info)));
 
-        /*
-         * TODO: Detect if the game is still in progress on the server. If not, close.
-         */
-
         final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);
         SerializablePacket p = new SerializablePacket();
-        while ((p = listener.receive(p)) != null)
+
+        final int PACKET_TIMEOUT = 1000;
+        final int INITIAL_RETRIES = 3;
+        long retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
+        int retries = INITIAL_RETRIES;
+
+        while (true)
         {
-            if (p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
+            p = listener.receive(p, PACKET_TIMEOUT);
+
+            if (p != null 
+                && p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
                 && p.getCustom2() == handle.gameID)
             {
                 final FrameData fd = p.deserialize(FrameData.class);
                 proxy.onFrame(fd.frame, fd.events);
+
+                retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
+                retries = INITIAL_RETRIES;
+            }
+            else
+            {
+                if (System.currentTimeMillis() > retryDeadline)
+                {
+                    retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
+                    if (--retries > 0)
+                    {
+                        logger.warn("Receiving no packets from the server... retries: " + retries);                        
+                    }
+                    else break;
+                }
             }
         }
+
+        logger.info("Shutting down...");
+        listener.close();
+        proxy.onFrame(0, Arrays.asList(new GameOverEvent()));
+        if (boardFrame != null) boardFrame.dispose();
+        if (soundEffects != null) soundEffects.dispose();
     }
 
     /**
@@ -222,6 +258,7 @@ public class BotClient
             try
             {
                 me.start();
+                System.exit(0);
             }
             catch (Exception e)
             {
