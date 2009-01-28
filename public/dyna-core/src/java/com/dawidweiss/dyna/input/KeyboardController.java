@@ -105,7 +105,13 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
                 else if (i == vk_up) direction = Direction.UP;
             }
 
-            return new ControllerState(direction, dropsBomb, /* Valid one frame. */ 1);
+            /*
+             * We allow the keyboard controller to send "indefinite" state validity,
+             * otherwise (even on the local wireless network), delayed packets cause weird
+             * jerking of players.
+             */
+            final int validFrames = 0;
+            return new ControllerState(direction, dropsBomb, validFrames);
         }
     }
 
