@@ -59,7 +59,6 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         scoreFrame.setSize(new Dimension(300, 500));
         scoreFrame.setFocusable(false);
-        scoreFrame.setFocusableWindowState(false);
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
