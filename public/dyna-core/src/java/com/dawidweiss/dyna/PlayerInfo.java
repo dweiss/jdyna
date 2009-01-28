@@ -283,7 +283,7 @@ final class PlayerInfo implements IPlayerSprite
     PlayerStatus getStatus()
     {
         final PlayerStatus ps = new PlayerStatus(getName());
-        ps.dead = isStoneDead();
+        ps.dead = isDead();
         ps.deathFrame = deathAtFrame + joinedAtFrame;
         ps.immortal = isImmortal();
         ps.killedEnemies = killedEnemies;

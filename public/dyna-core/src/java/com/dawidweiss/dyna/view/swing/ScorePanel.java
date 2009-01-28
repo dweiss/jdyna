@@ -73,6 +73,7 @@ public final class ScorePanel extends JPanel implements IGameEventListener
                 case 2:
                     return status.getKilledEnemies();
                 case 3:
+                    if (status.isStoneDead()) return "DEAD&OUT";
                     if (status.isDead()) return "DEAD";
                     if (status.isImmortal()) return "IMMORTAL";
                     return "";

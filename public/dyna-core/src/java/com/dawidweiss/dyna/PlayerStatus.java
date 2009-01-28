@@ -65,8 +65,8 @@ public final class PlayerStatus implements Serializable
     {
         return playerName
             + ";"
-            + (dead ? " dead" : "")
-            + (dead ? " immortal" : "")
+            + (isDead() ? (isStoneDead() ? " stone" : "") + " dead" : "")
+            + (isImmortal() ? " immortal" : "")
             + " lives=" + livesLeft
             + " enemies=" + killedEnemies
             + " deathFrame=" + deathFrame;
@@ -95,6 +95,11 @@ public final class PlayerStatus implements Serializable
     public boolean isDead()
     {
         return dead;
+    }
+
+    public boolean isStoneDead()
+    {
+        return isDead() && getLivesLeft() <= 0;
     }
 
     public int getLivesLeft()
