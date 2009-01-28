@@ -109,9 +109,9 @@ public class GameClient
 
         while (true)
         {
-            p = listener.receive(p, PACKET_TIMEOUT);
+            SerializablePacket p2 = listener.receive(p, PACKET_TIMEOUT);
 
-            if (p != null && p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
+            if (p2 != null && p.getCustom1() == PacketIdentifiers.GAME_FRAME_DATA
                 && p.getCustom2() == gameHandle.gameID)
             {
                 final FrameData fd = p.deserialize(FrameData.class);

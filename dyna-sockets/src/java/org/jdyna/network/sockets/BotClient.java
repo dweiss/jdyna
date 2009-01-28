@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.dawidweiss.dyna.CmdLine;
 import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.IPlayerFactory;
+import com.dawidweiss.dyna.Player;
 
 /**
  * A client that wraps {@link IPlayerFactory} and connects to the server, creating or
@@ -151,8 +152,11 @@ public class BotClient
         serverUpdater.setDefaultTarget(
             Inet4Address.getByName(server.serverAddress), server.UDPFeedbackPort);
 
+        final String fullName = this.playerName;
+        final String playerName = Player.split(this.playerName)[1];
+
         // Join the remote game.
-        final PlayerHandle playerHandle = client.joinGame(handle, playerName);
+        final PlayerHandle playerHandle = client.joinGame(handle, fullName);
 
         // Create local asynchronous controller wrapper.
         final IPlayerController localController = factory.getController(playerName);
