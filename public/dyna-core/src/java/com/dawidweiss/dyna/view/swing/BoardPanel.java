@@ -190,17 +190,27 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                 int frame = player.getAnimationFrame();
 
                 /*
-                 * Special handing of the 'dying' state.
+                 * Special handing of the 'dying' state. This is a bit more complex because
+                 * upon joining an existing game we should not display the dying sequence for
+                 * players that are dead and will never recover from such state.
                  */
                 final int deadState = Player.State.DEAD.ordinal();
                 final int dyingState = Player.State.DYING.ordinal();
                 if (state == deadState)
                 {
-                    Integer f = dyingPlayers.get(playerIndex);
-                    f = (f == null ? 0 : f);
+                    final int max = images.getMaxSpriteImageFrame(player.getType(), dyingState);
 
-                    final int max = images.getMaxSpriteImageFrame(player.getType(),
-                        dyingState);
+                    Integer f = dyingPlayers.get(playerIndex);
+                    if (f == null)
+                    {
+                        /*
+                         * We did not see this player previously and it is in the dying state?
+                         * Must be a stone-dead fella, so we don't display the dying sequence for him.
+                         */
+                        f = max;
+                        dyingPlayers.put(playerIndex, f);
+                    }
+
                     if (f < max)
                     {
                         state = dyingState;
@@ -210,7 +220,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                 }
                 else
                 {
-                    dyingPlayers.remove(playerIndex);
+                    dyingPlayers.put(playerIndex, 0);
                 }
 
                 /*
