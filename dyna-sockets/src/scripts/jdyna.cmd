@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET DYNA_JAR="%~dp0jdyna-sockets.jar;~dp0player.jar"
+SET DYNA_JAR="%~dp0jdyna-sockets.jar;%~dp0jdyna-corba.jar;%~dp0player.jar;%CLASSPATH%"
 
 SET COMMAND=%1
 SET ARGS=

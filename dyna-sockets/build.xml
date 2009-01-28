@@ -28,6 +28,7 @@
 
 	<target name="compile" depends="prepare" description="Compile sources.">
 		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-core" target="jar" />
+		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-corba" target="jar" />
 
 		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
 			<src location="${src.java}" />
@@ -56,6 +57,7 @@
 		<copy todir="${dist.path}">
 			<fileset dir="src/scripts" />
 			<fileset refid="classpath.core" />
+			<fileset dir="../public/dyna-corba/tmp/dist" includes="jdyna-corba.jar" />
 		</copy>
 		<chmod perm="a+rx">
 			<fileset dir="${dist.path}" includes="*.sh" /> 
