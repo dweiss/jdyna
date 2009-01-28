@@ -37,7 +37,7 @@ public class MainTest
                 BotClient.main(new String [] {
                     "--game", "testgame",
                     "--player-name", "player1",
-                    "--board", "classic",
+                    "--board", "bigclassic",
                     "--no-sound",
                     HumanPlayerFactory.class.getName()
                 });
@@ -67,7 +67,7 @@ public class MainTest
         {
             public void run()
             {
-                System.setProperty("rabbit.slowdown", "250");
+                // System.setProperty("rabbit.slowdown", "250");
 
                 BotClient.main(new String [] {
                     "--game", "testgame",
