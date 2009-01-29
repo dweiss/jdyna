@@ -15,7 +15,7 @@ public final class Globals
      * @see BombCell#range
      * @see PlayerInfo#bombRange
      */
-    public static final int DEFAULT_BOMB_RANGE = 3;
+    public static final int DEFAULT_BOMB_RANGE = intProperty("dyna.bomb.range", 3);
 
     /**
      * @see BombCell#fuseCounter
@@ -25,7 +25,7 @@ public final class Globals
     /**
      * @see PlayerInfo#bombCount
      */
-    public static final int DEFAULT_BOMB_COUNT = 4;
+    public static final int DEFAULT_BOMB_COUNT = intProperty("dyna.bomb.count", 4);
 
     /**
      * Default pixel size of each cell in the playfield.
@@ -69,7 +69,7 @@ public final class Globals
     /**
      * Default frame rate for playing games.
      */
-    public static final int DEFAULT_FRAME_RATE = 25;
+    public static final int DEFAULT_FRAME_RATE = intProperty("dyna.framerate", 25);
 
     /**
      * Default interval (in frames) between placing a new bonus on the playfield.
@@ -96,7 +96,7 @@ public final class Globals
     /**
      * The default number of lives a player has in the {@link Game.Mode#DEATHMATCH} mode.
      */
-    public static final int DEFAULT_LIVES = 3;
+    public static final int DEFAULT_LIVES = intProperty("dyna.lives", 3);
 
     /*
      * 
@@ -106,6 +106,26 @@ public final class Globals
         // no instances.
     }
     
+    /**
+     * Override a default with a system property.
+     */
+    private static int intProperty(String propertyName, int defaultValue)
+    {
+        final String v = System.getProperty(propertyName);
+        if (v != null)
+        {
+            try
+            {
+                return Integer.parseInt(v);
+            }
+            catch (NumberFormatException e)
+            {
+                // Ignore.
+            }
+        }
+        return defaultValue;
+    }
+
     /**
      * Returns "default" keyboard layout for a player numbered <code>num</code>.
      */

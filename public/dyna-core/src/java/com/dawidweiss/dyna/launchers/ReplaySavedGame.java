@@ -34,8 +34,7 @@ public final class ReplaySavedGame
     @Option(required = false, name = "-r", aliases =
     {
         "--frame-rate"
-    }, metaVar = "fps", usage = "Frames per second (default: "
-        + Globals.DEFAULT_FRAME_RATE + ")")
+    }, metaVar = "fps", usage = "Frames per second.")
     private double frameRate = Globals.DEFAULT_FRAME_RATE;
 
     @Argument(index = 0, metaVar = "file", required = true, usage = "Game log file.")
