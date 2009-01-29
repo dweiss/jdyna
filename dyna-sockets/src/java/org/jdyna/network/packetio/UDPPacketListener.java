@@ -4,10 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
+import java.net.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +61,10 @@ public final class UDPPacketListener
             {
                 receiver.setSoTimeout(timeout);
                 receiver.receive(udpPacket);
+            }
+            catch (SocketException e)
+            {
+                return null;
             }
             catch (SocketTimeoutException e)
             {

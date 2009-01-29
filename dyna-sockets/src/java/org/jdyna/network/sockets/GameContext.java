@@ -165,9 +165,15 @@ final class GameContext
      */
     public void dispose()
     {
-        synchronized (this)
+        try
         {
+            game.interrupt();
             thread.interrupt();
+            thread.join();
+        }
+        catch (InterruptedException e)
+        {
+            // Skip if interrupted.
         }
     }
 

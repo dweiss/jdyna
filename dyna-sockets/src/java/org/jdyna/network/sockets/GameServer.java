@@ -1,9 +1,8 @@
 package org.jdyna.network.sockets;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.jdyna.network.packetio.SerializablePacket;
@@ -71,6 +70,18 @@ public final class GameServer
     public String iface = "0.0.0.0";
 
     /**
+     * Enable game state logging for replays later on.
+     */
+    @Option(name = "-lg", aliases = "--log-games", required = false, usage = "Enable game state logging.")
+    public boolean gameStateLogging;
+
+    /**
+     * Game state logging directory, if enabled.
+     */
+    @Option(name = "-ld", aliases = "--log-dir", required = false, usage = "Game state logging directory.")
+    public File gameStateLogDir = new File("gamelogs");
+
+    /**
      * Broadcast port for distributing game events.
      */
     @Option(name = "-mg", aliases = "--max-games", required = false, metaVar = "int", 
@@ -100,11 +111,15 @@ public final class GameServer
                 final SerializablePacket p = new SerializablePacket();
                 while (true)
                 {
-                    feedbackSocket.receive(p);
+                    if (feedbackSocket.receive(p) == null)
+                    {
+                        break;
+                    }
 
                     if (p.getCustom1() != PacketIdentifiers.PLAYER_CONTROLLER_STATE)
                     {
-                        logger.warn("Junk packet received on feedback port.");
+                        logger.warn("Junk packet received on feedback port: "
+                            + p);
                         continue;
                     }
 
@@ -172,6 +187,10 @@ public final class GameServer
                 serverAddress.getHostAddress(), TCPport, UDPBroadcastPort, UDPport);
 
             this.context = new GameServerContext(serverInfo, maxGames);
+            if (gameStateLogging)
+            {
+                context.setGameStateDirectory(gameStateLogDir);
+            }
 
             /*
              * Start UDP socket listener.
@@ -180,15 +199,44 @@ public final class GameServer
             feedbackSocketListener.start();
 
             /*
+             * Add a shutdown hook that closes the TCP socket.
+             */
+            final ServerSocket socketf = socket;
+            final Thread serverThread = Thread.currentThread();
+            Runtime.getRuntime().addShutdownHook(new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        Closeables.close(socketf);
+                        serverThread.join();
+                        logger.info("Shutdown hook finished.");
+                    }
+                    catch (InterruptedException e)
+                    {
+                        // Ignore.
+                    }
+                }
+            });
+
+            /*
              * Start TCP control socket listener.
              */
-            Socket client;
-            while ((client = socket.accept()) != null)
+            try
             {
-                /*
-                 * Start a new thread to converse with this client.
-                 */
-                new ServerControlConnectionHandler(client, context).start();
+                Socket client;
+                while ((client = socket.accept()) != null)
+                {
+                    /*
+                     * Start a new thread to converse with this client.
+                     */
+                    new ServerControlConnectionHandler(client, context).start();
+                }
+            }
+            catch (SocketException e)
+            {
+                // We assume this is socket closed.
             }
         }
         catch (IOException e)
@@ -199,6 +247,7 @@ public final class GameServer
         {
             Closeables.close(socket);
             feedbackSocket.close();
+            context.close();
         }
 
         logger.info("Server stopped.");

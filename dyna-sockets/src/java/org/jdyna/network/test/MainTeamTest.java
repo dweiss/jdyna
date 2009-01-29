@@ -23,7 +23,9 @@ public class MainTeamTest
         {
             public void run()
             {
-                GameServer.main(new String [] {});
+                GameServer.main(new String [] {
+                    "--log-games"
+                });
             };
         }.start();
 

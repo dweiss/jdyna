@@ -1,5 +1,8 @@
 package org.jdyna.network.sockets;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dawidweiss.dyna.Game;
 
 /**
@@ -7,6 +10,7 @@ import com.dawidweiss.dyna.Game;
  */
 final class GameThread extends Thread
 {
+    private final static Logger logger = LoggerFactory.getLogger(GameThread.class); 
     private final GameContext context;
 
     /*
@@ -26,5 +30,6 @@ final class GameThread extends Thread
     public void run()
     {
         context.getGame().run(Game.Mode.INFINITE_DEATHMATCH);
+        logger.info("Game thread finished [" + getName() + "]");
     }
 }

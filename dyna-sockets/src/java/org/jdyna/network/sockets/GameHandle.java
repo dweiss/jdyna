@@ -21,6 +21,11 @@ public final class GameHandle implements Serializable
      */
     public int gameID;
 
+    /**
+     * Board name for the game.
+     */
+    public String boardName;
+
     /*
      * For serialization.
      */
@@ -31,10 +36,11 @@ public final class GameHandle implements Serializable
     /*
      * 
      */
-    public GameHandle(int id, String gameName, BoardInfo info)
+    public GameHandle(int id, String gameName, String boardName, BoardInfo info)
     {
         this.info = info;
         this.gameName = gameName;
         this.gameID = id;
+        this.boardName = boardName;
     }
 }
