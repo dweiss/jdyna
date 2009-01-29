@@ -6,7 +6,9 @@ if [ $# -eq 0 ]; then
 fi
 
 DYNA_JAR="`dirname $0`/jdyna-sockets.jar:`dirname $0`/jdyna-corba.jar:`dirname $0`/player.jar:$CLASSPATH"
+
 SERVER_OPTS="-Dlog4j.configuration=log4j-server.xml $SERVER_OPTS"
+# SERVER_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y $SERVER_OPTS"
 
 COMMAND=$1
 shift

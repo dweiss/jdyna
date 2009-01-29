@@ -2,6 +2,9 @@ package com.dawidweiss.dyna;
 
 import java.awt.event.KeyEvent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dawidweiss.dyna.input.KeyboardController;
 import com.dawidweiss.dyna.view.swing.BoardPanel;
 import com.dawidweiss.dyna.view.swing.Magnification;
@@ -11,6 +14,8 @@ import com.dawidweiss.dyna.view.swing.Magnification;
  */
 public final class Globals
 {
+    private final static Logger logger = LoggerFactory.getLogger(Globals.class);
+
     /**
      * @see BombCell#range
      * @see PlayerInfo#bombRange
@@ -114,6 +119,7 @@ public final class Globals
         final String v = System.getProperty(propertyName);
         if (v != null)
         {
+            logger.info("Overriding property: " + propertyName + " with: " + defaultValue);
             try
             {
                 return Integer.parseInt(v);
