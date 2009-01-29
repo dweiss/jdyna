@@ -142,6 +142,8 @@ public class GameClient
 
         if (boardFrame != null) boardFrame.dispose();
         if (soundEffects != null) soundEffects.dispose();
+
+        logger.info("Done.");
     }
 
     /*
