@@ -117,7 +117,6 @@ public class Admin
                         throw new CmdLineException("Game name is required.");
 
                     gh = client.getGame(gameName);
-                    client.disconnect();
 
                     logger.info("Attaching views to game [id=" + gh.gameID + "]");
                     attachView(gh, server);
