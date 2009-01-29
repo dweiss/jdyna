@@ -24,6 +24,8 @@
 	<target name="clean" description="Clean generated files.">
 		<delete dir="${build.path}" />
 		<delete dir="${dist.path}" />
+		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-core" target="clean" />
+		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-corba" target="clean" />
 	</target>
 
 	<target name="compile" depends="prepare" description="Compile sources.">
