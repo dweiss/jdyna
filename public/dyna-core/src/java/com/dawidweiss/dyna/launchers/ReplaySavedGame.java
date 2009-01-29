@@ -1,25 +1,18 @@
 package com.dawidweiss.dyna.launchers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
-import com.dawidweiss.dyna.serialization.GameReplay;
-import com.dawidweiss.dyna.serialization.GameWriter;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
+import com.dawidweiss.dyna.*;
+import com.dawidweiss.dyna.serialization.*;
+import com.dawidweiss.dyna.view.swing.ReplayFrame;
+import com.google.common.collect.Lists;
 
 /**
  * Replay a game saved previously with {@link GameWriter}.
@@ -31,17 +24,10 @@ public final class ReplaySavedGame
 {
     private final static Logger logger = LoggerFactory.getLogger(ReplaySavedGame.class);
 
-    @Option(required = false, name = "-r", aliases =
-    {
-        "--frame-rate"
-    }, metaVar = "fps", usage = "Frames per second.")
-    private double frameRate = Globals.DEFAULT_FRAME_RATE;
-
     @Argument(index = 0, metaVar = "file", required = true, usage = "Game log file.")
     private File gameLog;
 
-    private BoardFrame board;
-    private GameSoundEffects sound;
+    private ReplayFrame board;
 
     /**
      * Replay a stream of saved events at the given frame rate.
@@ -50,64 +36,57 @@ public final class ReplaySavedGame
     {
         try
         {
-            this.sound = new GameSoundEffects();
-            this.board = new BoardFrame();
-            board.setVisible(true);
-            board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            /*
+             * Preindex frames.
+             */
+            logger.info("Indexing frames.");
+            GameReader reader = new GameReader(new FileInputStream(gameLog));
+            final List<FrameData> frames = Lists.newArrayList();
+            while (reader.nextFrame())
+            {
+                frames.add(new FrameData(reader.getFrame(), Lists.newArrayList(
+                    reader.getEvents())));
+            }
 
-            final GameReplay replay = new GameReplay();
-            replay.addListener(board);
-            replay.addListener(sound);
-            replay.replay(frameRate, new FileInputStream(gameLog));
+            logger.info("Frames: " + frames.size());
+
+            logger.info("Replaying...");
+
+            this.board = new ReplayFrame(findBoardInfo(frames), frames);
+            board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            board.setVisible(true);
         }
         catch (IOException e)
         {
             logger.error(e.getMessage(), e);
         }
-        finally
-        {
-            if (board != null) 
-            {
-                final BoardFrame b = board;
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
-                        b.dispose();
-                    }
-                });
-            }
+    }
 
-            if (sound != null)
+    /*
+     * 
+     */
+    private BoardInfo findBoardInfo(List<FrameData> frames) throws IOException
+    {
+        for (FrameData fd : frames)
+        {
+            for (GameEvent ge : fd.events)
             {
-                sound.dispose();
+                if (ge instanceof GameStartEvent)
+                {
+                    return ((GameStartEvent) ge).getBoardInfo();
+                }
             }
         }
+        throw new IOException("No board info in the replay stream.");
     }
 
     /* Command-line entry point. */
     public static void main(String [] args) throws IOException
     {
         final ReplaySavedGame launcher = new ReplaySavedGame();
-        final CmdLineParser parser = new CmdLineParser(launcher);
-        parser.setUsageWidth(80);
-
-        try
+        if (CmdLine.parseArgs(launcher, args))
         {
-            parser.parseArgument(args);
+            launcher.start();
         }
-        catch (CmdLineException e)
-        {
-            PrintStream ps = System.out;
-            ps.print("Usage: ");
-            parser.printSingleLineUsage(ps);
-            ps.println();
-            parser.printUsage(ps);
-
-            ps.println("\n" + e.getMessage());
-            return;
-        }
-
-        launcher.start();
     }
 }
