@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -eq 0 ]; then
-	echo "$0 [server | bot | human | admin] [options]"
+	echo "$0 [server | bot | human | admin | replay] [options]"
 	exit 1
 fi
 
@@ -18,4 +18,5 @@ case $COMMAND in
 	bot)    java -cp $DYNA_JAR org.jdyna.network.sockets.BotClient "$@";;
 	human)  java -cp $DYNA_JAR org.jdyna.network.sockets.BotClient "$@" com.dawidweiss.dyna.players.HumanPlayerFactory;;
 	admin)  java -cp $DYNA_JAR org.jdyna.network.sockets.Admin "$@";;
+	replay) java -cp $DYNA_JAR com.dawidweiss.dyna.launchers.ReplaySavedGame "$@";;
 esac

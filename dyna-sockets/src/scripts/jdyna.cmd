@@ -16,6 +16,7 @@ IF "%COMMAND%" == "server" GOTO SERVER
 IF "%COMMAND%" == "bot" GOTO BOT
 IF "%COMMAND%" == "human" GOTO HUMAN
 IF "%COMMAND%" == "admin" GOTO ADMIN
+IF "%COMMAND%" == "replay" GOTO REPLAY
 GOTO HELP
 
 :SERVER
@@ -34,7 +35,11 @@ GOTO HELP
 	java -cp %DYNA_JAR% org.jdyna.network.sockets.Admin %ARGS%
 	GOTO EXIT
 
+:REPLAY
+	java -cp %DYNA_JAR% com.dawidweiss.dyna.launchers.ReplaySavedGame %ARGS%
+	GOTO EXIT
+
 :HELP
-	ECHO "%0 [server | bot | human | admin] [options]"
+	ECHO "%0 [server | bot | human | admin | replay] [options]"
 
 :EXIT
