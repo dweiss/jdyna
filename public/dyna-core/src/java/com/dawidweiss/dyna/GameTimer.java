@@ -23,29 +23,22 @@ public final class GameTimer
      * Passive wait for the next frame. May be slightly inaccurate if 
      * {@link Thread#sleep(long)} is not precise.
      */
-    public void waitForFrame()
+    public void waitForFrame() throws InterruptedException
     {
-        try
+        if (lastFrameTimestamp > 0)
         {
-            if (lastFrameTimestamp > 0)
+            final long nextFrameStart = lastFrameTimestamp + framePeriod;
+            long now;
+            while ((now = System.currentTimeMillis()) < nextFrameStart)
             {
-                final long nextFrameStart = lastFrameTimestamp + framePeriod;
-                long now;
-                while ((now = System.currentTimeMillis()) < nextFrameStart)
-                {
-                    Thread.sleep(nextFrameStart - now);
-                }
-                this.lastFrameTimestamp = lastFrameTimestamp + 
-                    (1 + (now - nextFrameStart) / framePeriod) * framePeriod;
+                Thread.sleep(nextFrameStart - now);
             }
-            else
-            {
-                lastFrameTimestamp = System.currentTimeMillis();
-            }
+            this.lastFrameTimestamp = lastFrameTimestamp + 
+                (1 + (now - nextFrameStart) / framePeriod) * framePeriod;
         }
-        catch (InterruptedException e)
+        else
         {
-            // Exit immediately.
+            lastFrameTimestamp = System.currentTimeMillis();
         }
     }
 

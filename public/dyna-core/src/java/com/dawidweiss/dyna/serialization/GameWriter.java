@@ -1,8 +1,7 @@
 package com.dawidweiss.dyna.serialization;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -10,11 +9,10 @@ import org.h2.compress.LZFOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
+import com.dawidweiss.dyna.*;
 
 /**
- * A {@link IGameEventListener} that saves snapshots from the game progress
+ * A simple {@link IGameEventListener} that saves snapshots from the game progress
  * to an external stream. Light LZF compression is used to compress frame data.
  */
 public final class GameWriter implements IGameEventListener
@@ -47,7 +45,7 @@ public final class GameWriter implements IGameEventListener
         {
             boolean closeAtEnd = false;
             oos.writeInt(frame);
-            oos.writeShort((short) events.size());
+            oos.writeShort((short) (events.size() + 1));
             for (GameEvent ge : events)
             {
                 oos.writeObject(ge);
@@ -57,10 +55,12 @@ public final class GameWriter implements IGameEventListener
                     closeAtEnd = true;
                 }
             }
+            oos.writeObject(new GameWallTimeEvent(new Date()));
             oos.flush();
-            
+
             if (closeAtEnd)
             {
+                logger.debug("Closed game log writer.");
                 oos.close();
                 oos = null;
             }

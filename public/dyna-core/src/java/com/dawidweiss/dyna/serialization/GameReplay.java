@@ -42,6 +42,10 @@ public final class GameReplay
                 }
             }
         }
+        catch (InterruptedException e)
+        {
+            // Do nothing.
+        }
         finally
         {
             reader.close();

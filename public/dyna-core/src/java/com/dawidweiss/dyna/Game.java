@@ -151,6 +151,11 @@ public final class Game
     private Map<String, Integer> teams = Maps.newHashBiMap();
 
     /**
+     * Interrupted flag.
+     */
+    private volatile boolean interrupted;
+
+    /**
      * Creates a single game.
      */
     public Game(Board board, BoardInfo boardInfo, Player... players)
@@ -225,11 +230,19 @@ public final class Game
             if (Thread.currentThread().isInterrupted()
                 || (result == null && frameLimit > 0 && frame > frameLimit))
             {
-                Thread.currentThread().interrupt();
+                interrupted = true;
                 break;
             }
 
-            timer.waitForFrame();
+            try
+            {
+                timer.waitForFrame();
+            }
+            catch (InterruptedException e)
+            {
+                interrupted = true;
+                break;
+            }
 
             /*
              * No player-related data structure fiddling while within frame processing.
@@ -281,7 +294,7 @@ public final class Game
         /*
          * Check interrupted state and clear it.
          */
-        if (Thread.interrupted())
+        if (interrupted || Thread.interrupted())
         {
             if (result == null) result = new GameResult(mode, getPlayerStats());
             result.gameInterrupted = true;
@@ -471,6 +484,15 @@ public final class Game
     public void removeListener(IFrameListener listener)
     {
         frameListeners.remove(listener);
+    }
+
+    /**
+     * Interrupt the currently running game. The interrupted game may be delayed for the duration
+     * of a frame to allow dispatching finalizing events.
+     */
+    public void interrupt()
+    {
+        this.interrupted = true;
     }
 
     /**

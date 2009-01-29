@@ -61,6 +61,11 @@ public abstract class GameEvent implements Serializable
          * Game status event (dispatched throughout the game and before game over).
          */
         GAME_STATUS,
+
+        /**
+         * Wall time from the game (used for game-saves).
+         */
+        GAME_WALL_TIME
     }
 
     /**

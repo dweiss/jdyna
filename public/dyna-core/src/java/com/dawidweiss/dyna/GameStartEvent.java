@@ -14,14 +14,22 @@ public final class GameStartEvent extends GameEvent
     /**
      * Board information for the game.
      */
-    private final BoardInfo boardInfo;
+    private BoardInfo boardInfo;
+
+    /*
+     * 
+     */
+    protected GameStartEvent()
+    {
+        super(GameEvent.Type.GAME_START);
+    }
 
     /*
      *  
      */
     public GameStartEvent(BoardInfo boardInfo)
     {
-        super(GameEvent.Type.GAME_START);
+        this();
         this.boardInfo = boardInfo;
     }
 
