@@ -173,7 +173,7 @@ public class BotClient
          * Create a local listeners - sound, view.
          */
         if (!noSound) gameClient.attachSound();
-        if (!noView) gameClient.attachView(playerHandle.playerName);
+        if (!noView) gameClient.attachView(playerName);
 
         gameClient.runLoop();
     }
