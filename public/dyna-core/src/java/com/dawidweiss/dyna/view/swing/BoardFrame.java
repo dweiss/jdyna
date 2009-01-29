@@ -90,8 +90,8 @@ public final class BoardFrame extends JFrame implements IGameEventListener
                 SwingUtils.glueTo(BoardFrame.this, scoreFrame, SwingUtils.SnapSide.RIGHT);
                 SwingUtils.snapFrame(BoardFrame.this, scoreFrame);
             }
-
-            public void windowClosing(WindowEvent e)
+            
+            public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
             }

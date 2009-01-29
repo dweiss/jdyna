@@ -166,7 +166,7 @@ public final class ReplayFrame extends JFrame
         replayer.start();
         addWindowListener(new WindowAdapter()
         {
-            public void windowClosing(WindowEvent e)
+            public void windowClosed(WindowEvent e)
             {
                 replayer.interrupt();
             }

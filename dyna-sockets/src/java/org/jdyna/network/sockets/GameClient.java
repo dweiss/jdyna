@@ -80,7 +80,8 @@ public class GameClient
         proxy.addListener(boardFrame);
         boardFrame.addWindowListener(new WindowAdapter()
         {
-            public void windowClosing(WindowEvent e)
+            @Override
+            public void windowClosed(WindowEvent e)
             {
                 proxy.removeListener(boardFrame);
                 boardFrame.dispose();
