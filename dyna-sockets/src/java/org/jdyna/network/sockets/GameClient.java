@@ -84,7 +84,6 @@ public class GameClient
             public void windowClosed(WindowEvent e)
             {
                 proxy.removeListener(boardFrame);
-                boardFrame.dispose();
             }
         });
     }
