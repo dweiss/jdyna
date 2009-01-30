@@ -5,8 +5,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.view.resources.*;
@@ -48,7 +47,8 @@ public final class BoardFrame extends JFrame implements IGameEventListener
                 /*
                  * Resize the entire frame when the game panel changes size.
                  */
-                pack();
+                BoardFrame.this.validate();
+                BoardFrame.this.setSize(BoardFrame.this.getPreferredSize());
             }
         });
 
@@ -65,6 +65,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         getContentPane().add(panel);
         panel.add(gamePanel, BorderLayout.CENTER);
 
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationByPlatform(true);
         setFocusTraversalKeysEnabled(false);
         getRootPane().setDoubleBuffered(false);
