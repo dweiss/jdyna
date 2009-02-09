@@ -173,13 +173,19 @@ public final class BoardUtilities
             return explosion;
         }
 
+        final ExplosionCell cell2 = (ExplosionCell) cell;
+        if (cell2.type == explosion.type)
+        {
+            cell2.mergeAttributions(explosion);
+            cell2.addAttribution(bomb.player);
+            return cell2;
+        }
+
         /*
          * We don't want to overlap with previous explosions, because it looks odd.
-         * There is no need to overlap same types of explosions either.
-         * Merge attributions in both cases, however.
+         * Merge attributions, however.
          */
-        final ExplosionCell cell2 = (ExplosionCell) cell;
-        if (cell2.counter > 0 || cell2.type == explosion.type)
+        if (cell2.counter > 0)
         {
             explosion.addAttribution(bomb.player);
             explosion.mergeAttributions(cell2);
