@@ -1,0 +1,75 @@
+
+<project name="DynaBlaster" default="jar">
+	<property name="tmp.path" value="tmp/build" />
+	<property name="build.path" value="${tmp.path}/classes" />
+	<property name="dist.path" value="${tmp.path}/dist" />
+
+	<property name="debug" value="on" />
+	<property name="optimize" value="off" />
+
+	<property name="src" location="src" />
+	<property file="local.properties" />
+
+	<!-- Paths and filesets. -->
+
+	<path id="project.classpath">
+	    <pathelement location="${dyna-corba.home}/tmp/dist/jdyna-corba.jar" />
+	    <pathelement location="${dyna-core.home}tmp/dist/jdyna-core.jar" />
+	</path>
+	
+	<target name="prepare">
+		<mkdir dir="${build.path}" />
+		<fail unless="dyna-corba.home">Define 'dyna-corba.home' property pointing to project dyna-corba</fail>
+		<fail unless="dyna-core.home">Define 'dyna-core.home' property pointing to project dyna-core</fail>
+	</target>
+			
+
+
+	<target name="clean" description="Clean generated files." >
+		<delete dir="${build.path}" />
+		<delete dir="${dist.path}" />
+	</target>
+
+	<target name="compile" description="Compile sources." depends="prepare">
+		
+		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
+			<src location="${src}" />
+			<classpath>
+				<fileset dir="${dyna-corba.home}">
+					<include name="tmp/dist/jdyna-corba.jar" />
+				</fileset>
+				<fileset dir="${dyna-core.home}">
+					<include name="tmp/dist/jdyna-core.jar" />
+				</fileset>
+			</classpath>
+
+		</javac>
+
+		<copy todir="${build.path}">
+			<fileset dir="${src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile" description="Compile an executable JAR">
+		<mkdir dir="${dist.path}" />
+
+		 <pathconvert property="mf.classpath" pathsep=" ">
+		    <path refid="project.classpath" />
+		    <flattenmapper />
+		  </pathconvert>
+
+		<jar jarfile="${dist.path}/Dyna-Piechociński.jar" basedir="${build.path}">
+			<manifest>
+				<attribute name="Main-Class" value="com.kdyna.KDyna" />
+				<attribute name="Class-Path" value="${mf.classpath}" />
+			</manifest>
+		</jar>
+
+
+	</target>
+
+
+</project>
+

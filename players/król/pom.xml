@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>dyna.khroolick.pl</groupId>
+	<artifactId>khroolickAI</artifactId>
+	<version>1.0</version>
+
+	<organization>
+		<name>Politechnika Poznańska</name>
+		<url>www.put.poznan.pl</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>khroolick</id>
+			<name>Przemysław Król</name>
+			<email>khroolick@o2.pl</email>
+			<organization>Politechnika Poznańska</organization>
+			<organizationUrl>www.put.poznan.pl</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties>
+				<picUrl>http://www.floatingbanana.com/artbackwash/ThugBunny_Large.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:svn:svn://khroolick.no-ip.org/dyna</connection>
+		<developerConnection>scm:svn:svn://khroolick.no-ip.org/dyna</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+</project>
+

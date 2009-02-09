@@ -1,0 +1,44 @@
+<project name="dyna-rychlicki-wilczak" default="jar">
+	<property name="tmp.path" location="tmp" />
+	<property name="build.path" location="${tmp.path}/ant" />
+	<property name="dist.path" location="${tmp.path}/dist" />
+
+	<property name="debug" value="on" />
+	<property name="optimize" value="off" />
+
+	<property name="src.java" location="src" />
+
+	<!-- Paths and filesets. -->
+
+	<fileset id="classpath.core" dir="../dyna-core/tmp/dist" includes="*.jar" />
+	<fileset id="classpath.corba" dir="../dyna-corba/tmp/dist" includes="*.jar" />
+
+	<path id="classpath.compile">
+		<fileset refid="classpath.core" />
+		<fileset refid="classpath.corba" />
+	</path>
+
+	<target name="prepare">
+		<mkdir dir="${build.path}" />
+	</target>
+
+	<target name="clean" description="Clean generated files.">
+		<delete dir="${build.path}" />
+		<delete dir="${dist.path}" />
+	</target>
+
+	<target name="compile" depends="prepare" description="Compile sources.">
+		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
+			<src location="${src.java}" />
+			<classpath refid="classpath.compile" />
+		</javac>
+
+	</target>
+
+	<target name="jar" depends="compile" description="Create JAR file.">
+		<mkdir dir="${dist.path}" />
+
+		<jar jarfile="${dist.path}/dyna-rychlicki-wilczak.jar" basedir="${build.path}">
+		</jar>
+	</target>
+</project>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="dyna-corba">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../../aplikacje/eclipse"/>
+    <property name="dyna-kkazmierczyk.location" value="../../../../../../workspaces/dyna/dyna-kkazmierczyk"/>
+    <property name="dyna-core.location" value="../dyna-core"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit4_4.5.0.v20080911/junit.jar"/>
+    </path>
+    <path id="dyna-core.classpath">
+        <pathelement location="${dyna-core.location}/tmp/eclipse"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/google-collections.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/args4j-2.0.9.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/commons-io-1.4.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/commons-lang-2.4.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/h2-1.1.105-compressonly.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/slf4j-api-1.5.6.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/log4j-1.2.14.jar"/>
+        <pathelement location="${dyna-core.location}/lib/runtime/slf4j-log4j12-1.5.6.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+    <path id="dyna-corba.classpath">
+        <pathelement location="tmp/eclipse"/>
+        <pathelement location="lib/runtime-corba/avalon-framework.jar"/>
+        <pathelement location="lib/runtime-corba/commons-cli.jar"/>
+        <pathelement location="lib/runtime-corba/logkit.jar"/>
+        <pathelement location="lib/runtime-corba/openorb_orb_omg-1.4.0.jar"/>
+        <pathelement location="lib/runtime-corba/openorb_orb-1.4.0.jar"/>
+        <pathelement location="lib/runtime-corba/tools-1.4.0.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <path refid="dyna-core.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="tmp/eclipse"/>
+        <copy includeemptydirs="false" todir="tmp/eclipse">
+            <fileset dir="src/corba" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="tmp/eclipse"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="${dyna-core.location}/build.xml" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="${dyna-core.location}/build.xml" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="tmp/eclipse" source="${source}" target="${target}">
+            <src path="src/corba"/>
+            <classpath refid="dyna-corba.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="${dyna-kkazmierczyk.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${dyna-kkazmierczyk.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>
