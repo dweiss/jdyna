@@ -3,14 +3,14 @@
 	<property name="dist.path" location="dist" />
 
 	<property name="dyna-core" location="dyna-core" />
-	<property name="dyna-corba" location="dyna-corba" />
+	<property name="dyna-sockets" location="dyna-sockets" />
 
 	<macrodef name="all">
 		<attribute name="target" />
 
 		<sequential>
 		<ant antfile="build.xml" dir="${dyna-core}" target="@{target}" inheritall="false" />
-		<ant antfile="build.xml" dir="${dyna-corba}" target="@{target}" inheritall="false" />
+		<ant antfile="build.xml" dir="${dyna-sockets}" target="@{target}" inheritall="false" />
 		</sequential>
 	</macrodef>
 
@@ -20,7 +20,7 @@
 
 		<copy todir="${dist.path}">
 			<fileset dir="${dyna-core}/tmp/dist" />
-			<fileset dir="${dyna-corba}/tmp/dist" />
+			<fileset dir="${dyna-sockets}/tmp/dist" />
 		</copy>
 		<chmod perm="a+rx">
 			<fileset dir="${dist.path}" includes="*.sh" />
@@ -31,7 +31,7 @@
 		<delete dir="${dist.path}" />
 		<all target="clean"/>
 	</target>
-	
+
 	<target name="package" depends="dist" description="Builds a ZIP file with the distribution.">
 		<zip destfile="jdyna.zip">
 			<zipfileset prefix="jdyna/" dir="${dist.path}" />

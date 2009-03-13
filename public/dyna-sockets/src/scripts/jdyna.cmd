@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET DYNA_JAR="%~dp0jdyna-sockets.jar;%~dp0jdyna-corba.jar;%~dp0player.jar;%CLASSPATH%"
+SET DYNA_JAR="%~dp0jdyna-sockets.jar;%~dp0player.jar;%CLASSPATH%"
 SET SERVER_OPTS="-Dlog4j.configuration=log4j-server.xml"
 
 SET COMMAND=%1
@@ -28,7 +28,7 @@ GOTO HELP
 	GOTO EXIT
 
 :HUMAN
-	java -cp %DYNA_JAR% org.jdyna.network.sockets.BotClient %ARGS% com.dawidweiss.dyna.players.HumanPlayerFactory
+	java -cp %DYNA_JAR% org.jdyna.network.sockets.BotClient %ARGS% org.jdyna.players.HumanPlayerFactory
 	GOTO EXIT
 
 :ADMIN
@@ -36,7 +36,7 @@ GOTO HELP
 	GOTO EXIT
 
 :REPLAY
-	java -cp %DYNA_JAR% com.dawidweiss.dyna.launchers.ReplaySavedGame %ARGS%
+	java -cp %DYNA_JAR% org.jdyna.launchers.ReplaySavedGame %ARGS%
 	GOTO EXIT
 
 :HELP

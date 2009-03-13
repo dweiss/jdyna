@@ -1,14 +1,10 @@
 
-NEXT: I17
-
-## Improvement and patch suggestions:
-
 GENERAL/ STARTUP SCREEN
 
 I2	Improve (suggest changes, implement them) the multi player server mode. How should games and
    	players be managed? When does a new game start and who initiates a game? Think of multiple
 	environments -- cell phones, applets, WebStart. The mechanism should apply to all.
-	
+
 I15 Code up a startup screen with options to launch a local game between an arbitrary (2-4?)
     number of players. Select opponents between various CPU players and human players.
     Add configuration screen to keyboard layouts.
@@ -33,10 +29,6 @@ I14 There is something screwy in javax.audio (how many mixed samples can be repl
 VIEW
 
 I1	Implement jMonkeyEngine-based OpenGL view.
-    
-GAMEPLAY
-    
-I10	Intelligent opponents and bots. [TWO'2008 homework.]
 
 MISC
 

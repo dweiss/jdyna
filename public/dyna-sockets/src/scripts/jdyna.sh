@@ -16,7 +16,7 @@ shift
 case $COMMAND in
 	server) java -cp $DYNA_JAR $SERVER_OPTS org.jdyna.network.sockets.GameServer "$@";;
 	bot)    java -cp $DYNA_JAR org.jdyna.network.sockets.BotClient "$@";;
-	human)  java -cp $DYNA_JAR org.jdyna.network.sockets.BotClient "$@" com.dawidweiss.dyna.players.HumanPlayerFactory;;
+	human)  java -cp $DYNA_JAR org.jdyna.network.sockets.BotClient "$@" org.jdyna.players.HumanPlayerFactory;;
 	admin)  java -cp $DYNA_JAR org.jdyna.network.sockets.Admin "$@";;
-	replay) java -cp $DYNA_JAR com.dawidweiss.dyna.launchers.ReplaySavedGame "$@";;
+	replay) java -cp $DYNA_JAR org.jdyna.launchers.ReplaySavedGame "$@";;
 esac

@@ -11,7 +11,7 @@
 
 	<!-- Paths and filesets. -->
 
-	<fileset id="classpath.core" dir="../public/dyna-core/tmp/dist" includes="*.jar" />
+	<fileset id="classpath.core" dir="../dyna-core/tmp/dist" includes="*.jar" />
 
 	<path id="classpath.compile">
 		<fileset refid="classpath.core" />
@@ -24,13 +24,11 @@
 	<target name="clean" description="Clean generated files.">
 		<delete dir="${build.path}" />
 		<delete dir="${dist.path}" />
-		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-core" target="clean" />
-		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-corba" target="clean" />
+		<ant inheritall="false" antfile="build.xml" dir="../dyna-core" target="clean" />
 	</target>
 
 	<target name="compile" depends="prepare" description="Compile sources.">
-		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-core" target="jar" />
-		<ant inheritall="false" antfile="build.xml" dir="../public/dyna-corba" target="jar" />
+		<ant inheritall="false" antfile="build.xml" dir="../dyna-core" target="jar" />
 
 		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
 			<src location="${src.java}" />
@@ -54,20 +52,6 @@
 			</manifest>
 		</jar>
 	</target>
-
-	<target name="dist" depends="jar" description="Builds the distribution.">
-		<copy todir="${dist.path}">
-			<fileset dir="src/scripts" />
-			<fileset refid="classpath.core" />
-			<fileset dir="../public/dyna-corba/tmp/dist" includes="jdyna-corba.jar" />
-		</copy>
-		<chmod perm="a+rx">
-			<fileset dir="${dist.path}" includes="*.sh" /> 
-		</chmod>
-		<zip zipfile="jdyna.zip" update="false">
-		    <zipfileset dir="${dist.path}" prefix="jdyna">
-		        <exclude name="*.log" />
-	        </zipfileset>
-	    </zip>
-	</target>
+	
+	<target name="dist" depends="jar" />	
 </project>
