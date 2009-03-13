@@ -2,7 +2,8 @@ package com.luczak.lykowski.dyna.ai;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
+
 
 /**
  * Class which is put in to the queue and delivered to AI thread. Class contains

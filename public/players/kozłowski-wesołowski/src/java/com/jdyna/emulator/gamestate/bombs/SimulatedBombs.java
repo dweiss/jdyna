@@ -2,7 +2,8 @@ package com.jdyna.emulator.gamestate.bombs;
 
 import java.util.Map.Entry;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 import com.jdyna.emulator.gamestate.Board;
 import com.jdyna.emulator.gamestate.ExtendedPlayer;
 import com.jdyna.emulator.gamestate.GridCoord;

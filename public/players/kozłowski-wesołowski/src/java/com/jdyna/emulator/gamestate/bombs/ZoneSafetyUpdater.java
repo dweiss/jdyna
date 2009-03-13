@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.jdyna.CellType;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerController.Direction;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.jdyna.emulator.gamestate.Board;
 import com.jdyna.emulator.gamestate.GridCoord;
 import com.jdyna.emulator.gamestate.bombs.BombState.BombStatus;

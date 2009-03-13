@@ -3,11 +3,11 @@ package two.bsr.dyna;
 import java.awt.Point;
 import java.util.*;
 
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.*;
 

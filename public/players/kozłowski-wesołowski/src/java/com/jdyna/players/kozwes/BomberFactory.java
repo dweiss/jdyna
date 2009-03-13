@@ -1,7 +1,8 @@
 package com.jdyna.players.kozwes;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
+
 import com.jdyna.emulator.SmartBomber;
 
 /**

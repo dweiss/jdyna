@@ -2,16 +2,8 @@ package com.michalkalinowski.dyna.players;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.ControllerState;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameOverEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerController2;
-import com.dawidweiss.dyna.Player;
+import org.jdyna.*;
+
 
 public final class Cr4zeePlayer implements IPlayerController, IPlayerController2,
     IGameEventListener

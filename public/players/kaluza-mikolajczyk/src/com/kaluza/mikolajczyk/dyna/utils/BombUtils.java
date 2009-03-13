@@ -5,8 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.Cell;
+import org.jdyna.IPlayerController.Direction;
+
 import com.kaluza.mikolajczyk.dyna.dtos.BombTO;
 
 public class BombUtils

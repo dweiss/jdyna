@@ -1,7 +1,7 @@
 package com.szqtom.dyna;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 public class KaszSzkudFactory implements IPlayerFactory
 {

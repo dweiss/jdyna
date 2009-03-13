@@ -6,19 +6,16 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdyna.*;
+import org.jdyna.audio.jxsound.GameSoundEffects;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.FrameData;
 import org.jdyna.network.sockets.packets.ServerInfo;
+import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameOverEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
  * A set of utilities facilitating running a remote {@link Game} over the network.

@@ -1,8 +1,8 @@
 package com.dawidweiss.dyna.corba;
 
+import org.jdyna.IPlayerFactory;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
 
 /**

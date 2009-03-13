@@ -1,7 +1,7 @@
 package com.rychlicki.wilczak.dyna.player;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 /**
  * IPlayerFactory implementation.

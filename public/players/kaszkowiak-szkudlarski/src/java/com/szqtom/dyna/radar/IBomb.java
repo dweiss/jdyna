@@ -3,7 +3,8 @@ package com.szqtom.dyna.radar;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
+
 public interface IBomb {
 
 	boolean isInDestructionZone(int x, int y, Cell[][] board);

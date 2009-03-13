@@ -4,8 +4,9 @@ import java.awt.Point;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerController.Direction;
+
 import com.kaluza.mikolajczyk.dyna.GameStateCollector;
 import com.kaluza.mikolajczyk.dyna.dtos.BombTO;
 import com.kaluza.mikolajczyk.dyna.utils.NeighborhoodUtils;

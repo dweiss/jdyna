@@ -7,17 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
+
 import put.bsr.dyna.player.extcell.ExtBombCell;
 import put.bsr.dyna.player.extcell.ExtCell;
 import put.bsr.dyna.player.extcell.ExtPreExplosionCell;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.BoardUtilities;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * Utility class for Shadow player.

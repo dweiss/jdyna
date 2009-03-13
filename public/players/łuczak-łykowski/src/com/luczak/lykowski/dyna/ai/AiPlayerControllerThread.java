@@ -1,7 +1,9 @@
 package com.luczak.lykowski.dyna.ai;
 
 import java.util.concurrent.LinkedBlockingDeque;
-import com.dawidweiss.dyna.IPlayerController;
+
+import org.jdyna.IPlayerController;
+
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
 

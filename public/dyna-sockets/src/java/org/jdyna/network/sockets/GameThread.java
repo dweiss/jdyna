@@ -1,9 +1,9 @@
 package org.jdyna.network.sockets;
 
+import org.jdyna.Game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Game;
 
 /**
  * A thread running a game on the server.

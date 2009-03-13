@@ -4,11 +4,9 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.GameEvent.Type;
+import org.jdyna.*;
+import org.jdyna.GameEvent.Type;
+
 
 /**
  * This class is used to estimate threatening by bombs.

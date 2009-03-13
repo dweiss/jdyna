@@ -2,16 +2,16 @@ package com.dawidweiss.dyna.corba;
 
 import java.util.ArrayList;
 
+import org.jdyna.*;
+import org.jdyna.players.HumanPlayerFactory;
+import org.jdyna.players.RabbitFactory;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.UserException;
 import org.omg.PortableServer.POA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.bindings.*;
-import com.dawidweiss.dyna.players.HumanPlayerFactory;
-import com.dawidweiss.dyna.players.RabbitFactory;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 

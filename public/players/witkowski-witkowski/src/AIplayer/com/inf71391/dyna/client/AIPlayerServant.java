@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.*;
 
 import AIplayer.ai.in71391.*;
 import AIplayer.model.*;
-import AIplayer.model.PlayerInfo;
 
-import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.*;
 

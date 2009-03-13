@@ -2,7 +2,8 @@ package pl.khroolick.dyna;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 public class PlayerInfo {
 	public int bombs = Globals.DEFAULT_BOMB_COUNT;

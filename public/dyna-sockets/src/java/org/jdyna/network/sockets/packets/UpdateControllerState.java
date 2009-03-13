@@ -2,7 +2,8 @@ package org.jdyna.network.sockets.packets;
 
 import java.io.Serializable;
 
-import com.dawidweiss.dyna.ControllerState;
+import org.jdyna.ControllerState;
+
 
 /**
  *  A message indicating change in the controller state.

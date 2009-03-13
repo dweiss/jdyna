@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jdyna.IPlayerSprite;
+
 import ai.player.PlayerInfo;
 
-import com.dawidweiss.dyna.IPlayerSprite;
 /**
  * 
  * @author Asia

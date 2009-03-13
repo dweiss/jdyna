@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
 
 import AIplayer.model.BfsInfo;
 import AIplayer.model.PlayerInfo;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * Implementation of behavioral software agent for real time simulation. It is

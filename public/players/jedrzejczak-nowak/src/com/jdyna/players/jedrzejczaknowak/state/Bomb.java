@@ -2,7 +2,8 @@ package com.jdyna.players.jedrzejczaknowak.state;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 /**
  * Represents a single bomb planted on the board.

@@ -2,7 +2,8 @@ package com.kozmich.dyna.ai;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 public class PlayerUtils {
 

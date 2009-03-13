@@ -2,8 +2,9 @@ package com.kaluza.mikolajczyk.dyna.utils;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerController.Direction;
+
 
 public class PositionUtils
 {

@@ -2,7 +2,8 @@ package AIplayer.model;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 /**
  * Class used to calculate distance to adjacent cells on board, and moving point

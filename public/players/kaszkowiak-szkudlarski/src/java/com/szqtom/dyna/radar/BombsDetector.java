@@ -7,9 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.*;
+
 import com.szqtom.dyna.generator.Point;
 
 public class BombsDetector {

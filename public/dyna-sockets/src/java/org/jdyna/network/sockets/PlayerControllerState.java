@@ -1,7 +1,7 @@
 package org.jdyna.network.sockets;
 
-import com.dawidweiss.dyna.ControllerState;
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.ControllerState;
+import org.jdyna.IPlayerController;
 
 /**
  * Remote {@link IPlayerController} state used by the game thread and by the server-side.

@@ -3,10 +3,10 @@ package two.bsr.dyna;
 import java.awt.Point;
 import java.util.*;
 
+import org.jdyna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
 
 public final class TZPlayer implements IPlayerController, IPlayerController2, IGameEventListener {
 

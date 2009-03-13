@@ -5,9 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.*;
+
 import com.dawidweiss.dyna.corba.bindings.CDirection;
 import com.krzysztofkazmierczyk.dyna.BombCell;
 import com.krzysztofkazmierczyk.dyna.GameStateEventUpdater;

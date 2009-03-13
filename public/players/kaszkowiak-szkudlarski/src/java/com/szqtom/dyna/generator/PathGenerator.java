@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.jdyna.Cell;
+import org.jdyna.CellType;
+import org.jdyna.IPlayerController.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.szqtom.dyna.radar.BombsDetector;
 import com.szqtom.dyna.generator.Point;
 

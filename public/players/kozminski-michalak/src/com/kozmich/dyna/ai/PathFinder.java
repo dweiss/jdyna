@@ -6,13 +6,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerSprite;
-import com.dawidweiss.dyna.GameEvent.Type;
+import org.jdyna.*;
+import org.jdyna.GameEvent.Type;
+
 
 /**
  * Implementation of Floyda-Warshall alghoritm.

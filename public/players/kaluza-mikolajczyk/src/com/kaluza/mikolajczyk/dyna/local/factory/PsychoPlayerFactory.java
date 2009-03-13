@@ -1,7 +1,8 @@
 package com.kaluza.mikolajczyk.dyna.local.factory;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
+
 import com.kaluza.mikolajczyk.dyna.ai.AIPlayerController;
 
 /**

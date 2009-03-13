@@ -2,12 +2,12 @@ package com.dawidweiss.dyna.corba;
 
 import java.io.PrintStream;
 
+import org.jdyna.Globals;
 import org.kohsuke.args4j.*;
 import org.omg.PortableServer.POA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Globals;
 import com.dawidweiss.dyna.corba.bindings.*;
 
 /**

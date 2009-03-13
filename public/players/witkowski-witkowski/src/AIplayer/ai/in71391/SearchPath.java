@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
 
 import AIplayer.model.BfsInfo;
 import AIplayer.model.CellAccess;
@@ -16,10 +18,6 @@ import AIplayer.model.CellDistance;
 import AIplayer.model.PlayerInfo;
 import AIplayer.model.Vertex;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * Class responsible for performing BFS through the board and find the best and

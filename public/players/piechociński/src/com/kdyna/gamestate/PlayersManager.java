@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.IPlayerSprite;
+
 
 /**
  * Contains info about all players in game

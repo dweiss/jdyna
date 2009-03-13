@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jdyna.*;
 import org.jdyna.network.sockets.packets.FrameData;
 
-import com.dawidweiss.dyna.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

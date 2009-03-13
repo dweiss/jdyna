@@ -3,7 +3,8 @@ package com.kozmich.dyna.ai;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
+
 
 /**
  * Helper for {@link PathFinder}.

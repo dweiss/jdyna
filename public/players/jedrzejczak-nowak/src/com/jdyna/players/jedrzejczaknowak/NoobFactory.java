@@ -1,10 +1,10 @@
 package com.jdyna.players.jedrzejczaknowak;
 
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 import org.omg.CORBA.UserException;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.ICPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerHelper;

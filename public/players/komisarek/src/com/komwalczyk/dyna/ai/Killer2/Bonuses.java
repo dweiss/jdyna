@@ -4,10 +4,10 @@ import java.awt.Point;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jdyna.CellType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.CellType;
 
 /**
  * Contains info about bonuses (new range and bombs).

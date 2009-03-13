@@ -1,11 +1,9 @@
 package pl.khroolick.dyna;
 
-import static com.dawidweiss.dyna.CellType.CELL_BOMB;
-import static com.dawidweiss.dyna.CellType.CELL_BONUS_BOMB;
-import static com.dawidweiss.dyna.CellType.CELL_BONUS_RANGE;
-import static com.dawidweiss.dyna.CellType.CELL_WALL;
+import static org.jdyna.CellType.*;
 
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.CellType;
+
 
 public class CellInfo {
 	private int timeToExplosion;

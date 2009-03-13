@@ -2,8 +2,9 @@ package com.kaluza.mikolajczyk.dyna.ai;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Cell;
+import org.jdyna.Globals;
+
 import com.kaluza.mikolajczyk.dyna.GameStateCollector;
 import com.kaluza.mikolajczyk.dyna.utils.BombUtils;
 import com.kaluza.mikolajczyk.dyna.utils.PositionUtils;

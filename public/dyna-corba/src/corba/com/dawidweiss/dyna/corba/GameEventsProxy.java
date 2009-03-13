@@ -2,8 +2,9 @@ package com.dawidweiss.dyna.corba;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
+import org.jdyna.GameEvent;
+import org.jdyna.IGameEventListener;
+
 import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.Lists;
 

@@ -4,8 +4,9 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.*;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
+
 import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.*;
 

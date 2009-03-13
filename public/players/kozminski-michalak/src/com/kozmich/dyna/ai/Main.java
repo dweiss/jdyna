@@ -8,19 +8,13 @@ import java.io.InputStreamReader;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.jdyna.*;
+import org.jdyna.audio.jxsound.GameSoundEffects;
+import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Boards;
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.audio.jxsound.GameSoundEffects;
-import com.dawidweiss.dyna.serialization.GameWriter;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
 
 /**
  * Only for test.

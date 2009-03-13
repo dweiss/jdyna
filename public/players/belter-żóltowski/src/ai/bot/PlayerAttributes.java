@@ -2,8 +2,9 @@ package ai.bot;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerSprite;
+
 
 /**
  * Stores player attributes. Copy-Pasted and adapted from original code because of too many 

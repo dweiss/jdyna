@@ -1,7 +1,7 @@
 package com.kozmich.dyna.ai;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerSprite;
 
 /**
  * Represents player state.

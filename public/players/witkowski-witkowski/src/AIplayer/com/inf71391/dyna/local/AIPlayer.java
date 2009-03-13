@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
 
 import AIplayer.ai.in71391.AIThread;
 import AIplayer.ai.in71391.PlayerContollerThread;
@@ -12,13 +13,6 @@ import AIplayer.model.GameStateInformation;
 import AIplayer.model.PlayerInfo;
 import AIplayer.model.PureController;
 
-import com.dawidweiss.dyna.ControllerState;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerController2;
-import com.dawidweiss.dyna.IPlayerSprite;
 
 public class AIPlayer implements IPlayerController, IGameEventListener,
 		IPlayerController2 {

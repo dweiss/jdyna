@@ -5,15 +5,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdyna.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
 import com.krzysztofkazmierczyk.dyna.GameStateEventUpdater;
 import com.krzysztofkazmierczyk.dyna.PlayerInfo;
 import com.krzysztofkazmierczyk.dyna.client.game.Utilities;

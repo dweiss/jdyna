@@ -9,12 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jdyna.*;
+
 import put.bsr.dyna.player.ShadowPlayerInfo;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
 
 /**
  * Utility class for managing ExtCells.

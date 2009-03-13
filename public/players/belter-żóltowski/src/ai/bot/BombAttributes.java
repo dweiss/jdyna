@@ -3,7 +3,8 @@ package ai.bot;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 /**
  * Stores bomb properties. Copy-Pasted and adapted from original code because of too many 

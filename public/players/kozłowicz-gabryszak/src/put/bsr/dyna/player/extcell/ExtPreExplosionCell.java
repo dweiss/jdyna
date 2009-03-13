@@ -3,8 +3,8 @@
  */
 package put.bsr.dyna.player.extcell;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Cell;
+import org.jdyna.Globals;
 
 /**
  * Cell representing field that is in bomb range and will be in explosion in

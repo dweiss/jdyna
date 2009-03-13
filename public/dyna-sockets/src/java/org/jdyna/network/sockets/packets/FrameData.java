@@ -3,7 +3,8 @@ package org.jdyna.network.sockets.packets;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dawidweiss.dyna.GameEvent;
+import org.jdyna.GameEvent;
+
 
 /**
  * 

@@ -2,8 +2,9 @@ package two.bsr.dyna;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerSprite;
+
 
 class TZPlayerInfo {
 	String name;

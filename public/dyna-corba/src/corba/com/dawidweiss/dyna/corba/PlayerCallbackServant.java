@@ -1,6 +1,7 @@
 package com.dawidweiss.dyna.corba;
 
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.IPlayerController;
+
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallbackPOA;
 

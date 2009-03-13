@@ -9,13 +9,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerSprite;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
+
 
 final class Tactics
 {

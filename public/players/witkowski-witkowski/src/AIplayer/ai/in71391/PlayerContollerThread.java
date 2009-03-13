@@ -5,6 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.jdyna.CellType;
+import org.jdyna.Globals;
 
 import AIplayer.model.BoardInformationClass;
 import AIplayer.model.BombInfo;
@@ -12,8 +14,6 @@ import AIplayer.model.GameStateInformation;
 import AIplayer.model.PlayerInfo;
 import AIplayer.model.SuperCell;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
 
 /**
  * Class responsible for parse map receive from Game controller and pass board

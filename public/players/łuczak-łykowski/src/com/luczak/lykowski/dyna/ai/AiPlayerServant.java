@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Logger;
 
+import org.jdyna.*;
 import org.omg.PortableServer.POAPackage.*;
 
-import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.*;
 

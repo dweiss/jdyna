@@ -1,6 +1,6 @@
 package put.bsr.dyna.player.extcell;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
 
 /**
  * 

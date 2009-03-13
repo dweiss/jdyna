@@ -3,10 +3,8 @@ package com.luczak.lykowski.dyna.ai;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController;
+
+import org.jdyna.*;
 
 /**
  * Model of intelligent player which implements IPlayerController interface

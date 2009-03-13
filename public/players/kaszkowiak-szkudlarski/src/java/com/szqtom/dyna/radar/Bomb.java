@@ -3,9 +3,8 @@ package com.szqtom.dyna.radar;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.*;
+
 
 class Bomb implements IBomb {
 

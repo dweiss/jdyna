@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdyna.BoardInfo;
+import org.jdyna.IPlayerSprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.IPlayerSprite;
 
 /**
  * Logic for players. Updating collectin bonuses. Positions.

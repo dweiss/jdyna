@@ -1,6 +1,6 @@
 package com.arturklopotek.dyna.ai;
 
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerFactory;
 
 /**A factory producing instances of {@link AIPlayerController}. */
 public class AIPlayerFactory implements IPlayerFactory

@@ -5,12 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 import com.krzysztofkazmierczyk.dyna.client.game.Utilities;
 
 /**

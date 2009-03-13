@@ -1,6 +1,7 @@
 package com.jdyna.pathfinder;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 import com.jdyna.emulator.gamestate.PointCoord;
 
 /**

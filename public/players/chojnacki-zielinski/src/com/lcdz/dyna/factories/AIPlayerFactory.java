@@ -1,6 +1,7 @@
 package com.lcdz.dyna.factories;
 
-import com.dawidweiss.dyna.*;
+import org.jdyna.*;
+
 import com.lcdz.dyna.ai.AIPlayerController;
 
 public final class AIPlayerFactory implements IPlayerFactory

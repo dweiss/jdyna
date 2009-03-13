@@ -4,13 +4,9 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.GameEvent.Type;
+import org.jdyna.*;
+import org.jdyna.GameEvent.Type;
+
 import com.jdyna.players.jedrzejczaknowak.state.GameState;
 import com.jdyna.players.jedrzejczaknowak.state.Player;
 import com.jdyna.players.jedrzejczaknowak.state.Space;
@@ -244,7 +240,7 @@ public class NoobPlayer implements IPlayerController, IGameEventListener {
 
     /**
      * @see Distances#getNeighbourPointByDirection(Point,
-     *      com.dawidweiss.dyna.IPlayerController.Direction)
+     *      org.jdyna.IPlayerController.Direction)
      */
     private Point getNeighbourPointByDirection(Space p, Direction direction) {
         return Distances.getNeighbourPointByDirection(p.toPoint(), direction);

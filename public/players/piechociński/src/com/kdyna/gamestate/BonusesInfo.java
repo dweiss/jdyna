@@ -3,7 +3,8 @@ package com.kdyna.gamestate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.CellType;
+
 
 /**
  * Manages information about all bonuses 

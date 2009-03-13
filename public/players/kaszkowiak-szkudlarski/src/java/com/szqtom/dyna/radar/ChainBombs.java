@@ -4,7 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
+
 
 
 public class ChainBombs implements IBomb {

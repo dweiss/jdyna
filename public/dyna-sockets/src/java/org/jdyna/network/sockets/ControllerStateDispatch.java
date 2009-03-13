@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.jdyna.*;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.packets.UpdateControllerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
 
 /**
  * Dispatch local {@link IPlayerController} state to a remote server using UDP.

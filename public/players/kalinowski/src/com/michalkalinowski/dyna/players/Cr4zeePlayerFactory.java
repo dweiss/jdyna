@@ -1,7 +1,7 @@
 package com.michalkalinowski.dyna.players;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 public final class Cr4zeePlayerFactory implements IPlayerFactory
 {

@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.IPlayerSprite;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jdyna.emulator.gamestate.ExtendedCell.TypeChangedEvent;

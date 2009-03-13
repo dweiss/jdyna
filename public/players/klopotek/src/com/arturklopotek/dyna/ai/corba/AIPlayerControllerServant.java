@@ -1,6 +1,7 @@
 package com.arturklopotek.dyna.ai.corba;
 
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.IPlayerController;
+
 import com.dawidweiss.dyna.corba.ICPlayerControllerAdapter;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CGameEvent;

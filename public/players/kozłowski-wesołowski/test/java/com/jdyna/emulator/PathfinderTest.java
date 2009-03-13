@@ -2,12 +2,10 @@ package com.jdyna.emulator;
 
 import static org.junit.Assert.assertTrue;
 
+import org.jdyna.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.Player;
 import com.jdyna.DynaStarter;
 import com.jdyna.GameParameters;
 import com.jdyna.emulator.SmartBomber;

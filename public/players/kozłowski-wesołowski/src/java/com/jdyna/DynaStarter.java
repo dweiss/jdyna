@@ -6,15 +6,11 @@ import java.io.FileOutputStream;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Game;
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.Game.Mode;
-import com.dawidweiss.dyna.serialization.GameWriter;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
+import org.jdyna.*;
+import org.jdyna.Game.Mode;
+import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.swing.BoardFrame;
+
 import com.google.common.collect.ImmutableList;
 import com.jdyna.emulator.AbstractPlayerEmulator;
 import com.jdyna.emulator.CarefulRandomWalker;

@@ -2,9 +2,8 @@ package com.jdyna;
 
 import java.io.InputStreamReader;
 
-import com.dawidweiss.dyna.Board;
-import com.dawidweiss.dyna.Boards;
-import com.dawidweiss.dyna.Player;
+import org.jdyna.*;
+
 import com.google.common.collect.ImmutableList;
 
 /**

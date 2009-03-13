@@ -3,9 +3,9 @@
  */
 package put.bsr.dyna.player.corba;
 
+import org.jdyna.IPlayerFactory;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.CPlayerFactoryAdapter;
 import com.dawidweiss.dyna.corba.ICPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;

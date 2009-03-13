@@ -3,10 +3,8 @@ package com.rychlicki.wilczak.dyna.corba;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IPlayerController;
 import com.google.common.collect.Lists;
 import com.rychlicki.wilczak.dyna.player.SmarterRabbit;
 

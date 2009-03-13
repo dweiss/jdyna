@@ -2,7 +2,8 @@ package ai.player;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 /**
  * 
  * @author Asia

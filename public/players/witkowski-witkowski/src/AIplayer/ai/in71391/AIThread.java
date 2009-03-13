@@ -7,16 +7,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
 
 import AIplayer.model.BoardInformationClass;
 import AIplayer.model.PlayerInfo;
 import AIplayer.model.PureController;
 import AIplayer.model.SuperCell;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * Class used to produce new decision about move direction or put a bomb and

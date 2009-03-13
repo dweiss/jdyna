@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 import com.kdyna.gamestate.DynaGameState.CellPredicate;
 
 /**

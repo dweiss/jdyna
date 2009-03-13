@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.util.List;
 
+import org.jdyna.*;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.kohsuke.args4j.Argument;
@@ -11,10 +12,6 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.CmdLine;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
-import com.dawidweiss.dyna.Player;
 
 /**
  * A client that wraps {@link IPlayerFactory} and connects to the server, creating or

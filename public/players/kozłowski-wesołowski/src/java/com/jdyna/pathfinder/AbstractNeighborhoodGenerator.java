@@ -3,7 +3,8 @@ package com.jdyna.pathfinder;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 import com.google.common.collect.Lists;
 import com.jdyna.emulator.gamestate.Board;
 import com.jdyna.emulator.gamestate.GameState;

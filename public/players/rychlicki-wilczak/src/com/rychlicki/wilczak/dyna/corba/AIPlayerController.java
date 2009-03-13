@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
 import org.omg.CORBA.UserException;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CGameEvent;

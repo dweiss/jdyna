@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.CellType;
+import org.jdyna.IPlayerController.Direction;
+
 import com.kaluza.mikolajczyk.dyna.GameStateCollector;
 import com.kaluza.mikolajczyk.dyna.utils.BombUtils;
 import com.kaluza.mikolajczyk.dyna.utils.NeighborhoodUtils;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.jdyna.*;
 import org.omg.PortableServer.POA;
 
 import ai.navigation.Metrics;
@@ -14,16 +15,6 @@ import ai.navigation.Node;
 import ai.navigation.NodeType;
 import ai.navigation.PathFinder;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.ControllerState;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerController2;
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.CPlayerFactoryAdapter;
 import com.dawidweiss.dyna.corba.ICPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;

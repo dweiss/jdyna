@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.CellType;
+import org.jdyna.Globals;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.jdyna.emulator.gamestate.Board;

@@ -11,13 +11,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jdyna.*;
 import org.jdyna.network.packetio.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
+import org.jdyna.serialization.GameWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
-import com.dawidweiss.dyna.serialization.GameWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

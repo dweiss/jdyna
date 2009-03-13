@@ -1,7 +1,7 @@
 package com.kdyna.gamestate;
 
 
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.CellType;
 
 
 /**

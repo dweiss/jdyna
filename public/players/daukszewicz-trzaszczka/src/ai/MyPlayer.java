@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.List;
 import java.util.Map;
 
+import org.jdyna.*;
+
 import ai.board.BombCell;
 import ai.board.EditableCell;
 import ai.player.PlayerInfo;
@@ -15,14 +17,6 @@ import ai.utilities.MoveUtility;
 import ai.utilities.PathUtility;
 import ai.utilities.PlayersUtility;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.SoundEffect;
 
 /**
  * @author Slawek, Asia

@@ -1,9 +1,9 @@
 package com.jdyna.corba;
 
+import org.jdyna.IPlayerFactory;
 import org.omg.CORBA.UserException;
 import org.omg.PortableServer.POA;
 
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.ICPlayerControllerAdapter;
 import com.dawidweiss.dyna.corba.ICPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;

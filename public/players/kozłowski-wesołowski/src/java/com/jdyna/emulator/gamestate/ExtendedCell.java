@@ -1,7 +1,7 @@
 package com.jdyna.emulator.gamestate;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.Cell;
+import org.jdyna.CellType;
 
 /**
  * Stores information about cell type and its changes.

@@ -1,7 +1,7 @@
 package AIplayer.com.inf71391.dyna.local;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 public class PlayerServant implements IPlayerFactory{
 

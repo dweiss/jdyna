@@ -1,7 +1,8 @@
 package com.kdyna.gamestate;
 
 import java.awt.Point;
-import com.dawidweiss.dyna.Globals;
+
+import org.jdyna.Globals;
 
 /**
  * Class represents single bomb

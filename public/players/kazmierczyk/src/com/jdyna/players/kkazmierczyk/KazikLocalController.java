@@ -3,13 +3,8 @@ package com.jdyna.players.kkazmierczyk;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameOverEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.*;
+
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.krzysztofkazmierczyk.dyna.GameStateEventUpdater;
 import com.krzysztofkazmierczyk.dyna.client.AI.AIMoveChooser;

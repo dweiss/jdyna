@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.Cell;
+import org.jdyna.CellType;
+
 import com.kaluza.mikolajczyk.dyna.ai.AIAttackDirectionMaker;
 import com.kaluza.mikolajczyk.dyna.dtos.BombTO;
 

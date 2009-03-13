@@ -2,7 +2,8 @@ package com.lcdz.dyna.ai;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 
 @SuppressWarnings("serial")
 public class PointS extends Point {

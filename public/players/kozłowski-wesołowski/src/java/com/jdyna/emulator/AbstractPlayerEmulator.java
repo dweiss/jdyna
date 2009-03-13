@@ -2,11 +2,8 @@ package com.jdyna.emulator;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.Player;
+import org.jdyna.*;
+
 import com.jdyna.emulator.gamestate.GameState;
 
 /**
@@ -33,7 +30,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener, IPla
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.dawidweiss.dyna.IGameEventListener#onFrame(int, java.util.List)
+	 * @see org.jdyna.IGameEventListener#onFrame(int, java.util.List)
 	 */
 	@Override
 	public void onFrame(int frame, List<? extends GameEvent> events) {

@@ -2,7 +2,8 @@ package pl.khroolick.dyna;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.IPlayerController;
+
 
 public enum KDirection
 {

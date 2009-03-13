@@ -2,7 +2,8 @@ package org.jdyna.network.sockets;
 
 import java.io.Serializable;
 
-import com.dawidweiss.dyna.BoardInfo;
+import org.jdyna.BoardInfo;
+
 
 /**
  * An identifier and associated information about a game running on the server.

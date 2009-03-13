@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.Cell;
+import org.jdyna.IPlayerSprite;
+
 import com.kaluza.mikolajczyk.dyna.dtos.BombTO;
 import com.kaluza.mikolajczyk.dyna.dtos.BonusTO;
 import com.kaluza.mikolajczyk.dyna.dtos.PlayerTO;

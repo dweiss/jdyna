@@ -2,7 +2,8 @@ package com.kaluza.mikolajczyk.dyna.dtos;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 import com.kaluza.mikolajczyk.dyna.GameStateCollector;
 /**
  * DTO for a bomb player. Used in {@link GameStateCollector}

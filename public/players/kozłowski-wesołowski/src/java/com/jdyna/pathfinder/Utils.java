@@ -2,11 +2,9 @@ package com.jdyna.pathfinder;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.Player;
-import com.dawidweiss.dyna.PlayerStatus;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
+
 import com.jdyna.emulator.gamestate.GridCoord;
 import com.jdyna.emulator.gamestate.PointCoord;
 

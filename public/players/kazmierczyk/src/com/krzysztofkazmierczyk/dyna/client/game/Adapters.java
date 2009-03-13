@@ -1,7 +1,8 @@
 package com.krzysztofkazmierczyk.dyna.client.game;
 
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.GameStateEvent;
+import org.jdyna.IPlayerController.Direction;
+
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.CDirection;

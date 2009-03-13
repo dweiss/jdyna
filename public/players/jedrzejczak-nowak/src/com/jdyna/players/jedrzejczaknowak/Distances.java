@@ -8,8 +8,9 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.dawidweiss.dyna.BoardUtilities;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.BoardUtilities;
+import org.jdyna.IPlayerController.Direction;
+
 import com.jdyna.players.jedrzejczaknowak.state.GameState;
 import com.jdyna.players.jedrzejczaknowak.state.Player;
 import com.jdyna.players.jedrzejczaknowak.state.Player.PlayerState;

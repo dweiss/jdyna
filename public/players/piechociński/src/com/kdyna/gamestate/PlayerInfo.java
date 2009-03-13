@@ -2,9 +2,10 @@ package com.kdyna.gamestate;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerSprite;
+import org.jdyna.IPlayerController.Direction;
+
 
 /**
  * class representing info about single player

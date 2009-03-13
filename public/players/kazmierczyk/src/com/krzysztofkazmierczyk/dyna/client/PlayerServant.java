@@ -2,8 +2,9 @@ package com.krzysztofkazmierczyk.dyna.client;
 
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.GameStateEvent;
+import org.jdyna.BoardInfo;
+import org.jdyna.GameStateEvent;
+
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CGameEvent;

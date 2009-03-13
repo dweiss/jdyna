@@ -1,7 +1,7 @@
 package AIplayer.model;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.Cell;
+import org.jdyna.CellType;
 
 /**
  * Remember more information in one cell of board

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.jdyna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
 
 /**
  * An adapter for {@link IGameEventListener} that internally queues external events and

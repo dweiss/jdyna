@@ -1,6 +1,6 @@
 package AIplayer.model;
 
-import com.dawidweiss.dyna.IPlayerController;
+import org.jdyna.IPlayerController;
 
 /**
  * Pure controller that is send by corba to Game controller and change move

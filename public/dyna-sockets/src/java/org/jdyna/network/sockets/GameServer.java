@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.*;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.jdyna.CmdLine;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.ServerInfo;
@@ -13,7 +14,6 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.CmdLine;
 
 /**
  * A socket server for jdyna. Broadcasts itself on the local network for automatic

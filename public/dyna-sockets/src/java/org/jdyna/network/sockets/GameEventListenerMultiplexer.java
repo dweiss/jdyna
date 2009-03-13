@@ -3,11 +3,11 @@ package org.jdyna.network.sockets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdyna.GameEvent;
+import org.jdyna.IGameEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
 import com.google.common.collect.Lists;
 
 /**

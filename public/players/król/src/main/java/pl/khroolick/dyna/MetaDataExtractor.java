@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 
 public class MetaDataExtractor
 {
@@ -294,7 +291,7 @@ public class MetaDataExtractor
         offset.y -= myPoss.y;
 
         KDirection.getDesiredDirs(offset, directions);
-        com.dawidweiss.dyna.IPlayerController.Direction currentDirection = null;
+        org.jdyna.IPlayerController.Direction currentDirection = null;
 
         int min = Integer.MAX_VALUE;
         for (KDirection direction : directions)

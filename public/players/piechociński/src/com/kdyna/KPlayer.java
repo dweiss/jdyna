@@ -6,13 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.Player;
+import org.jdyna.*;
+
 import com.kdyna.gamestate.BonusesInfo;
 import com.kdyna.gamestate.CellInfo;
 import com.kdyna.gamestate.DynaBoard;

@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.view.swing.BoardFrame;
+import org.jdyna.GameEvent;
+import org.jdyna.IGameEventListener;
+import org.jdyna.view.swing.BoardFrame;
+
 
 /**
  * A listener that shows Swing GUI for the game and hides it at game over.

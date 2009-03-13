@@ -2,7 +2,8 @@ package com.jdyna.emulator;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.GameEvent;
+import org.jdyna.GameEvent;
+
 
 /**
  * Player that lives just for fun (cannon fodder). Doesn't analyze game state, doesn't move, doesn't drop bombs.

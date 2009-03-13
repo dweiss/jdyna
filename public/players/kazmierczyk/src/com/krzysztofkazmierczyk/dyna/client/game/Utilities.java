@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 import com.dawidweiss.dyna.corba.bindings.CPlayer;
 import com.krzysztofkazmierczyk.dyna.BombCell;
 import com.krzysztofkazmierczyk.dyna.CellWithTime;

@@ -3,12 +3,12 @@ package com.kozmich.dyna.ai.corba;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jdyna.GameEvent;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.ObjectNotActive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-import com.dawidweiss.dyna.GameEvent;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CControllerState;

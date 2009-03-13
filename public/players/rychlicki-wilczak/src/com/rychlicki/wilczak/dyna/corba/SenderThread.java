@@ -3,8 +3,8 @@ package com.rychlicki.wilczak.dyna.corba;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jdyna.IPlayerController;
 
-import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.Adapters;
 import com.dawidweiss.dyna.corba.bindings.ICControllerCallback;
 

@@ -1,9 +1,9 @@
 package com.jdyna.players.jedrzejczaknowak;
 
+import org.jdyna.IPlayerController;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.Servant;
 
-import com.dawidweiss.dyna.IPlayerController;
 import com.dawidweiss.dyna.corba.ICPlayerControllerAdapter;
 import com.dawidweiss.dyna.corba.bindings.CBoardInfo;
 import com.dawidweiss.dyna.corba.bindings.CGameEvent;

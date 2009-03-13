@@ -3,7 +3,8 @@ package com.jdyna.emulator;
 import java.util.Collection;
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.CellType;
+
 import com.jdyna.emulator.gamestate.ExtendedPlayer;
 import com.jdyna.emulator.gamestate.GridCoord;
 import com.jdyna.emulator.gamestate.PointCoord;

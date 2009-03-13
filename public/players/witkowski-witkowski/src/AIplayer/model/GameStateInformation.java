@@ -2,7 +2,8 @@ package AIplayer.model;
 
 import java.util.ArrayList;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
+
 
 /**
  * Collection of information pass through the Corba from Game controller.

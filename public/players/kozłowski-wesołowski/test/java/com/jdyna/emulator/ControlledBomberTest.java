@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 
+import org.jdyna.GameResult;
+import org.jdyna.Player;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dawidweiss.dyna.GameResult;
-import com.dawidweiss.dyna.Player;
 import com.google.common.collect.Lists;
 import com.jdyna.DynaStarter;
 import com.jdyna.GameParameters;

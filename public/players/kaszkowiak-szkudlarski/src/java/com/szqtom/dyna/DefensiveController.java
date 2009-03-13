@@ -2,16 +2,10 @@ package com.szqtom.dyna;
 
 import java.util.List;
 
+import org.jdyna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerSprite;
 import com.szqtom.dyna.generator.PathGenerator;
 import com.szqtom.dyna.generator.Point;
 import com.szqtom.dyna.radar.BombsDetector;

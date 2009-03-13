@@ -2,9 +2,8 @@ package com.jdyna.emulator;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.ControllerState;
-import com.dawidweiss.dyna.IPlayerController2;
+import org.jdyna.*;
+
 import com.jdyna.emulator.gamestate.ExtendedPlayer;
 import com.jdyna.emulator.gamestate.GridCoord;
 import com.jdyna.pathfinder.Pathfinder;

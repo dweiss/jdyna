@@ -1,6 +1,6 @@
 package ai.board;
 
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.CellType;
 /**
  * 
  * @author Slawek

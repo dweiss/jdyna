@@ -2,9 +2,10 @@ package ai.utilities;
 
 import java.awt.Point;
 
+import org.jdyna.IPlayerController.Direction;
+
 import ai.board.EditableCell;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * 

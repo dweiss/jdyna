@@ -2,7 +2,8 @@ package com.jdyna.players.jedrzejczaknowak.state;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
+
 
 /**
  * Represents a single player taking part in the game.

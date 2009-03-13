@@ -1,8 +1,8 @@
 package com.dawidweiss.dyna.corba;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.jdyna.IPlayerController;
 
-import com.dawidweiss.dyna.IPlayerController;
 
 /**
  * A comparable state of {@link IPlayerController}.

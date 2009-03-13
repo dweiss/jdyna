@@ -1,7 +1,7 @@
 package com.kozmich.dyna.ai;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 /**
  * Factory class for AI player.

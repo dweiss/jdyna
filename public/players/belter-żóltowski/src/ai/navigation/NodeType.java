@@ -1,6 +1,6 @@
 package ai.navigation;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
 
 /**
  * Type of nodes for adjusting strategy.

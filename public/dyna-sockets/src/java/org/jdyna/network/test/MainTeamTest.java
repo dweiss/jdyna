@@ -2,10 +2,10 @@ package org.jdyna.network.test;
 
 import org.jdyna.network.sockets.GameServer;
 import org.jdyna.network.sockets.BotClient;
+import org.jdyna.players.HumanPlayerFactory;
+import org.jdyna.players.RabbitFactory;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.players.HumanPlayerFactory;
-import com.dawidweiss.dyna.players.RabbitFactory;
 
 /**
  * Set up a server and two clients locally.

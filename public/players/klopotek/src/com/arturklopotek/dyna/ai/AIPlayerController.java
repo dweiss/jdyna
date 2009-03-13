@@ -9,10 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 
 /**The implementation of {@link AbstractPlayerController} that uses simple (yet very effective) 
  * neighbor-scoring algorithm.

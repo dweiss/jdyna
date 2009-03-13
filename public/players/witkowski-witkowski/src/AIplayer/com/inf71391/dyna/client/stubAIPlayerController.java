@@ -1,11 +1,11 @@
 package AIplayer.com.inf71391.dyna.client;
 
 import org.apache.log4j.Logger;
+import org.jdyna.IPlayerFactory;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-import com.dawidweiss.dyna.IPlayerFactory;
 import com.dawidweiss.dyna.corba.ICPlayerFactory;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerController;
 import com.dawidweiss.dyna.corba.bindings.ICPlayerControllerHelper;

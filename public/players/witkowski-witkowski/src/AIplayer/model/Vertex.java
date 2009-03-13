@@ -2,7 +2,8 @@ package AIplayer.model;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 
 /**
  * Representation of vertex on BFS available fields queue.

@@ -1,6 +1,6 @@
 package com.jdyna.emulator.gamestate.bombs;
 
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.Globals;
 
 /**
  * <p>

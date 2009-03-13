@@ -3,8 +3,9 @@ package com.jdyna.emulator.gamestate;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.Globals;
+import org.jdyna.IPlayerSprite;
+
 import com.google.common.collect.Maps;
 import com.jdyna.pathfinder.Utils;
 

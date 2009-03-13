@@ -1,7 +1,7 @@
 package com.kozmich.dyna.ai;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
+import org.jdyna.Cell;
+import org.jdyna.CellType;
 
 /**
  * Keep game state and compare actual and previous state.

@@ -1,8 +1,6 @@
 package com.krzysztofkazmierczyk.dyna;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.*;
 
 /**
  * This class contains additional information about BombCell. BombCell is also for me cell after explosion.

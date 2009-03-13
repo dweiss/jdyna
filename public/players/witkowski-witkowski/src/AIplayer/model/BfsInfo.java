@@ -2,7 +2,8 @@ package AIplayer.model;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.IPlayerController.Direction;
+
 
 /**
  * Store information about BFS searching for closest bonuses, enemies or bricks

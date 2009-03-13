@@ -5,15 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jdyna.*;
+import org.jdyna.IPlayerController.Direction;
+
 import ai.board.BombCell;
 import ai.board.EditableCell;
 import ai.player.PlayerInfo;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.SoundEffect;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * 

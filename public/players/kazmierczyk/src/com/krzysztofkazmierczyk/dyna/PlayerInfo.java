@@ -5,13 +5,12 @@ package com.krzysztofkazmierczyk.dyna;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Globals;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 
 /**
  * This class contains everything what contains class {@code
- * com.dawidweiss.dyna.PlayerInfo} and is neccessary for me.
+ * org.jdyna.PlayerInfo} and is neccessary for me.
  * 
  * @author kazik
  */

@@ -4,10 +4,10 @@ import java.awt.Dimension;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.jdyna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dawidweiss.dyna.*;
 import com.dawidweiss.dyna.corba.bindings.*;
 import com.google.common.collect.*;
 

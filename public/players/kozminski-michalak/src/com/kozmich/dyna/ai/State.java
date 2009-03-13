@@ -1,6 +1,6 @@
 package com.kozmich.dyna.ai;
 
-import com.dawidweiss.dyna.Cell;
+import org.jdyna.Cell;
 
 /**
  * Keep information about state of game.

@@ -1,7 +1,7 @@
 package ai;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 public class MyPlayerFactory implements IPlayerFactory
 {

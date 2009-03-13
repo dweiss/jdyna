@@ -2,9 +2,10 @@ package com.jdyna.emulator.gamestate;
 
 import java.util.List;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.IPlayerController.Direction;
+import org.jdyna.Cell;
+import org.jdyna.CellType;
+import org.jdyna.IPlayerController.Direction;
+
 import com.google.common.collect.Lists;
 
 /**

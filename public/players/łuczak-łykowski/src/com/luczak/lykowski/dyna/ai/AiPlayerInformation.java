@@ -2,7 +2,8 @@ package com.luczak.lykowski.dyna.ai;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import com.dawidweiss.dyna.Globals;
+
+import org.jdyna.Globals;
 
 /**
  * Basic information about the players. Players positions are stored in other

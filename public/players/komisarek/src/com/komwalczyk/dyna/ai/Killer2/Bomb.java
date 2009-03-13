@@ -1,6 +1,6 @@
 package com.komwalczyk.dyna.ai.Killer2;
 
-import static com.dawidweiss.dyna.Globals.DEFAULT_FUSE_FRAMES;
+import static org.jdyna.Globals.DEFAULT_FUSE_FRAMES;
 
 import java.awt.Point;
 

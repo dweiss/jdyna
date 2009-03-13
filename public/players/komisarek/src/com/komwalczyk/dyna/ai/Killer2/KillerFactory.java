@@ -1,7 +1,7 @@
 package com.komwalczyk.dyna.ai.Killer2;
 
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerFactory;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
 
 /**
  * Factory of {@link Killer} players.

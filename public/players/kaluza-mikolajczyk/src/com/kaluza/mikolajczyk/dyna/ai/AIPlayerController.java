@@ -4,15 +4,8 @@ import java.awt.Point;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameEvent;
-import com.dawidweiss.dyna.GameOverEvent;
-import com.dawidweiss.dyna.GameStartEvent;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IGameEventListener;
-import com.dawidweiss.dyna.IPlayerController;
-import com.dawidweiss.dyna.IPlayerSprite;
+import org.jdyna.*;
+
 import com.kaluza.mikolajczyk.dyna.GameStateCollector;
 import com.kaluza.mikolajczyk.dyna.utils.NeighborhoodUtils;
 

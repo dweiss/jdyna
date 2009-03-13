@@ -7,16 +7,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jdyna.*;
+
 import ai.navigation.Metrics;
 import ai.navigation.NavGraph;
 import ai.navigation.Node;
 import ai.navigation.NodeType;
 
-import com.dawidweiss.dyna.BoardInfo;
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IPlayerSprite;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

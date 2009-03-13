@@ -1,7 +1,7 @@
 package com.komwalczyk.dyna.ai.Killer2;
 
-import static com.dawidweiss.dyna.Globals.DEFAULT_BOMB_COUNT;
-import static com.dawidweiss.dyna.Globals.DEFAULT_BOMB_RANGE;
+import static org.jdyna.Globals.DEFAULT_BOMB_COUNT;
+import static org.jdyna.Globals.DEFAULT_BOMB_RANGE;
 
 import java.awt.Point;
 

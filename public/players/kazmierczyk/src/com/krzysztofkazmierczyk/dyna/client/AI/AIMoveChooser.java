@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dawidweiss.dyna.BoardInfo;
+import org.jdyna.BoardInfo;
+
 import com.dawidweiss.dyna.corba.bindings.CControllerState;
 import com.dawidweiss.dyna.corba.bindings.CDirection;
 import com.krzysztofkazmierczyk.dyna.GameStateEventUpdater;

@@ -2,9 +2,8 @@ package com.arturklopotek.dyna.ai;
 
 import java.awt.Point;
 
-import com.dawidweiss.dyna.Cell;
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.Globals;
+import org.jdyna.*;
+
 
 /** A utility class providing static methods performing some 
  *  useful board-evaluation tasks.

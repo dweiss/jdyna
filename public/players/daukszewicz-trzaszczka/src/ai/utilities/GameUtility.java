@@ -3,9 +3,10 @@ package ai.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdyna.IPlayerController.Direction;
+
 import ai.board.EditableCell;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
 /**
  * 
  * @author Slawek

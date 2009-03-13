@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jdyna.CellType;
+import org.jdyna.GameStateEvent;
+import org.jdyna.IPlayerController.Direction;
 
-import com.dawidweiss.dyna.CellType;
-import com.dawidweiss.dyna.GameStateEvent;
-import com.dawidweiss.dyna.IPlayerController.Direction;
 import com.google.common.collect.Lists;
 import com.jdyna.emulator.gamestate.bombs.AllSimulatedBombs;
 import com.jdyna.emulator.gamestate.bombs.Bombs;

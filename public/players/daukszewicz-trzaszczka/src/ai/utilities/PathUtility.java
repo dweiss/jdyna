@@ -4,10 +4,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdyna.IPlayerController.Direction;
+
 import ai.board.BombCell;
 import ai.board.EditableCell;
 
-import com.dawidweiss.dyna.IPlayerController.Direction;
 
 /**
  * 
