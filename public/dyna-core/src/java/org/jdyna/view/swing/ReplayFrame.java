@@ -72,7 +72,7 @@ public final class ReplayFrame extends JFrame
                         while (!playing) this.wait();
                         current = frame;
 
-                        if (frame < frameData.size()) frame++;
+                        if (frame + 1 < frameData.size()) frame++;
                         else
                         {
                             playing = false;
