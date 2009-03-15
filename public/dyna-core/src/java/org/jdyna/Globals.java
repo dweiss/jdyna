@@ -30,7 +30,7 @@ public final class Globals
     /**
      * @see PlayerInfo#bombCount
      */
-    public static final int DEFAULT_BOMB_COUNT = intProperty("dyna.bomb.count", 4);
+    public static final int DEFAULT_BOMB_COUNT = intProperty("dyna.bomb.count", 2);
 
     /**
      * Default pixel size of each cell in the playfield.
@@ -81,7 +81,7 @@ public final class Globals
      * The default is 15 seconds. Assign to a very large value to effectively prevent
      * bonuses from showing up.
      */
-    public static final int DEFAULT_BONUS_PERIOD = 15 * DEFAULT_FRAME_RATE;
+    public static final int DEFAULT_BONUS_PERIOD = 10 * DEFAULT_FRAME_RATE;
 
     /**
      * Number of frames it takes for a dead player to be ressurrected in deatch match mode.

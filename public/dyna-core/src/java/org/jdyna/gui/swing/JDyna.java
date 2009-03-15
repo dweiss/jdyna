@@ -96,6 +96,7 @@ public final class JDyna
         frame.getContentPane().add(createMainPanelGUI());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);
+        frame.setResizable(false);
         try
         {
             frame.setIconImage(ImageUtilities.loadResourceImage("icons/window-icon.png"));
@@ -118,8 +119,14 @@ public final class JDyna
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        panel.add(createSectionTitleGUI("Local"));
+        panel.add(createSectionTitleGUI("Local: two-player modes"));
+        panel.add(Box.createVerticalStrut(2));
         panel.add(createLocalModeGUI());
+        panel.add(Box.createVerticalStrut(5));
+
+        panel.add(createSectionTitleGUI("Network: multiplayer modes"));
+        panel.add(Box.createVerticalStrut(2));
+        panel.add(createNetworkModeGUI());
 
         panel.add(Box.createVerticalStrut(10));
         panel.add(Box.createGlue());
@@ -189,6 +196,35 @@ public final class JDyna
         return panel;
     }
 
+    /*
+     * 
+     */
+    private Component createNetworkModeGUI()
+    {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+        final JButton startGame = new JButton("Start game");
+        startGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                runNetworkedGame();
+            }
+        });
+        panel.add(startGame);
+
+        panel.add(Box.createHorizontalStrut(SPACING));
+
+        final JButton joinGame = new JButton("Join game");
+        joinGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+            }
+        });        
+        panel.add(joinGame);
+
+        return panel;
+    }    
     /**
      * Run a local game between two players. 
      */
@@ -229,13 +265,23 @@ public final class JDyna
     }
 
     /**
-     * Get bot for a given name.
+     * Start a server for a network game. 
      */
-    private IPlayerFactory getBot(String bot)
+    private void runNetworkedGame()
     {
-        return bots.get(bot);
-    }
+        assert SwingUtilities.isEventDispatchThread();
 
+        final Board board = selectBoard();
+        if (board == null) return;
+
+        hideMainGUI();
+
+        /*
+         * TODO: Start local server, create the game and attach the player to the
+         * server.
+         */
+    }
+    
     /**
      * Run a local game.
      */
@@ -243,28 +289,28 @@ public final class JDyna
     {
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
-
+    
         final Game game = new Game(board, boardInfo);
         game.setFrameRate(Globals.DEFAULT_FRAME_RATE);
-
+    
         for (IPlayerFactory pf : players)
         {
             final String name = pf.getDefaultPlayerName();
             game.addPlayer(new Player(name, pf.getController(name)));
         }
-
+    
         /*
          * Attach sound effects view to the game.
          */
         if (sound) game.addListener(new GameSoundEffects());
-
+    
         /*
          * Attach a swing display view to the game.
          */
         final BoardFrame frame = new BoardFrame();
         game.addListener(frame);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+    
         final Thread gameThread = new Thread() {
             @SuppressWarnings("unused")
             public void run()
@@ -273,7 +319,7 @@ public final class JDyna
                 SwingUtils.dispose(frame);
             }
         };
-
+    
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e)
             {
@@ -286,12 +332,20 @@ public final class JDyna
                 {
                     throw new RuntimeException();
                 }
-
+    
                 showMainGUI();
             }
         });
         frame.setVisible(true);
         gameThread.start();
+    }
+
+    /**
+     * Get bot for a given name.
+     */
+    private IPlayerFactory getBot(String bot)
+    {
+        return bots.get(bot);
     }
 
     /**
