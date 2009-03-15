@@ -227,7 +227,8 @@ public final class Game
         events.add(new GameStartEvent(boardData));
         do
         {
-            if (Thread.currentThread().isInterrupted()
+            if (interrupted 
+                || Thread.currentThread().isInterrupted()
                 || (result == null && frameLimit > 0 && frame > frameLimit))
             {
                 interrupted = true;
