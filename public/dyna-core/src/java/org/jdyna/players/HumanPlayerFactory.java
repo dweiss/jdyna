@@ -7,7 +7,8 @@ import org.jdyna.*;
  */
 public final class HumanPlayerFactory implements IPlayerFactory
 {
-    private IPlayerController controller;
+    private final IPlayerController controller;
+    private final String playerName;
 
     public HumanPlayerFactory()
     {
@@ -16,7 +17,13 @@ public final class HumanPlayerFactory implements IPlayerFactory
 
     public HumanPlayerFactory(IPlayerController controller)
     {
+        this(controller, "Human");
+    }
+
+    public HumanPlayerFactory(IPlayerController controller, String defaultPlayerName)
+    {
         this.controller = controller;
+        this.playerName = defaultPlayerName;
     }
 
     /**
@@ -31,7 +38,7 @@ public final class HumanPlayerFactory implements IPlayerFactory
     @Override
     public String getDefaultPlayerName()
     {
-        return "Human";
+        return playerName;
     }
 
     @Override
