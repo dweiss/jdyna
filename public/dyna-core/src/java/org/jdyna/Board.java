@@ -48,7 +48,7 @@ public final class Board
     Board(String name, int width, int height, Cell [][] cells, Point [] playerPositions)
     {
         assert !StringUtils.isEmpty(name);
-        assert width > 0 && height > 0 && cells.length == (width * height);
+        assert width > 0 && height > 0;
 
         this.name = name;
         this.width = width;
