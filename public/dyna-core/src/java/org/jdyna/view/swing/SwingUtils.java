@@ -360,4 +360,17 @@ public final class SwingUtils
     {
         return new VisibilityTracker(component);
     }
+
+    /**
+     * Schedule disposal of a frame (async).
+     */
+    public static void dispose(final BoardFrame frame)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                if (frame.isDisplayable()) frame.dispose();
+            }
+        });
+    }
 }
