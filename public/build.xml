@@ -3,14 +3,12 @@
 	<property name="dist.path" location="dist" />
 
 	<property name="dyna-core" location="dyna-core" />
-	<property name="dyna-sockets" location="dyna-sockets" />
 
 	<macrodef name="all">
 		<attribute name="target" />
 
 		<sequential>
 		<ant antfile="build.xml" dir="${dyna-core}" target="@{target}" inheritall="false" />
-		<ant antfile="build.xml" dir="${dyna-sockets}" target="@{target}" inheritall="false" />
 		</sequential>
 	</macrodef>
 
@@ -20,7 +18,6 @@
 
 		<copy todir="${dist.path}">
 			<fileset dir="${dyna-core}/tmp/dist" />
-			<fileset dir="${dyna-sockets}/tmp/dist" />
 		</copy>
 		<chmod perm="a+rx">
 			<fileset dir="${dist.path}" includes="*.sh" />
