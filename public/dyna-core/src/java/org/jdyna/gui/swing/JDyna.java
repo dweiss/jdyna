@@ -190,7 +190,7 @@ public final class JDyna
             final JPanel panel = new JPanel(new BorderLayout(5, 5));
             panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
     
-            final JTextArea textArea = new JTextArea(20, 80);
+            final JTextArea textArea = new JTextArea(20, 81);
             textArea.setFont(
                 new Font("Monospaced", Font.PLAIN, textArea.getFont().getSize()));
             textArea.setWrapStyleWord(false);
