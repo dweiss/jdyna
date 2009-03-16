@@ -36,7 +36,7 @@ public final class Closeables
     {
         try
         {
-            c.close();
+            if (c != null) c.close();
         }
         catch (IOException e)
         {

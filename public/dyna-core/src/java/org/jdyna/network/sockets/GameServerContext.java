@@ -35,11 +35,6 @@ public final class GameServerContext
     public final static String BROADCAST_ADDRESS = "255.255.255.255";
 
     /**
-     * How frequently should auto-discovery messages be sent?
-     */
-    public final static int AUTO_DISCOVERY_INTERVAL = 1000 * 2;
-
-    /**
      * Active gameHandles.
      */
     private Map<String, GameContext> games = Maps.newHashMap();
@@ -83,7 +78,7 @@ public final class GameServerContext
 
                 while (!interrupted())
                 {
-                    sleep(AUTO_DISCOVERY_INTERVAL);
+                    sleep(GameServer.AUTO_DISCOVERY_INTERVAL);
                     udpBroadcaster.send(autodiscoveryPacket);
                 }
             }

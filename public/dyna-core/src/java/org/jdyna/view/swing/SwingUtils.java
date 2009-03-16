@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.*;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 /**
  * Swing utilities not covered in {@link SwingUtilities}.
  */
@@ -373,4 +375,76 @@ public final class SwingUtils
             }
         });
     }
+    
+    /**
+     * Displays a message dialog with exception information.
+     */
+    public static void showExceptionDialog(Component component, String message, Throwable t)
+    {
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        final JLabel messageLabel = new JLabel(message);
+        messageLabel.setFont(new Font("Dialog", Font.BOLD, messageLabel
+            .getFont().getSize()));
+
+        final JTextArea stacktraceArea = new JTextArea(20, 60);
+        stacktraceArea.setFont(new Font("Monospaced", Font.PLAIN,
+            stacktraceArea.getFont().getSize()));
+        stacktraceArea.setWrapStyleWord(false);
+        stacktraceArea.setLineWrap(false);
+        stacktraceArea.setText("Exception: " + t.getClass().getName() + "\n\n"
+            + "Exception message: " + t.getMessage() + "\n\n"
+            + "Stack trace:\n" + ExceptionUtils.getFullStackTrace(t));
+        stacktraceArea.setEditable(false);
+        final JScrollPane stacktraceAreaScroller = new JScrollPane(
+            stacktraceArea);
+
+        panel.add(messageLabel, BorderLayout.NORTH);
+        panel.add(stacktraceAreaScroller, BorderLayout.CENTER);
+
+        // Adjust stack trace dimensions
+        final Dimension stacktraceDimension = stacktraceArea
+            .getPreferredScrollableViewportSize();
+        final Dimension screenDimension = Toolkit.getDefaultToolkit()
+            .getScreenSize();
+        screenDimension.setSize(screenDimension.getWidth() * 0.7,
+            screenDimension.getHeight() * 0.7);
+        final Dimension maxStackTraceDimension = new Dimension(500, 500);
+        maxStackTraceDimension.setSize(Math.min(maxStackTraceDimension
+            .getWidth(), screenDimension.getWidth()), Math.min(
+            maxStackTraceDimension.getHeight(), screenDimension.getHeight()));
+        stacktraceDimension.setSize(Math.min(stacktraceDimension.getWidth(),
+            maxStackTraceDimension.getWidth()), Math.min(stacktraceDimension
+            .getHeight(), maxStackTraceDimension.getHeight()));
+        stacktraceAreaScroller.setPreferredSize(stacktraceDimension);
+        stacktraceArea.setCaretPosition(0);
+
+        JOptionPane.showMessageDialog(component, panel, "Program error.", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Centers a {@link JFrame} on screen.
+     */
+    public static void centerFrameOnScreen(JFrame frame)
+    {
+        final Dimension position = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation((position.width - frame.getWidth()) / 2,
+            (position.height - frame.getHeight()) / 2);
+    }
+
+    /**
+     * Adds a key listener to a given {@link JDialog} that diposes it when the escape
+     * key is pressed.
+     */
+    public static void addEscapeKeyCloseAction(final JDialog dialog)
+    {
+        dialog.getRootPane().registerKeyboardAction(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                dialog.dispose();
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }    
 }

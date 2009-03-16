@@ -38,6 +38,11 @@ public final class GameServer
     private final static int DEFAULT_UDP_FEEDBACK_PORT = 50000;
 
     /**
+     * How frequently should auto-discovery messages be sent?
+     */
+    public final static int AUTO_DISCOVERY_INTERVAL = 1000 * 2;
+    
+    /**
      * Internal logger.
      */
     private final static Logger logger = LoggerFactory.getLogger(GameServer.class);
@@ -96,13 +101,13 @@ public final class GameServer
     /**
      * Feedback UDP socket.
      */
-    private UDPPacketListener feedbackSocket;
+    private UDPPacketListener udpPacketListener;
 
     /**
      * A thread accepting feedback UDP packets from clients and updating controller
      * states.
      */
-    private Thread feedbackSocketListener = new Thread()
+    private Thread udpProcessingThread = new Thread()
     {
         public void run()
         {
@@ -111,7 +116,7 @@ public final class GameServer
                 final SerializablePacket p = new SerializablePacket();
                 while (true)
                 {
-                    if (feedbackSocket.receive(p) == null)
+                    if (udpPacketListener.receive(p) == null)
                     {
                         break;
                     }
@@ -133,12 +138,47 @@ public final class GameServer
         }
     };
 
-    /*
-     * 
+    /**
+     * Server TCP socket. 
      */
-    protected GameServer()
+    private ServerSocket tcpSocket;
+    
+    /**
+     * A thread accepting TCP connections from clients (control connection).
+     */
+    private Thread tcpProcessingThread = new Thread()
     {
-        // Empty, for command-line use.
+        public void run()
+        {
+            try
+            {
+                Socket client;
+                while ((client = tcpSocket.accept()) != null)
+                {
+                    /*
+                     * Start a new thread to talk to the client.
+                     */
+                    new ServerControlConnectionHandler(client, context).start();
+                }
+            }
+            catch (SocketException e)
+            {
+                // We assume this is caused by forced socket close.
+            }
+            catch (IOException e)
+            {
+                // This is weird, log and bail out.
+                logger.error("Server socket I/O error.", e);
+            }
+        }
+    };
+
+    /**
+     * Public parameterless constructor (defaults taken).
+     */
+    public GameServer()
+    {
+        // Empty.
     }
 
     /**
@@ -168,22 +208,23 @@ public final class GameServer
 
         gameContext.updateControllerState(s.playerID, s.state);
     }
-
+    
     /**
-     * Bring up the network presence.
+     * Start the server, launch a background connection-processing thread and return
+     * the status information. 
      */
-    public void start()
+    public ServerInfo start() throws IOException
     {
-        ServerSocket socket = null;
+        tcpSocket = null;
         try
         {
             logger.info("Server initializing...");
 
             final InetAddress serverAddress = InetAddress.getByName(iface);
-            socket = new ServerSocket(TCPport, 0, serverAddress);
-            logger.info("TCP listener bound to: " + socket.getInetAddress());
+            tcpSocket = new ServerSocket(TCPport, 0, serverAddress);
+            logger.info("TCP listener bound to: " + tcpSocket.getInetAddress());
 
-            final ServerInfo serverInfo = new ServerInfo(
+            ServerInfo serverInfo = new ServerInfo(
                 serverAddress.getHostAddress(), TCPport, UDPBroadcastPort, UDPport);
 
             this.context = new GameServerContext(serverInfo, maxGames);
@@ -195,62 +236,45 @@ public final class GameServer
             /*
              * Start UDP socket listener.
              */
-            feedbackSocket = new UDPPacketListener(UDPport);
-            feedbackSocketListener.start();
-
-            /*
-             * Add a shutdown hook that closes the TCP socket.
-             */
-            final ServerSocket socketf = socket;
-            final Thread serverThread = Thread.currentThread();
-            Runtime.getRuntime().addShutdownHook(new Thread()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        Closeables.close(socketf);
-                        serverThread.join();
-                        logger.info("Shutdown hook finished.");
-                    }
-                    catch (InterruptedException e)
-                    {
-                        // Ignore.
-                    }
-                }
-            });
+            udpPacketListener = new UDPPacketListener(UDPport);
+            udpProcessingThread.start();
 
             /*
              * Start TCP control socket listener.
              */
-            try
-            {
-                Socket client;
-                while ((client = socket.accept()) != null)
-                {
-                    /*
-                     * Start a new thread to converse with this client.
-                     */
-                    new ServerControlConnectionHandler(client, context).start();
-                }
-            }
-            catch (SocketException e)
-            {
-                // We assume this is socket closed.
-            }
+            tcpProcessingThread.start();
+            
+            return serverInfo;
         }
         catch (IOException e)
         {
-            logger.error("Network or I/O error: " + e.getMessage(), e);
+            stop();
+            throw e;
         }
-        finally
-        {
-            Closeables.close(socket);
-            feedbackSocket.close();
-            context.close();
-        }
+    }
 
-        logger.info("Server stopped.");
+    /**
+     * Force stop.
+     */
+    public void stop()
+    {
+        try
+        {
+            Closeables.close(tcpSocket);
+            tcpSocket = null;
+            if (tcpProcessingThread != null) tcpProcessingThread.join();
+    
+            if (udpPacketListener != null) udpPacketListener.close();
+            udpPacketListener = null; 
+            if (udpProcessingThread != null) udpProcessingThread.join();
+
+            if (context != null) context.close();
+            context = null;
+        }
+        catch (InterruptedException e)
+        {
+            // Ignore.
+        }
     }
 
     /**
@@ -261,7 +285,14 @@ public final class GameServer
         final GameServer me = new GameServer();
         if (CmdLine.parseArgs(me, args))
         {
-            me.start();
+            try
+            {
+                me.start();
+            }
+            catch (IOException e)
+            {
+                logger.error("I/O error while starting the server.", e);
+            }
         }
     }
 }

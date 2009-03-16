@@ -77,12 +77,19 @@ public class GameClient
         proxy.addListener(boardFrame);
         boardFrame.addWindowListener(new WindowAdapter()
         {
-            @Override
             public void windowClosed(WindowEvent e)
             {
                 proxy.removeListener(boardFrame);
             }
         });
+    }
+
+    /*
+     * 
+     */
+    public void addListener(IGameEventListener l)
+    {
+        this.proxy.addListener(l);
     }
 
     /**
@@ -97,7 +104,7 @@ public class GameClient
         if (boardFrame != null) boardFrame.setVisible(true);
 
         final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);
-        SerializablePacket p = new SerializablePacket();
+        final SerializablePacket p = new SerializablePacket();
 
         final int PACKET_TIMEOUT = 1000;
         final int INITIAL_RETRIES = 3;
@@ -140,13 +147,5 @@ public class GameClient
         if (soundEffects != null) soundEffects.dispose();
 
         logger.info("Done.");
-    }
-
-    /*
-     * 
-     */
-    public void addListener(IGameEventListener l)
-    {
-        this.proxy.addListener(l);
     }
 }

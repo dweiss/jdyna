@@ -167,7 +167,7 @@ public class BotClient
         client.disconnect();
 
         /*
-         * Create a local listeners - sound, view.
+         * Create local listeners - sound, view.
          */
         if (!noSound) gameClient.attachSound();
         if (!noView) gameClient.attachView(playerName);
@@ -186,7 +186,6 @@ public class BotClient
             try
             {
                 me.start();
-                System.exit(0);
             }
             catch (Exception e)
             {

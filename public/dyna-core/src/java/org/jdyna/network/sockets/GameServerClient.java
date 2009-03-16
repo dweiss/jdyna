@@ -83,6 +83,8 @@ public class GameServerClient
         final UDPPacketListener listener = new UDPPacketListener(udpBroadcastPort);
         SerializablePacket packet = new SerializablePacket();
 
+        if (minServers <= 0) minServers = Integer.MAX_VALUE;
+
         while (minServers > 0)
         {
             final int delay = (int) (deadline - System.currentTimeMillis());

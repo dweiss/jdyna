@@ -5,19 +5,25 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.util.*;
 
 import javax.swing.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.GameSoundEffects;
+import org.jdyna.network.packetio.UDPPacketEmitter;
+import org.jdyna.network.sockets.*;
+import org.jdyna.network.sockets.packets.ServerInfo;
 import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.players.RabbitFactory;
 import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.swing.BoardFrame;
 import org.jdyna.view.swing.SwingUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
@@ -219,8 +225,9 @@ public final class JDyna
         joinGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                joinNetworkGame();
             }
-        });        
+        });
         panel.add(joinGame);
 
         return panel;
@@ -263,6 +270,111 @@ public final class JDyna
             new HumanPlayerFactory(Globals.getDefaultKeyboardController(0), "Player"),
             getBot(bot));        
     }
+    
+    /**
+     * Join an existing game on the local network. 
+     */
+    private void joinNetworkGame()
+    {
+        assert SwingUtilities.isEventDispatchThread();
+
+        /*
+         * Look for existing game servers on the local network. There are a number of 
+         * blocking calls that should be replaced with background SwingWorker later on.
+         */
+        try
+        {
+            List<ServerInfo> servers = GameServerClient.lookup(
+                GameServer.DEFAULT_UDP_BROADCAST, 
+                /* Look for all servers. */ 0,
+                2 * GameServer.AUTO_DISCOVERY_INTERVAL);
+
+            if (servers.size() == 0)
+            {
+                throw new IOException("No active servers in your network.");
+            }
+
+            final List<GameListEntry> games = Lists.newArrayList();
+            for (ServerInfo si : servers)
+            {
+                final GameServerClient gsc = new GameServerClient(si);
+                gsc.connect();
+                for (GameHandle gh : gsc.listGames())
+                {
+                    games.add(new GameListEntry(si, gh));
+                }
+                gsc.disconnect();
+            }
+            
+            GameListEntry gameEntry;
+            if (games.size() == 0) throw new IOException("No active games.");
+            else if (games.size() == 1) gameEntry = games.get(0);
+            else
+            {
+                final Object [] options = games.toArray(new GameListEntry [games.size()]);
+                gameEntry = (GameListEntry) Dialogs.selectOneFromList(frame, 
+                    "Game selection.", "Select the game to join.", null, options);
+                if (gameEntry == null) return;
+            }
+
+            /*
+             * Join the given game.
+             */
+            final String playerName = "Player 2";
+            final IPlayerFactory playerFactory = new HumanPlayerFactory(
+                Globals.getDefaultKeyboardController(0), playerName);
+
+            final GameServerClient client = new GameServerClient(gameEntry.server);
+            client.connect();
+            final PlayerHandle playerHandle = client.joinGame(
+                gameEntry.handle, playerName);
+            client.disconnect();
+
+            /*
+             * Prepare asynchronous player using a loopback connection.
+             */
+            final IPlayerController localController = playerFactory.getController(playerName);
+
+            final UDPPacketEmitter serverUpdater = new UDPPacketEmitter(new DatagramSocket());
+            serverUpdater.setDefaultTarget(
+                Inet4Address.getLocalHost(), gameEntry.server.UDPFeedbackPort);
+
+            final IViewListener viewListener = new IViewListener() {
+                public void viewClosed()
+                {
+                    /* Disconnect from the game. */
+                    showMainGUI();
+                }
+            };
+
+            final GameClient gameClient = new GameClient(gameEntry.handle, gameEntry.server);
+            gameClient.addListener(createView(playerName, viewListener));
+
+            final AsyncPlayerController asyncController = 
+                new AsyncPlayerController(localController);
+            gameClient.addListener(asyncController); 
+            gameClient.addListener(
+                new ControllerStateDispatch(playerHandle, asyncController, serverUpdater));
+
+            new Thread() {
+                public void run()
+                {
+                    try
+                    {
+                        gameClient.runLoop();
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore, not much to do.
+                    }
+                }
+            }.start();
+        }
+        catch (IOException e)
+        {
+            SwingUtils.showExceptionDialog(frame, "Server lookup problems.", e);
+        }
+    }
 
     /**
      * Start a server for a network game. 
@@ -277,9 +389,79 @@ public final class JDyna
         hideMainGUI();
 
         /*
-         * TODO: Start local server, create the game and attach the player to the
-         * server.
+         * Start local server, create the game and attach the player to the server.
          */
+        final GameServer server = new GameServer();
+        server.gameStateLogging = false;
+
+        try
+        {
+            final String playerName = "Player 1";
+            final IPlayerFactory playerFactory = new HumanPlayerFactory(
+                Globals.getDefaultKeyboardController(0), playerName);
+
+            /*
+             * Start the server. 
+             */
+            final ServerInfo serverInfo = server.start();
+            final GameServerClient client = new GameServerClient(serverInfo);
+            client.connect();
+
+            /*
+             * Create a new game on the server. 
+             */
+            final GameHandle gameHandle = client.createGame("Game: " + board.name, board.name);
+            final PlayerHandle playerHandle = client.joinGame(gameHandle, playerName);
+            client.disconnect();
+
+            /*
+             * Prepare asynchronous player using a loopback connection.
+             */
+            final IPlayerController localController = playerFactory.getController(playerName);
+
+            final UDPPacketEmitter serverUpdater = new UDPPacketEmitter(new DatagramSocket());
+            serverUpdater.setDefaultTarget(
+                Inet4Address.getLocalHost(), serverInfo.UDPFeedbackPort);
+
+            final IViewListener viewListener = new IViewListener() {
+                public void viewClosed()
+                {
+                    /* Close the game by shutting down the server */
+                    server.stop();
+                    showMainGUI();
+                }
+            };
+
+            final GameClient gameClient = new GameClient(gameHandle, serverInfo);
+            gameClient.addListener(createView(playerName, viewListener));
+
+            final AsyncPlayerController asyncController = 
+                new AsyncPlayerController(localController);
+            gameClient.addListener(asyncController); 
+            gameClient.addListener(
+                new ControllerStateDispatch(playerHandle, asyncController, serverUpdater));
+
+            new Thread() {
+                public void run()
+                {
+                    try
+                    {
+                        gameClient.runLoop();
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore, not much to do.
+                    }
+                }
+            }.start();
+        }
+        catch (IOException e)
+        {
+            server.stop();
+            showMainGUI();
+            SwingUtils.showExceptionDialog(frame, "Could not start server.", e);
+            return;
+        }
     }
     
     /**
@@ -298,30 +480,25 @@ public final class JDyna
             final String name = pf.getDefaultPlayerName();
             game.addPlayer(new Player(name, pf.getController(name)));
         }
-    
+
         /*
-         * Attach sound effects view to the game.
+         * Attach sound effects to the game.
          */
         if (sound) game.addListener(new GameSoundEffects());
-    
+
         /*
          * Attach a swing display view to the game.
          */
-        final BoardFrame frame = new BoardFrame();
-        game.addListener(frame);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    
         final Thread gameThread = new Thread() {
             @SuppressWarnings("unused")
             public void run()
             {
                 final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
-                SwingUtils.dispose(frame);
             }
         };
-    
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosed(WindowEvent e)
+
+        final IViewListener viewListener = new IViewListener() {
+            public void viewClosed()
             {
                 game.interrupt();
                 try
@@ -335,9 +512,35 @@ public final class JDyna
     
                 showMainGUI();
             }
-        });
-        frame.setVisible(true);
+        };
+        game.addListener(createView(/* no name */ null, viewListener));
+
         gameThread.start();
+    }
+
+    /**
+     * Create a game view for the given player.
+     */
+    private IGameEventListener createView(String playerName, final IViewListener listener)
+    {
+        BoardFrame boardFrame = new BoardFrame();
+        boardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        if (!StringUtils.isEmpty(playerName))
+        {
+            boardFrame.getGamePanel().trackPlayer(playerName);
+        }
+
+        boardFrame.addWindowListener(new WindowAdapter()
+        {
+            public void windowClosed(WindowEvent e)
+            {
+                if (listener != null) listener.viewClosed();
+            }
+        });
+
+        boardFrame.setVisible(true);
+        return boardFrame;
     }
 
     /**
