@@ -28,7 +28,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
-import com.jgoodies.looks.LookUtils;
 import com.jgoodies.looks.Options;
 
 /**
@@ -754,10 +753,7 @@ public final class JDyna
     {
         try
         {
-            final String lafName = LookUtils.IS_OS_WINDOWS_XP ? Options
-                .getCrossPlatformLookAndFeelClassName() : Options
-                .getSystemLookAndFeelClassName();
-
+            final String lafName = Options.getCrossPlatformLookAndFeelClassName();
             UIManager.setLookAndFeel(lafName);
         }
         catch (Exception e)
