@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<jnlp spec="1.0">
+<jnlp spec="1.0" codebase="http://www.jdyna.com/play/">
         <information>
                 <title>JDyna.com</title>
                 <vendor>JDyna.com developers</vendor>
@@ -13,8 +13,7 @@
         </security>
 
         <resources>
-                <j2se href="http://java.sun.com/products/autodl/j2se" 
-                    version="1.6*" initial-heap-size="128M" />
+                <j2se version="1.6*" />
 
                 <jar href="jdyna-core.jar" />
 
@@ -23,7 +22,6 @@
                 <jar href="commons-lang-2.4.jar" />
                 <jar href="google-collections.jar" />
                 <jar href="h2-1.1.105-compressonly.jar" />
-                <jar href="jdyna-core.jar" />
                 <jar href="jgoodies-forms-1.2.1.jar" />
                 <jar href="jgoodies-looks-2.2.1.jar" />
                 <jar href="log4j-1.2.14.jar" />
