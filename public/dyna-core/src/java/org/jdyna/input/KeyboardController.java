@@ -34,7 +34,7 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
     private static HashMap<Integer, Integer> keystrokes = Maps.newHashMap();
 
     /**
-     * Hook into events manager.
+     * Hook into keyboard manager.
      */
     static
     {
@@ -123,7 +123,7 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
     {
         final KeyboardFocusManager km = KeyboardFocusManager
             .getCurrentKeyboardFocusManager();
-
+        
         km.addKeyEventDispatcher(new KeyEventDispatcher()
         {
             public boolean dispatchKeyEvent(KeyEvent e)
@@ -147,8 +147,20 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
                     }
                 }
 
-                e.consume();
-                return true;
+                /*
+                 * We used to consume keyboard events, but since this hook is global
+                 * and static, it consumes everything -- even keyboard actions from
+                 * input components... At the same time we _do_ want a global
+                 * keyboard grabber because we want our players to move regardless of
+                 * the component with active focus. 
+                 */
+
+                /*
+                 * e.consume();
+                 * return true;
+                 */
+
+                return false;
             }
         });
     }
