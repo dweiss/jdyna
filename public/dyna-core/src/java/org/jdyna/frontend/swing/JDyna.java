@@ -20,6 +20,9 @@ import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.players.RabbitFactory;
+import org.jdyna.players.n00b.NoobFactory;
+import org.jdyna.players.stalker.StalkerFactory;
+import org.jdyna.players.tyson.TysonFactory;
 import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.swing.BoardFrame;
 import org.jdyna.view.swing.SwingUtils;
@@ -67,15 +70,13 @@ public final class JDyna
     static
     {
         bots = Maps.newHashMap();
-        
-        final IPlayerFactory [] factories = new IPlayerFactory [] {
-            new RabbitFactory(),
-        };
 
-        for (IPlayerFactory i : factories)
-            bots.put(i.getDefaultPlayerName(), i);
+        bots.put("rabbit (cannon fodder)", new RabbitFactory());  
+        bots.put("stalker (fair)", new StalkerFactory());
+        bots.put("n00b (good)", new NoobFactory());
+        bots.put("tyson (very good)", new TysonFactory());
     }
-    
+
     /*
      * 
      */
@@ -309,7 +310,7 @@ public final class JDyna
 
         final String bot = Dialogs.selectOneFromList(frame,
             "Select opponent", "Select opponent",
-            null, "Rabbit");
+            null, getBotNames());
         if (bot == null) return;
 
         hideMainGUI();
@@ -322,6 +323,14 @@ public final class JDyna
             getBot(bot));        
     }
     
+    /**
+     * Return the names of all bots.
+     */
+    private String [] getBotNames()
+    {
+        return (String []) bots.keySet().toArray(new String [bots.size()]);
+    }
+
     /**
      * Join an existing game on the local network. 
      */

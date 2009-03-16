@@ -504,7 +504,14 @@ public final class Game
         final List<GameEvent> e = Collections.unmodifiableList(events);
         for (IGameEventListener gl : listeners)
         {
-            gl.onFrame(frame, e);
+            try
+            {
+                gl.onFrame(frame, e);
+            }
+            catch (Throwable t)
+            {
+                logger.error("On-frame exception from listener: " + gl.getClass(), t);
+            }
         }
     }
 
