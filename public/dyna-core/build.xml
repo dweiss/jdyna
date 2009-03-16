@@ -94,11 +94,17 @@
 		<fail unless="ftp.user" />
 		<fail unless="ftp.pass" />
 		<fail unless="ftp.path" />
-		
+
+		<ftp password="${ftp.pass}" server="${ftp.server}" userid="${ftp.user}" 
+			passive="true" verbose="true"
+			remotedir="${ftp.path}/play">
+			<fileset dir="${webstart.path}" />
+		</ftp>
+
 		<ftp password="${ftp.pass}" server="${ftp.server}" userid="${ftp.user}" 
 			passive="true" verbose="true"
 			remotedir="${ftp.path}">
-			<fileset dir="${webstart.path}" />
+			<fileset dir="src/website" />
 		</ftp>
 	</target>	
 
