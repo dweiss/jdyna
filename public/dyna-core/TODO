@@ -29,6 +29,8 @@ VIEW
 
 MISC
 
+-   Clean up test code, launchers and other things that have grown on the code.
+
 - 	Visual editor for game boards :]
 
 - 	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
