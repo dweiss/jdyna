@@ -111,7 +111,7 @@ public class GameClient
         long retryDeadline = System.currentTimeMillis() + PACKET_TIMEOUT;
         int retries = INITIAL_RETRIES;
 
-        while (true)
+        while (!Thread.currentThread().isInterrupted())
         {
             SerializablePacket p2 = listener.receive(p, PACKET_TIMEOUT);
 

@@ -150,7 +150,7 @@ public class BotClient
             Inet4Address.getByName(server.serverAddress), server.UDPFeedbackPort);
 
         final String fullName = this.playerName;
-        final String playerName = Player.split(this.playerName)[1];
+        final String playerName = Player.split(this.playerName).playerName;
 
         // Join the remote game.
         final PlayerHandle playerHandle = client.joinGame(handle, fullName);

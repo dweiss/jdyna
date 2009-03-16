@@ -14,6 +14,7 @@ final class GameListEntry
     public GameListEntry(ServerInfo s, GameHandle handle)
     {
         this.server = s;
+        this.handle = handle;
     }
 
     public String toString()
