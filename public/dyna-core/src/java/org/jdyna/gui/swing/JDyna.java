@@ -1,16 +1,17 @@
 package org.jdyna.gui.swing;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.GameSoundEffects;
@@ -158,6 +159,14 @@ public final class JDyna
     {
         final ButtonBarBuilder builder = new ButtonBarBuilder();
         
+        final JButton aboutButton = new JButton("About");
+        aboutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                displayAbout();
+            }
+        });
+
         final JButton quitButton = new JButton("Quit");
         quitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -166,9 +175,44 @@ public final class JDyna
             }
         });
 
+        builder.addFixed(aboutButton);
         builder.addGlue();
         builder.addGridded(quitButton);
         return builder.getPanel();
+    }
+
+    /*
+     * 
+     */
+    protected void displayAbout()
+    {
+        try
+        {
+            final JPanel panel = new JPanel(new BorderLayout(5, 5));
+            panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+    
+            final JTextArea textArea = new JTextArea(20, 80);
+            textArea.setFont(
+                new Font("Monospaced", Font.PLAIN, textArea.getFont().getSize()));
+            textArea.setWrapStyleWord(false);
+            textArea.setLineWrap(false);
+            textArea.setText(IOUtils.toString(getClass().getResourceAsStream("/about.txt"), "UTF-8"));
+            textArea.setEditable(false);
+            textArea.setCaretPosition(0);
+
+            final JScrollPane scroller = new JScrollPane(textArea);
+            scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+            panel.add(scroller, BorderLayout.CENTER);
+            scroller.setBorder(BorderFactory.createEmptyBorder());
+    
+            JOptionPane.showMessageDialog(
+                frame, panel, "About JDyna", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (IOException e)
+        {
+            // Ignore.
+        }
     }
 
     /*

@@ -1,0 +1,16 @@
+JDyna.com
+---------
+
+Java clone of the classic Dyna Blaster (Bomberman) game by Hudson Soft.
+
+This software was created for fun and out of nostalgia only. It is not meant  to
+be sold  or redistributed  in any  way other  than for  playing with  a bunch of
+friends at the office (during lunch breaks of course).
+
+Copyright information
+---------------------
+
+Most of the graphics  and sounds in this  game have been ripped  from an ancient
+"classic" version  of Dyna  Blaster (c)  Hudson soft.  The rest  of the code was
+written from  scratch, only  by looking  at the  behavior of  the original  Dyna
+Blaster.
