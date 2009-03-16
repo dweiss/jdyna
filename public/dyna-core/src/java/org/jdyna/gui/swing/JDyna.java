@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
@@ -124,12 +125,12 @@ public final class JDyna
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        panel.add(createSectionTitleGUI("Local: two-player modes"));
+        panel.add(createSectionTitleGUI("Local play modes"));
         panel.add(Box.createVerticalStrut(2));
         panel.add(createLocalModeGUI());
         panel.add(Box.createVerticalStrut(5));
 
-        panel.add(createSectionTitleGUI("Network: multiplayer modes"));
+        panel.add(createSectionTitleGUI("Network (multiplayer) modes"));
         panel.add(Box.createVerticalStrut(2));
         panel.add(createNetworkModeGUI());
 
@@ -178,7 +179,8 @@ public final class JDyna
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-        final JButton twoPlayersGameButton = new JButton("Human vs. Human");
+        final JButton twoPlayersGameButton = new JButton(getIcon("buttons/human-human.png"));
+        twoPlayersGameButton.setToolTipText("Two human players.");
         twoPlayersGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -189,7 +191,8 @@ public final class JDyna
 
         panel.add(Box.createHorizontalStrut(SPACING));
 
-        final JButton onePlayerGameButton = new JButton("Human vs. Computer");
+        final JButton onePlayerGameButton = new JButton(getIcon("buttons/human-cpu.png"));
+        onePlayerGameButton.setToolTipText("Play against computer.");
         onePlayerGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -209,7 +212,8 @@ public final class JDyna
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-        final JButton startGame = new JButton("Start game");
+        final JButton startGame = new JButton(getIcon("buttons/server-start.png"));
+        startGame.setToolTipText("Start a network game.");
         startGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -220,7 +224,8 @@ public final class JDyna
 
         panel.add(Box.createHorizontalStrut(SPACING));
 
-        final JButton joinGame = new JButton("Join game");
+        final JButton joinGame = new JButton(getIcon("buttons/server-join.png"));
+        joinGame.setToolTipText("Join a network game.");
         joinGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -285,37 +290,86 @@ public final class JDyna
         if (name == null) return;
 
         final PlayerTeamName fullName = new PlayerTeamName(name);
-        
+
         /*
-         * Look for existing game servers on the local network. There are a number of 
-         * blocking calls that should be replaced with background SwingWorker later on.
+         * Display a temporary progress window while looking for network servers
+         * and games.
+         */
+        final JOptionPane information =
+            new JOptionPane("Looking for games on the local network...", 
+            JOptionPane.INFORMATION_MESSAGE);
+        information.setOptions(new Object [] {"Cancel"});
+
+        final JDialog dialog = information.createDialog(frame, "Network scanning...");
+
+        SwingWorker<?, ?> sw = new SwingWorker<List<GameListEntry>, String>()
+        {
+            @Override
+            protected List<GameListEntry> doInBackground() throws Exception
+            {
+                List<ServerInfo> servers = GameServerClient.lookup(
+                    GameServer.DEFAULT_UDP_BROADCAST, 
+                    /* Look for all servers. */ 0,
+                    2 * GameServer.AUTO_DISCOVERY_INTERVAL);
+
+                if (servers.size() == 0)
+                {
+                    return Collections.emptyList();
+                }
+
+                final List<GameListEntry> games = Lists.newArrayList();
+                for (ServerInfo si : servers)
+                {
+                    final GameServerClient gsc = new GameServerClient(si);
+                    gsc.connect();
+                    for (GameHandle gh : gsc.listGames())
+                    {
+                        games.add(new GameListEntry(si, gh));
+                    }
+                    gsc.disconnect();
+                }
+
+                return games;
+            }
+            
+            @Override
+            protected void done()
+            {
+                try
+                {
+                    dialog.dispose();
+                    if (isCancelled()) return;
+                    joinNetworkGame(fullName, get());
+                }
+                catch (ExecutionException e)   
+                {
+                    // Ignore.
+                }
+                catch (InterruptedException e)
+                {
+                    // Ignore.
+                }
+            }
+        };
+        sw.execute();
+
+        // Display a modal dialog box for the duration of server lookup.
+        dialog.setVisible(true);
+        if (information.getValue() != JOptionPane.UNINITIALIZED_VALUE)
+        {
+            sw.cancel(true);
+        }
+    }
+
+    protected void joinNetworkGame(PlayerTeamName fullName, List<GameListEntry> games)
+    {
+        /*
+         * Look for existing game servers on the local network.
          */
         try
         {
-            List<ServerInfo> servers = GameServerClient.lookup(
-                GameServer.DEFAULT_UDP_BROADCAST, 
-                /* Look for all servers. */ 0,
-                2 * GameServer.AUTO_DISCOVERY_INTERVAL);
-
-            if (servers.size() == 0)
-            {
-                throw new IOException("No active servers in your network.");
-            }
-
-            final List<GameListEntry> games = Lists.newArrayList();
-            for (ServerInfo si : servers)
-            {
-                final GameServerClient gsc = new GameServerClient(si);
-                gsc.connect();
-                for (GameHandle gh : gsc.listGames())
-                {
-                    games.add(new GameListEntry(si, gh));
-                }
-                gsc.disconnect();
-            }
-
             GameListEntry gameEntry;
-            if (games.size() == 0) throw new IOException("No active games.");
+            if (games.size() == 0) throw new IOException("No active servers or games.");
             else if (games.size() == 1) gameEntry = games.get(0);
             else
             {
@@ -493,7 +547,7 @@ public final class JDyna
         do
         {
             final String result = JOptionPane.showInputDialog(frame, 
-                "Enter player identifier (team:playerName):", 
+                "Enter player identifier (team:playerName or playerName):", 
                 "Player name", JOptionPane.QUESTION_MESSAGE);
 
             if (StringUtils.isEmpty(result))
@@ -632,6 +686,21 @@ public final class JDyna
     {
         assert SwingUtilities.isEventDispatchThread();
         frame.setVisible(true);
+    }
+
+    /*
+     * 
+     */
+    private Icon getIcon(String resource)
+    {
+        try
+        {
+            return new ImageIcon(ImageUtilities.loadResourceImage(resource));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Could not load resource: " + resource);
+        }
     }
 
     /**
