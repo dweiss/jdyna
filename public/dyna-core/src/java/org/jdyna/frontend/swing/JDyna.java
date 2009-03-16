@@ -1,4 +1,4 @@
-package org.jdyna.gui.swing;
+package org.jdyna.frontend.swing;
 
 import java.awt.*;
 import java.awt.event.*;

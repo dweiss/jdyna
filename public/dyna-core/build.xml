@@ -72,7 +72,9 @@
 		
 		<copy todir="${webstart.path}">
 			<fileset dir="${dist.path}" />
-			<fileset dir="src/webstart" />
+			<fileset dir="src/webstart">
+				<exclude name="**/*.keystore" />
+			</fileset>
 		</copy>
 		<property name="keystore.alias" value="jdyna.com" />
 		<property name="keystore.password" value="jdyna rocks" />

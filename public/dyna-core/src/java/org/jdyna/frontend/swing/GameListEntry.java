@@ -1,4 +1,4 @@
-package org.jdyna.gui.swing;
+package org.jdyna.frontend.swing;
 
 import org.jdyna.network.sockets.GameHandle;
 import org.jdyna.network.sockets.packets.ServerInfo;
