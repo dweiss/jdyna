@@ -7,6 +7,8 @@ This software was created for fun and out of nostalgia only. It is not meant  to
 be sold  or redistributed  in any  way other  than for  playing with  a bunch of
 friends at the office (during lunch breaks of course).
 
+Version @VERSION@, published: @BUILD.TSTAMP@.
+
 
 Copyright information
 ---------------------

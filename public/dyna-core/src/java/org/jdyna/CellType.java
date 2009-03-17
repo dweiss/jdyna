@@ -19,7 +19,9 @@ public enum CellType
     CELL_WALL('#'),
 
     /* Crates (destroyable). */
-    CELL_CRATE('X'), CELL_CRATE_OUT('x'),
+    CELL_CRATE('X'), 
+    CELL_CRATE_OUT('x'),
+    CELL_RANDOM_CRATE('~'),
 
     /* Bomb. */
     CELL_BOMB('b'),

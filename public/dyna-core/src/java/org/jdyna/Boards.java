@@ -126,6 +126,8 @@ public final class Boards
      */
     private static Board buildBoard(BoardSpec boardSpec)
     {
+        final Random random = new Random();
+        
         final Multimap<Character, Point> playerPositions = Multimaps
             .newArrayListMultimap();
         final List<String> lines = boardSpec.lines;
@@ -171,8 +173,15 @@ public final class Boards
                     playerPositions.put(code, new Point(col, row));
                     code = ' ';
                 }
-
-                if (code == 'B')
+                else if (code == CellType.CELL_RANDOM_CRATE.code)
+                {
+                    /*
+                     * Handle random crate fields.
+                     */
+                    code = (random.nextBoolean() 
+                        ? CellType.CELL_CRATE.code : CellType.CELL_EMPTY.code); 
+                }
+                else if (code == 'B')
                 {
                     /*
                      * Special bomb with a very large fuse limit (seems not to explode on
@@ -181,10 +190,36 @@ public final class Boards
                     final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
                     bomb.fuseCounter = Integer.MAX_VALUE;
                     cells[col][row] = bomb;
+                    continue;
                 }
-                else
+
+                cells[col][row] = Cell.getInstance(CellType.valueOf(code));
+            }
+        }
+        
+        /*
+         * Random crate assignment can result in a player being blocked in a dead-hole.
+         * Give each player some room.
+         */
+        for (Point position : playerPositions.values())
+        {
+            final Point [] offsets = new Point [] {
+                new Point(-1, 0), new Point(1, 0),
+                new Point(1, 0),  new Point(-1, 0),
+                new Point(0, -1), new Point(0, 1),
+                new Point(0, 1),  new Point(0, -1),
+            };
+
+            for (int i = 0; i < offsets.length;)
+            {
+                final Point source = offsets[i++];
+                final Point target = offsets[i++];
+                
+                if (cells[position.x + source.x][position.y + source.y].type == CellType.CELL_CRATE
+                    && cells[position.x - target.x][position.y + target.y].type != CellType.CELL_EMPTY)
                 {
-                    cells[col][row] = Cell.getInstance(CellType.valueOf(code));
+                    cells[position.x + source.x][position.y + source.y] = 
+                        Cell.getInstance(CellType.CELL_EMPTY);          
                 }
             }
         }

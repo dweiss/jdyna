@@ -1,7 +1,7 @@
 
 VERSION 0.91
 
-    - Added random layout of crates ('*' brick).
+    - Added random layout of crates ('~' brick).
 
     - Corrected links in the about section [Krzysztof Kaźmierczyk].
 
