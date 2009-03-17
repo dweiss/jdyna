@@ -1,9 +1,13 @@
 
+VERSION 0.93
+
+	- Added support for OpenAL audio engine.
+
 VERSION 0.92
 
 	- Added persistent (.jdyna.xml in home folder) configuration.
 
-	- Added sound engine configuration switch and support for Java Audio. 
+	- Added sound engine configuration switch and support for Java Audio.
 
 VERSION 0.91
 

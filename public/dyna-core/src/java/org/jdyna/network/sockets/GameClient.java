@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.*;
-import org.jdyna.audio.jxsound.GameSoundEffects;
+import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.UDPPacketListener;
 import org.jdyna.network.sockets.packets.FrameData;
@@ -30,7 +30,7 @@ public class GameClient implements IGameEventListenerHolder
     private final ServerInfo server;
     private final GameEventListenerMultiplexer proxy = new GameEventListenerMultiplexer();
 
-    private GameSoundEffects soundEffects;
+    private JavaSoundSFX soundEffects;
     private BoardFrame boardFrame;
 
     /*
@@ -49,7 +49,7 @@ public class GameClient implements IGameEventListenerHolder
     {
         if (soundEffects != null) throw new RuntimeException("Already attached.");
 
-        soundEffects = new GameSoundEffects();
+        soundEffects = new JavaSoundSFX();
         proxy.addListener(soundEffects);
     }
 

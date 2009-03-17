@@ -18,5 +18,8 @@
 	<classpathentry kind="lib" path="lib/runtime/jgoodies-looks-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jgoodies-forms-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/simple-xml-1.7.2.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jinput.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/lwjgl_util.jar"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>

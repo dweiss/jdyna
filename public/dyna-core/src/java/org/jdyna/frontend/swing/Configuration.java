@@ -19,14 +19,16 @@ public class Configuration
     public static enum SoundEngine 
     {
         NONE,
-        JAVA_AUDIO;
-        
+        JAVA_AUDIO,
+        OPEN_AL;
+
         public String toString()
         {
             switch (this)
             {
                 case NONE: return "<disabled>";
                 case JAVA_AUDIO: return "Java Audio API";
+                case OPEN_AL: return "OpenAL";
             }
             throw new RuntimeException("Unreachable.");
         }
@@ -36,7 +38,7 @@ public class Configuration
      * Enable sounds effects?
      */
     @Element(name = "sound-engine", required = true)
-    public SoundEngine soundEngine = SoundEngine.JAVA_AUDIO;
+    public SoundEngine soundEngine = SoundEngine.OPEN_AL;
 
     /**
      * Remember most recent board selection.

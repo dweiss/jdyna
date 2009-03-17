@@ -15,7 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.jdyna.*;
-import org.jdyna.audio.jxsound.GameSoundEffects;
+import org.jdyna.audio.jxsound.JavaSoundSFX;
+import org.jdyna.audio.openal.OpenALSFX;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
@@ -750,9 +751,9 @@ public final class JDyna
     {
         for (IGameEventListener listener : holder.getListeners())
         {
-            if (listener instanceof GameSoundEffects)
+            if (listener instanceof JavaSoundSFX)
             {
-                ((GameSoundEffects) listener).dispose();
+                ((JavaSoundSFX) listener).dispose();
             }
             else if (listener instanceof BoardFrame)
             {
@@ -771,7 +772,8 @@ public final class JDyna
             switch (config.soundEngine)
             {
                 case NONE:  return null;
-                case JAVA_AUDIO: return new GameSoundEffects();
+                case JAVA_AUDIO: return new JavaSoundSFX();
+                case OPEN_AL: return new OpenALSFX();
                 default:
                     throw new RuntimeException("Unexpected audio engine: " + config.soundEngine);
             }

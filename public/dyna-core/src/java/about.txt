@@ -60,3 +60,6 @@ This software uses JGoodies library:
   
 This software uses SimpleXML:
   http://simple.sourceforge.net
+
+This software uses OpenAL and LWJGL:
+  http://lwjgl.org

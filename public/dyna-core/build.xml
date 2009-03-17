@@ -107,7 +107,22 @@
 				<exclude name="**/*.keystore" />
 			</fileset>
 		</copy>
+		
+		<mkdir dir="${website.path}/play/native/win32" />
+		<jar destfile="${website.path}/play/native/win32/lwjgl.jar">
+			<fileset dir="lib/native/win32" />
+		</jar>
 
+		<mkdir dir="${website.path}/play/native/macosx" />
+		<jar destfile="${website.path}/play/native/macosx/lwjgl.jar">
+			<fileset dir="lib/native/macosx" />
+		</jar>
+
+		<mkdir dir="${website.path}/play/native/linux" />
+		<jar destfile="${website.path}/play/native/linux/lwjgl.jar">
+			<fileset dir="lib/native/linux" />
+		</jar>
+				
 		<property name="keystore.alias" value="jdyna.com" />
 		<property name="keystore.password" value="jdyna rocks" />
 		<property name="keystore" value="src/webstart/jdyna.com.keystore" />

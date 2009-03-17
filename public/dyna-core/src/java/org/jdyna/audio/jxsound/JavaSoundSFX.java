@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 /**
  * Sound listener and player based on Java's built-in <code>javax.sound</code> package. 
  */
-public final class GameSoundEffects implements IGameEventListener
+public final class JavaSoundSFX implements IGameEventListener
 {
     /**
      * Audio manager for this listener.
@@ -23,7 +23,7 @@ public final class GameSoundEffects implements IGameEventListener
     /**
      * Load the default samples. 
      */
-    public GameSoundEffects()
+    public JavaSoundSFX()
     {
         final EnumMap<SoundEffect, List<Clip>> clips = Maps.newEnumMap(SoundEffect.class);
 

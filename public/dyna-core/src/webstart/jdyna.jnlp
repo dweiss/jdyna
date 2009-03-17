@@ -40,7 +40,42 @@
                 <jar href="log4j-1.2.14.jar" />
                 <jar href="slf4j-api-1.5.6.jar" />
                 <jar href="slf4j-log4j12-1.5.6.jar" />
-		<jar href="simple-xml-1.7.2.jar" />
+				<jar href="simple-xml-1.7.2.jar" />
+				<jar href="jinput.jar" />
+				<jar href="lwjgl.jar" />
+				<jar href="lwjgl_util.jar" />
+        </resources>
+
+        <resources os="Win">
+                <nativelib href="native/win32/lwjgl.jar" />
+        </resources>
+
+        <resources os="Mac OS X" arch="ppc">
+                <nativelib href="native/macosx/lwjgl.jar" />
+        </resources>
+
+        <resources os="Mac OS X" arch="i386">
+                <nativelib href="native/macosx/lwjgl.jar" />
+        </resources>
+
+        <resources os="Mac OS X" arch="x86_64">
+                <nativelib href="native/macosx/lwjgl.jar" />
+        </resources>
+
+        <resources os="Linux" arch="i386">
+                <nativelib href="native/linux/lwjgl.jar" />
+        </resources>
+
+        <resources os="Linux" arch="x86">
+                <nativelib href="native/linux/lwjgl.jar" />
+        </resources>
+
+        <resources os="Linux" arch="amd64">
+                <nativelib href="native/linux/lwjgl.jar" />
+        </resources>
+
+        <resources os="Linux" arch="x86_64">
+                <nativelib href="native/linux/lwjgl.jar" />
         </resources>
 
         <application-desc main-class="org.jdyna.frontend.swing.JDyna" />

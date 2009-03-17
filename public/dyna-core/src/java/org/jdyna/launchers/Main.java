@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
-import org.jdyna.audio.jxsound.GameSoundEffects;
+import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.serialization.GameWriter;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public final class Main
         /*
          * Attach sounds view to the game.
          */
-        game.addListener(new GameSoundEffects());
+        game.addListener(new JavaSoundSFX());
 
         /*
          * Attach game progress saver.
