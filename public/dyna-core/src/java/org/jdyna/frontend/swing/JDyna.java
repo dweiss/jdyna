@@ -2,8 +2,7 @@ package org.jdyna.frontend.swing;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.List;
@@ -11,8 +10,10 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.GameSoundEffects;
 import org.jdyna.network.packetio.UDPPacketEmitter;
@@ -54,14 +55,9 @@ public final class JDyna
     private Boards boards;
 
     /**
-     * Enable sounds effects?
+     * Configuration settings.
      */
-    private boolean sound = false;
-
-    /**
-     * Remember most recent board selection.
-     */
-    private String mostRecentBoard = "classic";
+    private Configuration config = new Configuration();
 
     /**
      * Bots.
@@ -97,12 +93,25 @@ public final class JDyna
         }
 
         /*
+         * Load previously saved configuration.
+         */
+        final File configSettings = new File(SystemUtils.getUserHome(), ".jdyna.xml");
+        try
+        {
+            config = Configuration.load(
+                new FileInputStream(configSettings));
+        }
+        catch (IOException e)
+        {
+            // Ignore and stay with defaults.
+        }
+
+        /*
          * Initialize the main GUI.
          */
         frame = new JFrame("JDyna.com");
         frame.getContentPane().add(createMainPanelGUI());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationByPlatform(true);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         try
         {
@@ -113,8 +122,35 @@ public final class JDyna
             // Ignore if icon not found.
         }
 
-        frame.pack();
-        frame.setVisible(true);
+        /*
+         * Save settings on shutdown.
+         */
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosed(WindowEvent e)
+            {
+                try
+                {
+                    FileUtils.writeStringToFile(configSettings, 
+                        config.save(), "UTF-8");
+                }
+                catch (IOException x)
+                {
+                    // Ignore if could not save.
+                }
+            }
+        });
+
+        /*
+         * From the dispatcher thread, center the frame and show it.
+         */
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                frame.pack();
+                SwingUtils.centerFrameOnScreen(frame);
+                frame.setVisible(true);
+            }
+        });
     }
 
     /*
@@ -167,6 +203,14 @@ public final class JDyna
             }
         });
 
+        final JButton configureButton = new JButton("Configure");
+        configureButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                displayConfiguration();
+            }
+        });
+
         final JButton quitButton = new JButton("Quit");
         quitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -176,9 +220,23 @@ public final class JDyna
         });
 
         builder.addFixed(aboutButton);
+        builder.addRelatedGap();
+        builder.addFixed(configureButton);
+        builder.addUnrelatedGap();
         builder.addGlue();
         builder.addGridded(quitButton);
         return builder.getPanel();
+    }
+
+    /*
+     * 
+     */
+    private void displayConfiguration()
+    {
+        assert SwingUtilities.isEventDispatchThread();
+
+        final ConfigurationDialog configDialog = new ConfigurationDialog(config);
+        config = configDialog.prompt(frame);
     }
 
     /*
@@ -467,6 +525,7 @@ public final class JDyna
                         // Ignore, not much to do.
                     }
 
+                    cleanupListeners(gameClient);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() { showMainGUI(); }
                     });
@@ -480,6 +539,9 @@ public final class JDyna
                     gameClientThread.interrupt();
                 }
             };
+
+            final IGameEventListener audio = createAudioEngine();
+            if (audio != null) gameClient.addListener(audio);
 
             gameClient.addListener(createView(fullName.playerName, viewListener));
 
@@ -548,16 +610,21 @@ public final class JDyna
             serverUpdater.setDefaultTarget(
                 Inet4Address.getLocalHost(), serverInfo.UDPFeedbackPort);
 
+            final GameClient gameClient = new GameClient(gameHandle, serverInfo);
+
             final IViewListener viewListener = new IViewListener() {
                 public void viewClosed()
                 {
                     /* Close the game by shutting down the server */
                     server.stop();
+                    cleanupListeners(gameClient);
                     showMainGUI();
                 }
             };
-
-            final GameClient gameClient = new GameClient(gameHandle, serverInfo);
+            
+            final IGameEventListener audio = createAudioEngine();
+            if (audio != null) gameClient.addListener(audio);
+            
             gameClient.addListener(createView(fullName.playerName, viewListener));
 
             final AsyncPlayerController asyncController = 
@@ -637,7 +704,11 @@ public final class JDyna
         /*
          * Attach sound effects to the game.
          */
-        if (sound) game.addListener(new GameSoundEffects());
+        final IGameEventListener audio = createAudioEngine();
+        if (audio != null)
+        {
+            game.addListener(audio);
+        }
 
         /*
          * Attach a swing display view to the game.
@@ -662,13 +733,54 @@ public final class JDyna
                 {
                     throw new RuntimeException();
                 }
-    
+
+                cleanupListeners(game);
                 showMainGUI();
             }
         };
         game.addListener(createView(highlightPlayer, viewListener));
-
         gameThread.start();
+    }
+
+    /**
+     * Cleanup (dispose) any listeners that we know should be disposed after a given
+     * game is finished. 
+     */
+    private void cleanupListeners(IGameEventListenerHolder holder)
+    {
+        for (IGameEventListener listener : holder.getListeners())
+        {
+            if (listener instanceof GameSoundEffects)
+            {
+                ((GameSoundEffects) listener).dispose();
+            }
+            else if (listener instanceof BoardFrame)
+            {
+                SwingUtils.dispose((BoardFrame) listener);
+            }
+        }
+    }
+
+    /**
+     * Create audio engine according to the current settings. 
+     */
+    private IGameEventListener createAudioEngine()
+    {
+        try
+        {
+            switch (config.soundEngine)
+            {
+                case NONE:  return null;
+                case JAVA_AUDIO: return new GameSoundEffects();
+                default:
+                    throw new RuntimeException("Unexpected audio engine: " + config.soundEngine);
+            }
+        }
+        catch (Throwable t)
+        {
+            SwingUtils.showExceptionDialog(frame, "Audio engine initialization failed.", t);
+            return null;
+        }
     }
 
     /**
@@ -676,7 +788,7 @@ public final class JDyna
      */
     private IGameEventListener createView(String playerName, final IViewListener listener)
     {
-        BoardFrame boardFrame = new BoardFrame();
+        final BoardFrame boardFrame = new BoardFrame();
         boardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         if (!StringUtils.isEmpty(playerName))
@@ -714,11 +826,11 @@ public final class JDyna
 
         String boardName = Dialogs.selectOneFromList(frame,
             "Select game board", "Select game board",
-            mostRecentBoard,
+            config.mostRecentBoard,
             (String []) boardNames.toArray(new String [boardNames.size()]));
-        
+
         if (boardName == null) return null;
-        mostRecentBoard = boardName;
+        config.mostRecentBoard = boardName;
         return boards.get(boardName);
     }
 

@@ -1,10 +1,8 @@
 package org.jdyna.network.sockets;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import org.jdyna.GameEvent;
-import org.jdyna.IGameEventListener;
+import org.jdyna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +11,7 @@ import com.google.common.collect.Lists;
 /**
  * A multiplexer of events from one {@link IGameEventListener} source to multiple clients.
  */
-public final class GameEventListenerMultiplexer implements IGameEventListener
+public final class GameEventListenerMultiplexer implements IGameEventListener, IGameEventListenerHolder
 {
     private final static Logger logger = LoggerFactory
         .getLogger(GameEventListenerMultiplexer.class);
@@ -54,8 +52,18 @@ public final class GameEventListenerMultiplexer implements IGameEventListener
     /*
      * 
      */
+    @Override
     public synchronized void removeListener(IGameEventListener l)
     {
         listeners.remove(l);
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public Collection<IGameEventListener> getListeners()
+    {
+        return Collections.unmodifiableList(listeners);
     }
 }

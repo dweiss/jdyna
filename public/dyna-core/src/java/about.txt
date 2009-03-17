@@ -57,3 +57,6 @@ This software uses Google Collections:
 
 This software uses JGoodies library:
   http://www.jgoodies.com 
+  
+This software uses SimpleXML:
+  http://simple.sourceforge.net

@@ -4,6 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.*;
@@ -20,11 +21,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A set of utilities facilitating running a remote {@link Game} over the network.
  */
-public class GameClient
+public class GameClient implements IGameEventListenerHolder 
 {
-    /**
-     * Internal logger.
-     */
+    /** Internal logger. */
     private final static Logger logger = LoggerFactory.getLogger(GameClient.class);
 
     private final GameHandle gameHandle;
@@ -147,5 +146,23 @@ public class GameClient
         if (soundEffects != null) soundEffects.dispose();
 
         logger.info("Done.");
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public Collection<IGameEventListener> getListeners()
+    {
+        return proxy.getListeners();
+    }
+
+    /*
+     * 
+     */
+    @Override
+    public void removeListener(IGameEventListener l)
+    {
+        throw new UnsupportedOperationException("Not implemented on this object.");
     }
 }

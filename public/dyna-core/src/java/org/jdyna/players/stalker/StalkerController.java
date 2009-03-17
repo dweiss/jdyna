@@ -301,6 +301,9 @@ class StalkerController implements IGameEventListener, IPlayerController
                 String [] playerNames = getPlayerNames(p);
                 for (String playerName : playerNames)
                 {
+                    // [NPE]
+                    if (!ranges.containsKey(playerName)) ranges.put(playerName, 0);
+
                     ranges.put(playerName, ranges.get(playerName) + 1);
                 }
                 collectedBonuses.add(p);

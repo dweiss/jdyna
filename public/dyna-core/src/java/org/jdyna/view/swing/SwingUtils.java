@@ -366,7 +366,7 @@ public final class SwingUtils
     /**
      * Schedule disposal of a frame (async).
      */
-    public static void dispose(final BoardFrame frame)
+    public static void dispose(final JFrame frame)
     {
         SwingUtilities.invokeLater(new Runnable() {
             public void run()

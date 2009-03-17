@@ -5,13 +5,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.IPlayerController.Direction;
@@ -27,7 +21,7 @@ import com.google.common.collect.Sets;
  * Game controller. The controller and <b>all the objects involved in the game</b> are
  * single-threaded and should be accessed from within the game loop only.
  */
-public final class Game
+public final class Game implements IGameEventListenerHolder
 {
     private final static Logger logger = LoggerFactory.getLogger(Game.class); 
 
@@ -987,5 +981,14 @@ public final class Game
     private boolean isDeathMatch()
     {
         return mode == Mode.DEATHMATCH || mode == Mode.INFINITE_DEATHMATCH;
+    }
+
+    /**
+     * Returns all subscribers of events.
+     */
+    @Override
+    public Collection<IGameEventListener> getListeners()
+    {
+        return Collections.unmodifiableList(listeners);
     }
 }
