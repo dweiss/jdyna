@@ -40,10 +40,18 @@ Bots (artificial intelligence):
 Open source acknowledgments
 ---------------------------
 
-This software uses software developed by the Apache Foundation.
+This software uses software developed by the Apache Foundation:
+  http://commons.apache.org
+  http://logging.apache.org/log4j
 
-This software uses args4j, https://args4j.dev.java.net/.
+This software uses slf4j:
+  http://www.slf4j.org
 
-This software uses Google Collections.
+This software uses args4j:
+  https://args4j.dev.java.net
 
-This software uses JGoodies library, http://www.jgoodies.org. 
+This software uses Google Collections:
+  http://code.google.com/p/google-collections/
+
+This software uses JGoodies library:
+  http://www.jgoodies.com 
