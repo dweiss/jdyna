@@ -70,10 +70,10 @@
             implementation everything should work on compatible Java virtual machines. The
             performance of Java2D (drawing) engine may vary from platform to platform though.</li>
             
-            <li><b>Sound does not work.</b> Java Sound API is somewhat crippled and sound
-            is currently disabled. We do have it implemented, but it will be enabled when
-            it works properly (on all platforms).</li>
-            
+            <li><b>Sound does not work.</b> Java Sound API is somewhat crippled and uses hardware audio
+	    devices on certain platforms (it does not use high-level mixers like ALSA). We are working
+	    on this.</li>
+
             <li><b>Where is the source code?</b> Unfortunately we cannot release source
             code to JDyna at this moment. If you're interested in development, however,
             feel free to get in touch.</li>
