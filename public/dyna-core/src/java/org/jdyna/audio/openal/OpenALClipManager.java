@@ -16,6 +16,7 @@ import org.lwjgl.util.WaveData;
  * 
  * TODO: static initialization is brrr...
  * TODO: there is no disposal of clip manager (ever).
+ * TODO: how does OpenAL handle multi-threaded calls?
  */
 public final class OpenALClipManager<T extends Enum<T>>
 {

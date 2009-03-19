@@ -11,7 +11,7 @@ import org.lwjgl.util.WaveData;
 import com.google.common.collect.Maps;
 
 /**
- * Sound listener and player based on Java's built-in <code>javax.sound</code> package.
+ * Sound listener and player based on OpenAL library (native).
  */
 public final class OpenALSFX implements IGameEventListener
 {
