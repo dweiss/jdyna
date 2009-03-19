@@ -120,7 +120,7 @@ public final class TeamScorePanel extends JPanel implements IGameEventListener
         table.setPreferredScrollableViewportSize(new Dimension(50, 70));
         table.setFillsViewportHeight(true);
         table.setAutoCreateRowSorter(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        SwingUtils.disableSelection(table);
         this.model.updateColumns(table.getColumnModel());
 
         final JScrollPane scrollPane = new JScrollPane(table);

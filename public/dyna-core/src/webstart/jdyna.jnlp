@@ -28,22 +28,7 @@
         <resources>
                 <j2se version="1.6+" />
 
-                <jar href="jdyna-core.jar" />
-
-                <jar href="args4j-2.0.9.jar" />
-                <jar href="commons-io-1.4.jar" />
-                <jar href="commons-lang-2.4.jar" />
-                <jar href="google-collections.jar" />
-                <jar href="h2-1.1.105-compressonly.jar" />
-                <jar href="jgoodies-forms-1.2.1.jar" />
-                <jar href="jgoodies-looks-2.2.1.jar" />
-                <jar href="log4j-1.2.14.jar" />
-                <jar href="slf4j-api-1.5.6.jar" />
-                <jar href="slf4j-log4j12-1.5.6.jar" />
-				<jar href="simple-xml-1.7.2.jar" />
-				<jar href="jinput.jar" />
-				<jar href="lwjgl.jar" />
-				<jar href="lwjgl_util.jar" />
+                <jar href="jdyna.jar" />
         </resources>
 
         <resources os="Win">

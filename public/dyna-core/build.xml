@@ -4,6 +4,8 @@
 	<property name="build.path" location="${tmp.path}/classes-core" />
 	<property name="dist.path" location="${tmp.path}/dist" />
 	<property name="website.path" location="${tmp.path}/webstart" />
+	<property name="obfuscated.dir" location="${tmp.path}/obfuscated" />
+
     <property file="VERSION" />
 	
     <tstamp>
@@ -22,17 +24,17 @@
 
 	<!-- Paths and filesets. -->
 
+	<fileset dir="lib" includes="runtime*/*.jar" id="classpath.runtime" />
 	<path id="classpath.compile">
-		<fileset id="libs" dir=".">
-			<include name="lib/**/*.jar" />
-		</fileset>
+		<fileset refid="classpath.runtime" />
 	</path>
 
-	<fileset dir="lib" includes="runtime*/*.jar" id="classpath.runtime" />
-
 	<target name="clean" description="Clean generated files.">
-		<delete dir="${build.path}" />
-		<delete dir="${dist.path}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${tmp.path}">
+				<exclude name="eclipse/**" />
+			</fileset>
+		</delete>
 	</target>
 
 	<target name="compile" description="Compile source code.">
@@ -65,28 +67,14 @@
 	<target name="jar" depends="compile" description="Compile the core JAR.">
 		<mkdir dir="${dist.path}" />
 
-		<pathconvert property="manifest.libs" pathsep=" ">
-			<mapper>
-				<chainedmapper>
-					<flattenmapper />
-				</chainedmapper>
-			</mapper>
-			<fileset refid="classpath.runtime" />
-		</pathconvert>
-
-		<jar jarfile="${dist.path}/jdyna-core.jar" basedir="${build.path}">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Class-Path" value="${manifest.libs}" />
-			</manifest>
-		</jar>
+		<jar jarfile="${dist.path}/jdyna-core.jar" basedir="${build.path}" />
 
 		<copy todir="${dist.path}" flatten="true">
 			<fileset refid="classpath.runtime" />
 		</copy>
 	</target>
 	
-	<target name="webstart" depends="dist">
+	<target name="webstart" depends="obfuscate">
 		<mkdir dir="${website.path}" />
 
         <copy todir="${website.path}">
@@ -102,7 +90,7 @@
         </copy>
 
 		<copy todir="${website.path}/play">
-			<fileset dir="${dist.path}" />
+			<fileset dir="${obfuscated.dir}" includes="*.jar" />
 			<fileset dir="src/webstart">
 				<exclude name="**/*.keystore" />
 			</fileset>
@@ -133,6 +121,39 @@
 			</fileset>
 	   	</signjar>
 	</target>
+
+	<target name="obfuscate" depends="jar">
+        <available file="${java.home}/lib/rt.jar" property="rt.libs.available" type="file" value="true" />
+        <fail unless="rt.libs.available">Runtime Java libraries are needed for obfuscation. They are not found in the default path: ${java.home}/lib</fail>
+
+        <mkdir dir="${obfuscated.dir}" />
+
+        <pathconvert property="include.jars">
+            <path refid="classpath.compile" />
+       	</pathconvert>
+
+        <pathconvert property="library.jars">
+            <path location="${java.home}/lib/rt.jar" />
+        </pathconvert>
+
+        <echo file="${obfuscated.dir}/jdyna.pro"><![CDATA[
+            -printmapping ${obfuscated.dir}/obfuscation-mapping.txt
+            -printseeds ${obfuscated.dir}/obfuscation-seeds.txt
+
+            -injar ${dist.path}/jdyna-core.jar
+            -injar ${include.jars}
+            -libraryjar ${library.jars}
+
+            -outjar ${obfuscated.dir}/jdyna.jar
+
+            @${basedir}/etc/obfuscation.pro
+        ]]>    
+        </echo>
+
+        <java jar="lib/proguard.jar" fork="true" maxmemory="256m">
+            <arg value="@${obfuscated.dir}/jdyna.pro" />
+        </java>
+	</target>	
 	
 	<target name="publish" depends="webstart">
 		<property file="local.properties" />
@@ -148,6 +169,4 @@
 			<fileset dir="${website.path}" />
 		</ftp>
 	</target>	
-
-	<target name="dist" depends="jar" />
 </project>

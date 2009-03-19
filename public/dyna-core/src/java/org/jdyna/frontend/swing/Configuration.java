@@ -60,6 +60,7 @@ public class Configuration
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new IOException("Could not save configuration.", e);
         }
     }

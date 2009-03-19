@@ -1,4 +1,12 @@
 
+VERSION <HEAD>
+
+VERSION 0.94
+
+	- Corrected selection/ focus on score boards.
+
+	- Added obfuscation/ trimming to the output JAR.
+
 VERSION 0.93
 
 	- Added support for OpenAL audio engine.
