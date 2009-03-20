@@ -18,8 +18,6 @@ EVENTS/ NETWORKING
 
 SOUND
 
-- 	Add a sound player view based on  lwjgl.org.
-
 -   There is something screwy in javax.audio (how many mixed samples can be replayed
     at once?). Would interrupt-and-replay work better?
 
@@ -31,9 +29,9 @@ MISC
 
 -   Clean up test code, launchers and other things that have grown on the code.
 
-- 	Visual editor for game boards :]
+-   Visual editor for game boards :]
 
-- 	J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
+-   J2ME view implementation. Bluetooth, internet, ad-hoc gaming modes.
 
-- 	Eclipse view implementation (plugin :).
+-   Eclipse view implementation (plugin :).
 
