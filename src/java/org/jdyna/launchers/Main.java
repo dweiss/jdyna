@@ -43,7 +43,7 @@ public final class Main
         /*
          * Set up a single game between two players.
          */
-        final Board board = boards.get("classic");
+        final Board board = boards.get("classic-random");
 
         final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
         final IPlayerController c2 = Globals.getDefaultKeyboardController(1);
