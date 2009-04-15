@@ -40,7 +40,8 @@
 	<target name="compile" description="Compile source code.">
 		<mkdir dir="${build.path}" />
 
-		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no">
+		<javac destdir="${build.path}" debug="${debug}" optimize="${optimize}" deprecation="on" includeAntRuntime="no" includeJavaRuntime="no"
+		    encoding="UTF-8">
 			<src location="${src.java}" />
 			<classpath refid="classpath.compile" />
 		</javac>
