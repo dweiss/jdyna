@@ -1,8 +1,6 @@
 package org.jdyna.serialization;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -48,6 +46,10 @@ public final class GameReader
                 }
                 events.add(e);
             }
+        }
+        catch (EOFException e)
+        {
+            return false;
         }
         catch (ClassNotFoundException e)
         {
