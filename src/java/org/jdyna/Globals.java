@@ -102,6 +102,13 @@ public final class Globals
      * The default number of lives a player has in the {@link Game.Mode#DEATHMATCH} mode.
      */
     public static final int DEFAULT_LIVES = intProperty("dyna.lives", 3);
+    
+    /**
+     * The default number of frames diarrhea occurs.
+     * It is a bit lower than {@link Globals#DEFAULT_FUSE_FRAMES} so that
+     * player can avoid self-destruction when having many bombs collected.
+     */
+    public static final int DEFAULT_DIARRHEA_FRAMES = DEFAULT_FUSE_FRAMES - 20;
 
     /*
      * 

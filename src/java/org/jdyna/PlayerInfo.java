@@ -52,6 +52,11 @@ final class PlayerInfo implements IPlayerSprite
      * Bomb range for this player. Assigned to {@link BombCell#range}.
      */
     int bombRange = Globals.DEFAULT_BOMB_RANGE;
+    
+    /**
+     * Frame number after which diarrhea bonus ends for the player.
+     */
+    int diarrheaEndsAtFrame = Integer.MIN_VALUE;
 
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this

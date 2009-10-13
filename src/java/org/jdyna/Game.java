@@ -99,8 +99,9 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Bonus cells assigned every {@link #bonusPeriod}.
      */
-    private final static List<CellType> BONUSES = 
-        Arrays.asList(CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE);
+    private final static List<CellType> BONUSES = Arrays.asList(
+			CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
+			CellType.CELL_BONUS_DIARRHEA);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -566,6 +567,11 @@ public final class Game implements IGameEventListenerHolder
              * check collisions against bombs and other active cells.
              */
             checkCollisions(frame, killed, pi);
+            
+            /*
+             * execute bonuses that player doesn't have influence on.
+             */
+            executeBonuses(frame, pi);
         }
         
         /*
@@ -656,6 +662,12 @@ public final class Game implements IGameEventListenerHolder
             pi.bombRange++;
             bonusCollected = true;
         }
+        
+        if (c.type == CellType.CELL_BONUS_DIARRHEA)
+        {
+        	pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
+        	bonusCollected = true;
+        }
 
         if (bonusCollected)
         {
@@ -664,6 +676,17 @@ public final class Game implements IGameEventListenerHolder
             events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
         }
     }
+    
+    /**
+	 * Execute bonuses that aren't controlled by the player, like diarrhea.
+	 */
+    private void executeBonuses(int frame, PlayerInfo pi)
+	{
+		if (pi.diarrheaEndsAtFrame > frame)
+		{
+			dropBombAttempt(frame, pi);
+		}
+	}
 
     /**
      * Attempt to drop a bomb at the given location (if the player has any bombs left

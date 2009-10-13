@@ -110,6 +110,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_RANGE, 4, sb2.tile(new int [][] {
                 {1, 0}, {4, 0} })
             ),
+            create(CellType.CELL_BONUS_DIARRHEA, 4, sb2.tile(new int [][] {
+            	{6, 0}, {7, 0} })
+            ),
         });
 
         /*
