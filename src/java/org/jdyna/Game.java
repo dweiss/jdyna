@@ -92,9 +92,19 @@ public final class Game implements IGameEventListenerHolder
     private int bonusPeriod = Globals.DEFAULT_BONUS_PERIOD;
 
     /**
-     * Last time a bonus was added to the board.
+     * The next time a bonus will be added to the board.
      */
-    private int lastBonusFrame;
+    private int nextBonusFrame;
+
+    /**
+     * The period after which a crate should be randomly placed on the board.
+     */
+    private int cratePeriod = Globals.DEFAULT_CRATE_PERIOD;
+
+    /**
+     * The next time a crate will be added to the board.
+     */
+    private int nextCrateFrame;
 
     /**
      * Bonus cells assigned every {@link #bonusPeriod}.
@@ -216,7 +226,8 @@ public final class Game implements IGameEventListenerHolder
     {
         this.mode = mode;
 
-        lastBonusFrame = bonusPeriod;
+        nextBonusFrame = bonusPeriod;
+        nextCrateFrame = cratePeriod;
 
         int frame = 0;
         GameResult result = null;
@@ -252,6 +263,7 @@ public final class Game implements IGameEventListenerHolder
                 processBoardCells();
                 processPlayers(frame);
                 processBonuses(frame);
+                processCrates(frame);
 
                 events.add(new GameStateEvent(board.cells, playerInfos));
                 
@@ -311,7 +323,7 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processBonuses(int frame)
     {
-        if (lastBonusFrame < frame)
+        if (nextBonusFrame < frame)
         {
             /* 
              * We pick the bonus location at random, avoiding
@@ -322,34 +334,155 @@ public final class Game implements IGameEventListenerHolder
             final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
             {
-                if (!pi.isDead()) banned.add(pi.location);
+                if (!pi.isDead()) banned.add(boardData.pixelToGrid(pi.location));
             }
 
-            final ArrayList<Point> positions = 
-                Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
-            for (int y = board.height - 1; y >= 0; y--)
-            {
-                for (int x = board.width - 1; x >= 0; x--)
-                {
-                    final Point p = new Point(x, y);
-                    if (!banned.contains(p) 
-                        && board.cellAt(p).type == CellType.CELL_EMPTY)
-                    {
-                        positions.add(p);
-                    }
-                }
-            }
-
-            final int size = positions.size(); 
-            if (size > 0)
+            final Point p = randomEmptyCell(banned);
+            if (p != null)
             {
                 final CellType bonus = BONUSES.get(random.nextInt(BONUSES.size()));
-                final Point p = positions.get(random.nextInt(size));
                 board.cellAt(p, Cell.getInstance(bonus));
             }
 
-            this.lastBonusFrame = frame + bonusPeriod;
+            this.nextBonusFrame = frame + bonusPeriod;
         }
+    }
+
+    private Point randomEmptyCell(Collection<Point> banned) {
+        final ArrayList<Point> positions = 
+            Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
+        for (int y = board.height - 1; y >= 0; y--)
+        {
+            for (int x = board.width - 1; x >= 0; x--)
+            {
+                final Point p = new Point(x, y);
+                if (!banned.contains(p) 
+                    && board.cellAt(p).type == CellType.CELL_EMPTY)
+                {
+                    positions.add(p);
+                }
+            }
+        }
+        final int size = positions.size(); 
+        if (size > 0)
+        {
+            return positions.get(random.nextInt(size));
+        }
+        return null;
+    }
+
+    /**
+     * Check if new crates should be placed on the board.
+     */
+    private void processCrates(int frame)
+    {
+        if (nextCrateFrame < frame) {
+        	final HashSet<Point> banned = Sets.newHashSet();
+            for (PlayerInfo pi : playerInfos)
+            {
+                if (!pi.isDead())
+                {
+                    Point point = boardData.pixelToGrid(pi.location);
+                    banned.add(point);
+                    banned.addAll(findBlockingLocations(point));
+                }
+            }
+            
+            for (Point point : board.defaultPlayerPositions) {
+                banned.add(point);
+                banned.addAll(findBlockingLocations(point));
+            }
+    
+            final Point p = randomEmptyCell(banned);
+            if (p != null)
+            {
+                board.cellAt(p, Cell.getInstance(CellType.CELL_CRATE));
+            }
+
+            this.nextCrateFrame = frame + cratePeriod;
+        }
+    }
+
+    /**
+     * Determines locations at which placing a crate will cause given player to
+     * be blocked (that is close him in a tunnel without ).
+     * 
+     * @param p
+     *            Coordinates of the cell the player is standing on
+     * @return
+     */
+    private Collection<? extends Point> findBlockingLocations(Point p)
+    {
+        int[] dx = {1, 0, -1, 0};
+        int[] dy = {0, 1, 0, -1};
+        ArrayList<Point> result = new ArrayList<Point>();
+        for (int x = 0; x < board.width; x++)
+        {
+            for (int y = 0; y < board.height; y++)
+            {
+                Cell cell = board.cells[x][y];
+                if (cell.type == CellType.CELL_EMPTY)
+                {
+                    // simulate placing a crate and then go in every direction
+                    // and check if there's a blocked tunnel
+                    board.cellAt(x, y, Cell.getInstance(CellType.CELL_WALL));
+                    boolean[] blocked = new boolean[4];
+                    for (int d = 0; d < 4; d++)
+                    {
+                        for (int i = 0; ; i++)
+                        {
+                            Cell ahead = board.cells[p.x + (i + 1) * dx[d]]
+                                                     [p.y + (i + 1) * dy[d]];
+                            Cell side1 = board.cells[p.x + i * dx[d] + dx[(d + 1) % 4]]
+                                                     [p.y + i * dy[d] + dy[(d + 1) % 4]];
+                            Cell side2 = board.cells[p.x + i * dx[d] + dx[(d + 3) % 4]]
+                                                     [p.y + i * dy[d] + dy[(d + 3) % 4]];
+                            if (side1.type.isWalkable() || side2.type.isWalkable())
+                            {
+                                // player can turn sideways, so this is not a closed tunnel
+                                break;
+                            }
+                            else if (!ahead.type.isWalkable())
+                            {
+                                // player can't go ahead, so this is a closed tunnel
+                                blocked[d] = true;
+                                break;
+                            }
+                        }
+                    }
+                    board.cellAt(x, y, cell);
+
+                    if ((blocked[0] && blocked[2]) || (blocked[1] && blocked[3]))
+                    {
+                        if (x == p.x && y == p.y)
+                        {
+                            // player is blocked even when crate is placed on his current
+                            // position, so he's already in a tunnel
+                            // we should return all cells inside this tunnel
+                            result.clear();
+                            for (int d = 0; d < 4; d++)
+                            {
+                                for (int i = 1; ; i++)
+                                {
+                                    Point p2 = new Point(p.x + i * dx[d], p.y + i * dy[d]);
+                                    if (board.cellAt(p2).type.isWalkable())
+                                        result.add(p2);
+                                    else
+                                        break;
+                                }
+                            }
+                            
+                            return result;
+                        }
+                        else
+                        {
+                            result.add(new Point(x, y));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**
