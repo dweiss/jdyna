@@ -53,6 +53,9 @@ final class PlayerInfo implements IPlayerSprite
      */
     int bombRange = Globals.DEFAULT_BOMB_RANGE;
     
+    /**
+     * Saves the previous value which is restored when bonus runs out.
+     */
     int temporaryBombRange = Integer.MIN_VALUE;
     
     /**
@@ -77,6 +80,11 @@ final class PlayerInfo implements IPlayerSprite
      * Frame number after which immortality ends for this player.
      */
     private int immortalityEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * If player collects the immortality bonus the variable is changed.  
+     */
+    public boolean immortalityBonusCollected = false;
     
     /**
      * Frame number after which no bombs bonus ends for this player.
@@ -282,6 +290,7 @@ final class PlayerInfo implements IPlayerSprite
         this.state = State.DOWN;
         this.bombCount = Globals.DEFAULT_BOMB_COUNT;
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
+        this.immortalityBonusCollected = false;
 
         this.reincarnations++;
         makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);

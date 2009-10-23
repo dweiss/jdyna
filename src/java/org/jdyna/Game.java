@@ -102,7 +102,7 @@ public final class Game implements IGameEventListenerHolder
     private final static List<CellType> BONUSES = Arrays.asList(
 			CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
 			CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
-			CellType.CELL_BONUS_MAXRANGE);
+			CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -559,7 +559,7 @@ public final class Game implements IGameEventListenerHolder
                 movePlayer(pi, signal);
             }
 
-            if (c.dropsBomb() && !pi.isImmortal())
+            if (c.dropsBomb() && (!pi.isImmortal() || pi.immortalityBonusCollected))
             {
                 dropBombAttempt(frame, pi);
             }
@@ -675,6 +675,13 @@ public final class Game implements IGameEventListenerHolder
         	pi.temporaryBombRange = pi.bombRange;
         	pi.bombRange = Integer.MAX_VALUE;
         	pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
+        	bonusCollected = true;
+        }
+        
+        if (c.type == CellType.CELL_BONUS_IMMORTALITY)
+        {
+        	pi.makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
+        	pi.immortalityBonusCollected = true;
         	bonusCollected = true;
         }
         
