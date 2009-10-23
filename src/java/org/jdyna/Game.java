@@ -701,7 +701,7 @@ public final class Game implements IGameEventListenerHolder
 		{
 			dropBombAttempt(frame, pi);
 		}
-		if (pi.maxRangeEndsAtFrame < frame)
+		if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
 		{
 			pi.bombRange = pi.temporaryBombRange;
 			pi.temporaryBombRange = Integer.MIN_VALUE;
