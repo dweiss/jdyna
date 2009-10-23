@@ -101,7 +101,8 @@ public final class Game implements IGameEventListenerHolder
      */
     private final static List<CellType> BONUSES = Arrays.asList(
 			CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
-			CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS);
+			CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
+			CellType.CELL_BONUS_MAXRANGE);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -668,6 +669,14 @@ public final class Game implements IGameEventListenerHolder
         	pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
         	bonusCollected = true;
         }
+
+        if (c.type == CellType.CELL_BONUS_MAXRANGE)
+        {
+        	pi.temporaryBombRange = pi.bombRange;
+        	pi.bombRange = Integer.MAX_VALUE;
+        	pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
+        	bonusCollected = true;
+        }
         
         if (c.type == CellType.CELL_BONUS_NO_BOMBS)
         {
@@ -691,6 +700,11 @@ public final class Game implements IGameEventListenerHolder
 		if (pi.diarrheaEndsAtFrame > frame)
 		{
 			dropBombAttempt(frame, pi);
+		}
+		if (pi.maxRangeEndsAtFrame < frame)
+		{
+			pi.bombRange = pi.temporaryBombRange;
+			pi.temporaryBombRange = Integer.MIN_VALUE;
 		}
 	}
 

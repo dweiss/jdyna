@@ -115,6 +115,11 @@ public final class Globals
      */
     public static final int DEFAULT_NO_BOMBS_FRAMES = 10 * DEFAULT_FRAME_RATE;
 
+    /**
+     * The default number of frames player poses the max explosion range.
+     */
+    public static final int DEFAULT_MAXRANGE_FRAMES = 10*DEFAULT_FRAME_RATE;
+
     /*
      * 
      */

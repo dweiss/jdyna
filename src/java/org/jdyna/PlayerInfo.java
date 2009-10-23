@@ -53,11 +53,18 @@ final class PlayerInfo implements IPlayerSprite
      */
     int bombRange = Globals.DEFAULT_BOMB_RANGE;
     
+    int temporaryBombRange = Integer.MIN_VALUE;
+    
     /**
      * Frame number after which diarrhea bonus ends for the player.
      */
     int diarrheaEndsAtFrame = Integer.MIN_VALUE;
 
+    /**
+     * Frame number after which max range bonus ends for the player.
+     */
+    int maxRangeEndsAtFrame = Integer.MIN_VALUE;
+    
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.

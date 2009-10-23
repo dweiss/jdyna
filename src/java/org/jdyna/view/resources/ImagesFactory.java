@@ -116,6 +116,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_NO_BOMBS, 4, sb2.tile(new int [][] {
                 	{8, 0}, {9, 0} })
                 ),
+            create(CellType.CELL_BONUS_MAXRANGE, 4, sb2.tile(new int [][] {
+                {10, 0}, {11, 0} })
+            ),
         });
 
         /*
