@@ -38,7 +38,8 @@ public enum CellType
     /* Bonuses */
     CELL_BONUS_BOMB('@'),
     CELL_BONUS_RANGE('*'),
-    CELL_BONUS_DIARRHEA('d');
+    CELL_BONUS_DIARRHEA('d'),
+    CELL_BONUS_NO_BOMBS('n');
 
     /**
      * Character code for the cell (16 bits).
@@ -172,7 +173,7 @@ public enum CellType
     static
     {
         WALKABLES = EnumSet.of(CellType.CELL_EMPTY, CellType.CELL_BONUS_BOMB,
-            CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA);
+            CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 

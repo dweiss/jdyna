@@ -70,6 +70,11 @@ final class PlayerInfo implements IPlayerSprite
      * Frame number after which immortality ends for this player.
      */
     private int immortalityEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * Frame number after which no bombs bonus ends for this player.
+     */
+    int noBombsEndsAtFrame = Integer.MIN_VALUE; 
 
     /**
      * If the player is dead, this is the frame number of its death.

@@ -109,6 +109,11 @@ public final class Globals
      * player can avoid self-destruction when having many bombs collected.
      */
     public static final int DEFAULT_DIARRHEA_FRAMES = DEFAULT_FUSE_FRAMES - 20;
+    
+    /**
+     * For how many frames the player cannot place any bombs.
+     */
+    public static final int DEFAULT_NO_BOMBS_FRAMES = 10 * DEFAULT_FRAME_RATE;
 
     /*
      * 
