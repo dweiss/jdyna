@@ -18,6 +18,11 @@ public final class BoardUtilities
     }
 
     /**
+     * Helper arrays for loops that need to go in four directions.
+     */
+    private final static int[] dx = {1, 0, -1, 0}, dy = {0, 1, 0, -1};
+
+    /**
      * A grid of resulting {@link CellType}s when two explosions overlap.
      * 
      * @see #overlap(Cell, Cell)
@@ -219,5 +224,89 @@ public final class BoardUtilities
     public static boolean isClose(Point a, Point b, int fuzziness)
     {
         return Math.abs(a.x - b.x) <= fuzziness && Math.abs(a.y - b.y) <= fuzziness;
+    }
+
+    /**
+     * Determines locations at which placing a crate will cause given player to
+     * be blocked (that is close him in a tunnel without exit).
+     * 
+     * @param p
+     *            Coordinates of the cell the player is standing on
+     * @return
+     */
+    public static Collection<Point> findBlockingLocations(Board board, Point p)
+    {
+        
+        ArrayList<Point> result = new ArrayList<Point>();
+        if (isBlocked(board, p)) {
+            // player is already in a tunnel
+            // we should return all cells inside this tunnel
+            for (int d = 0; d < 4; d++)
+            {
+                for (int i = 1; ; i++)
+                {
+                    Point p2 = new Point(p.x + i * dx[d], p.y + i * dy[d]);
+                    if (board.cellAt(p2).type.isWalkable())
+                        result.add(p2);
+                    else
+                        break;
+                }
+            }
+            return result;
+        }
+        for (int x = 0; x < board.width; x++)
+        {
+            for (int y = 0; y < board.height; y++)
+            {
+                Cell cell = board.cells[x][y];
+                if (cell.type == CellType.CELL_EMPTY)
+                {
+                    // simulate placing a crate and check if causes blockade
+                    board.cellAt(x, y, Cell.getInstance(CellType.CELL_WALL));
+                    if (isBlocked(board, p))
+                    {
+                        result.add(new Point(x, y));
+                    }
+                    board.cellAt(x, y, cell);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Determines whether a player standing on given board on given location
+     * is blocked inside a tunnel without turns.
+     * @param board
+     * @param p
+     * @return
+     */
+    public static boolean isBlocked(Board board, Point p)
+    {
+        boolean[] directionBlocked = new boolean[4];
+        for (int d = 0; d < 4; d++)
+        {
+            for (int i = 0; ; i++)
+            {
+                Cell ahead = board.cells[p.x + (i + 1) * dx[d]]
+                                         [p.y + (i + 1) * dy[d]];
+                Cell side1 = board.cells[p.x + i * dx[d] + dx[(d + 1) % 4]]
+                                         [p.y + i * dy[d] + dy[(d + 1) % 4]];
+                Cell side2 = board.cells[p.x + i * dx[d] + dx[(d + 3) % 4]]
+                                         [p.y + i * dy[d] + dy[(d + 3) % 4]];
+                if (side1.type.isWalkable() || side2.type.isWalkable())
+                {
+                    // player can turn sideways, so this is not a closed tunnel
+                    break;
+                }
+                else if (!ahead.type.isWalkable())
+                {
+                    // player can't go ahead, so this is a closed tunnel
+                    directionBlocked[d] = true;
+                    break;
+                }
+            }
+        }
+        return (directionBlocked[0] && directionBlocked[2]) || (directionBlocked[1] && directionBlocked[3]);
     }
 }

@@ -385,15 +385,15 @@ public final class Game implements IGameEventListenerHolder
                 {
                     Point point = boardData.pixelToGrid(pi.location);
                     banned.add(point);
-                    banned.addAll(findBlockingLocations(point));
+                    banned.addAll(BoardUtilities.findBlockingLocations(board, point));
                 }
             }
-            
+
             for (Point point : board.defaultPlayerPositions) {
                 banned.add(point);
-                banned.addAll(findBlockingLocations(point));
+                banned.addAll(BoardUtilities.findBlockingLocations(board, point));
             }
-    
+
             final Point p = randomEmptyCell(banned);
             if (p != null)
             {
@@ -402,88 +402,6 @@ public final class Game implements IGameEventListenerHolder
 
             this.nextCrateFrame = frame + cratePeriod;
         }
-    }
-
-    /**
-     * Determines locations at which placing a crate will cause given player to
-     * be blocked (that is close him in a tunnel without ).
-     * 
-     * @param p
-     *            Coordinates of the cell the player is standing on
-     * @return
-     */
-    private Collection<? extends Point> findBlockingLocations(Point p)
-    {
-        int[] dx = {1, 0, -1, 0};
-        int[] dy = {0, 1, 0, -1};
-        ArrayList<Point> result = new ArrayList<Point>();
-        for (int x = 0; x < board.width; x++)
-        {
-            for (int y = 0; y < board.height; y++)
-            {
-                Cell cell = board.cells[x][y];
-                if (cell.type == CellType.CELL_EMPTY)
-                {
-                    // simulate placing a crate and then go in every direction
-                    // and check if there's a blocked tunnel
-                    board.cellAt(x, y, Cell.getInstance(CellType.CELL_WALL));
-                    boolean[] blocked = new boolean[4];
-                    for (int d = 0; d < 4; d++)
-                    {
-                        for (int i = 0; ; i++)
-                        {
-                            Cell ahead = board.cells[p.x + (i + 1) * dx[d]]
-                                                     [p.y + (i + 1) * dy[d]];
-                            Cell side1 = board.cells[p.x + i * dx[d] + dx[(d + 1) % 4]]
-                                                     [p.y + i * dy[d] + dy[(d + 1) % 4]];
-                            Cell side2 = board.cells[p.x + i * dx[d] + dx[(d + 3) % 4]]
-                                                     [p.y + i * dy[d] + dy[(d + 3) % 4]];
-                            if (side1.type.isWalkable() || side2.type.isWalkable())
-                            {
-                                // player can turn sideways, so this is not a closed tunnel
-                                break;
-                            }
-                            else if (!ahead.type.isWalkable())
-                            {
-                                // player can't go ahead, so this is a closed tunnel
-                                blocked[d] = true;
-                                break;
-                            }
-                        }
-                    }
-                    board.cellAt(x, y, cell);
-
-                    if ((blocked[0] && blocked[2]) || (blocked[1] && blocked[3]))
-                    {
-                        if (x == p.x && y == p.y)
-                        {
-                            // player is blocked even when crate is placed on his current
-                            // position, so he's already in a tunnel
-                            // we should return all cells inside this tunnel
-                            result.clear();
-                            for (int d = 0; d < 4; d++)
-                            {
-                                for (int i = 1; ; i++)
-                                {
-                                    Point p2 = new Point(p.x + i * dx[d], p.y + i * dy[d]);
-                                    if (board.cellAt(p2).type.isWalkable())
-                                        result.add(p2);
-                                    else
-                                        break;
-                                }
-                            }
-                            
-                            return result;
-                        }
-                        else
-                        {
-                            result.add(new Point(x, y));
-                        }
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     /**
