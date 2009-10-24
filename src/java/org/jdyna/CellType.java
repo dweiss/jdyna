@@ -41,7 +41,8 @@ public enum CellType
     CELL_BONUS_DIARRHEA('d'),
     CELL_BONUS_IMMORTALITY('i'),
     CELL_BONUS_MAXRANGE('m'),
-    CELL_BONUS_NO_BOMBS('n');
+    CELL_BONUS_NO_BOMBS('n'),
+    CELL_BONUS_SPEED('s');
 
     /**
      * Character code for the cell (16 bits).
@@ -176,7 +177,8 @@ public enum CellType
     {
         WALKABLES = EnumSet.of(CellType.CELL_EMPTY, CellType.CELL_BONUS_BOMB,
             CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
-            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY);
+            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SPEED);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 

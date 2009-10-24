@@ -33,6 +33,11 @@ public final class Globals
     public static final int DEFAULT_BOMB_COUNT = intProperty("dyna.bomb.count", 2);
 
     /**
+     * @see PlayerInfo#speed
+     */
+    public static final int DEFAULT_PLAYER_SPEED = intProperty("dyna.player.speed", 2);
+    
+    /**
      * Default pixel size of each cell in the playfield.
      */
     public static final int DEFAULT_CELL_SIZE = 16;
@@ -125,6 +130,11 @@ public final class Globals
      */
     public static final int DEFAULT_MAXRANGE_FRAMES = 10*DEFAULT_FRAME_RATE;
 
+    /**
+     * The default number of frames player has a speed up or slow down bonus.
+     */
+    public static final int DEFAULT_SPEED_FRAMES = 10 * DEFAULT_FRAME_RATE;
+        
     /*
      * 
      */

@@ -26,8 +26,14 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Movement speed in each direction.
      */
-    final Point speed = new Point(2, 2);
+    Point speed = new Point(Globals.DEFAULT_PLAYER_SPEED, Globals.DEFAULT_PLAYER_SPEED);
 
+    /**
+     * If player collects the speed bonus the variable is changed. 
+     * If player doesn't have speed bonus the variable is set to 1.0. 
+     */
+    double speedModifier = 1.0;
+    
     /**
      * An increasing counter of frames if the player is in walking state.
      */
@@ -68,6 +74,11 @@ final class PlayerInfo implements IPlayerSprite
      */
     int maxRangeEndsAtFrame = Integer.MIN_VALUE;
     
+    /**
+     * Frame number after which slow down or speed up bonus ends for this player.
+     */
+    int speedEndsAtFrame = Integer.MIN_VALUE;
+
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.

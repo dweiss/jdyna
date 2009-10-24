@@ -110,9 +110,10 @@ public final class Game implements IGameEventListenerHolder
      * Bonus cells assigned every {@link #bonusPeriod}.
      */
     private final static List<CellType> BONUSES = Arrays.asList(
-			CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
-			CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
-			CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY);
+            CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
+            CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
+            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SPEED);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -824,6 +825,17 @@ public final class Game implements IGameEventListenerHolder
         	bonusCollected = true;
         }
 
+        if (c.type == CellType.CELL_BONUS_SPEED)
+        {
+            pi.speedEndsAtFrame = frame + Globals.DEFAULT_SPEED_FRAMES;
+
+            // Should Player speed up or slow down? It's a random case.
+            pi.speedModifier = random.nextInt(2) == 0 ? 0.5 : 1.5;
+            pi.speed = new Point((int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED));
+            bonusCollected = true;
+        }
+        
         if (bonusCollected)
         {
             dispatchPlayerStatuses = true;
@@ -846,6 +858,13 @@ public final class Game implements IGameEventListenerHolder
 			pi.bombRange = pi.temporaryBombRange;
 			pi.temporaryBombRange = Integer.MIN_VALUE;
 		}
+		
+        if ((pi.speedEndsAtFrame <= frame) && (pi.speedModifier != 1.0))
+        {
+            pi.speedModifier = 1.0;
+            pi.speed = new Point((int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED));
+        }
 	}
 
     /**

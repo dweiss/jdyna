@@ -122,6 +122,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_MAXRANGE, 4, sb2.tile(new int [][] {
                 {10, 0}, {11, 0} })
             ),
+            create(CellType.CELL_BONUS_SPEED, 4, sb2.tile(new int [][] {
+                {14, 0}, {15, 0} })
+            ),
         });
 
         /*
