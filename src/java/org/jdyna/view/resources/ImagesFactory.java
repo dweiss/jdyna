@@ -114,16 +114,19 @@ public final class ImagesFactory
             	{6, 0}, {7, 0} })
             ),
             create(CellType.CELL_BONUS_IMMORTALITY, 4, sb2.tile(new int [][] {
-                	{12, 0}, {13, 0} })
-                ),
+              	{12, 0}, {13, 0} })
+            ),
             create(CellType.CELL_BONUS_NO_BOMBS, 4, sb2.tile(new int [][] {
-                	{8, 0}, {9, 0} })
-                ),
+               	{8, 0}, {9, 0} })
+            ),
             create(CellType.CELL_BONUS_MAXRANGE, 4, sb2.tile(new int [][] {
                 {10, 0}, {11, 0} })
             ),
             create(CellType.CELL_BONUS_SPEED, 4, sb2.tile(new int [][] {
                 {14, 0}, {15, 0} })
+            ),
+            create(CellType.CELL_BONUS_CRATE_WALKING, 4, sb2.tile(new int [][] {
+                {16, 0}, {17, 0} })
             ),
         });
 

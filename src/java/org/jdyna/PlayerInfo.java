@@ -60,9 +60,9 @@ final class PlayerInfo implements IPlayerSprite
     int bombRange = Globals.DEFAULT_BOMB_RANGE;
     
     /**
-     * Saves the previous value which is restored when bonus runs out.
+     * Stores the actual bomb range when player is under the influence of max range bonus.
      */
-    int temporaryBombRange = Integer.MIN_VALUE;
+    int storedBombRange = Integer.MIN_VALUE;
     
     /**
      * Frame number after which diarrhea bonus ends for the player.
@@ -79,6 +79,16 @@ final class PlayerInfo implements IPlayerSprite
      */
     int speedEndsAtFrame = Integer.MIN_VALUE;
 
+    /**
+     * Frames number the player is under Wall Walking Bonus influence
+     */
+    int crateWalkingEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * Indicates whether or not player can walk trough crates
+     */
+    public boolean canWalkCrates = false; 
+    
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.

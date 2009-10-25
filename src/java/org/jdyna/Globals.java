@@ -86,7 +86,7 @@ public final class Globals
      * The default is 15 seconds. Assign to a very large value to effectively prevent
      * bonuses from showing up.
      */
-    public static final int DEFAULT_BONUS_PERIOD = 15 * DEFAULT_FRAME_RATE;
+    public static final int DEFAULT_BONUS_PERIOD = 12 * DEFAULT_FRAME_RATE;
 
     /**
      * Default period for adding crates at random positions on the board.
@@ -135,6 +135,7 @@ public final class Globals
      */
     public static final int DEFAULT_SPEED_FRAMES = 10 * DEFAULT_FRAME_RATE;
         
+    public static final int DEFAULT_CRATE_WALKING_FRAMES = 10* DEFAULT_FRAME_RATE;
     /*
      * 
      */

@@ -113,7 +113,7 @@ public final class Game implements IGameEventListenerHolder
             CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
             CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
-            CellType.CELL_BONUS_SPEED);
+            CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -712,8 +712,12 @@ public final class Game implements IGameEventListenerHolder
 
         if (c.type == CellType.CELL_BONUS_RANGE)
         {
-            pi.bombRange++;
-            bonusCollected = true;
+        	if ((pi.maxRangeEndsAtFrame > frame) && (pi.bombRange == Integer.MAX_VALUE)) 
+        	{
+        		pi.storedBombRange++;
+        	}
+        	else pi.bombRange++;
+        	bonusCollected = true;
         }
         
         if (c.type == CellType.CELL_BONUS_DIARRHEA)
@@ -724,7 +728,7 @@ public final class Game implements IGameEventListenerHolder
 
         if (c.type == CellType.CELL_BONUS_MAXRANGE)
         {
-        	pi.temporaryBombRange = pi.bombRange;
+        	pi.storedBombRange = pi.bombRange;
         	pi.bombRange = Integer.MAX_VALUE;
         	pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
         	bonusCollected = true;
@@ -754,6 +758,13 @@ public final class Game implements IGameEventListenerHolder
             bonusCollected = true;
         }
         
+        if (c.type == CellType.CELL_BONUS_CRATE_WALKING)
+        {
+        	pi.crateWalkingEndsAtFrame = frame + Globals.DEFAULT_CRATE_WALKING_FRAMES;
+        	pi.canWalkCrates = true;
+        	bonusCollected = true;
+        }
+        
         if (bonusCollected)
         {
             dispatchPlayerStatuses = true;
@@ -773,8 +784,8 @@ public final class Game implements IGameEventListenerHolder
 		}
 		if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
 		{
-			pi.bombRange = pi.temporaryBombRange;
-			pi.temporaryBombRange = Integer.MIN_VALUE;
+			pi.bombRange = pi.storedBombRange;
+			pi.storedBombRange = Integer.MIN_VALUE;
 		}
 		
         if ((pi.speedEndsAtFrame <= frame) && (pi.speedModifier != 1.0))
@@ -782,6 +793,16 @@ public final class Game implements IGameEventListenerHolder
             pi.speedModifier = 1.0;
             pi.speed = new Point((int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED),
                 (int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED));
+        }
+        if ((pi.crateWalkingEndsAtFrame < frame) && (pi.canWalkCrates))
+        {
+        	pi.canWalkCrates = false;
+        	final Point xy = boardData.pixelToGrid(pi.location);
+        	if (!canWalkOn(pi, xy))
+        	{
+        		pi.kill();
+        		events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+        	}
         }
 	}
 
@@ -943,7 +964,9 @@ public final class Game implements IGameEventListenerHolder
          * Players in immortality mode can walk over bombs, but not anything else.
          */
         CellType t = board.cellAt(txy).type;
-        return t.isWalkable() || (pi.isImmortal() && t == CellType.CELL_BOMB);
+        return t.isWalkable() 
+        || (pi.isImmortal() && t == CellType.CELL_BOMB) 
+        || (pi.canWalkCrates && ((t == CellType.CELL_CRATE) ||(t == CellType.CELL_CRATE_OUT)));
     }
 
     /**
