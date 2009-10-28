@@ -128,6 +128,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_CRATE_WALKING, 4, sb2.tile(new int [][] {
                 {16, 0}, {17, 0} })
             ),
+            create(CellType.CELL_BONUS_BOMB_WALKING, 4, sb2.tile(new int [][] {
+                {18, 0}, {19, 0} })
+            ),
         });
 
         /*
