@@ -113,7 +113,8 @@ public final class Game implements IGameEventListenerHolder
             CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
             CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
-            CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING);
+            CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING,
+            CellType.CELL_BONUS_BOMB_WALKING);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -765,6 +766,13 @@ public final class Game implements IGameEventListenerHolder
         	bonusCollected = true;
         }
         
+        if (c.type == CellType.CELL_BONUS_BOMB_WALKING)
+        {
+            pi.bombWalkingEndsAtFrame = frame + Globals.DEFAULT_BOMB_WALKING_FRAMES;
+            pi.canWalkBombs = true;
+            bonusCollected = true;
+        }
+        
         if (bonusCollected)
         {
             dispatchPlayerStatuses = true;
@@ -787,7 +795,6 @@ public final class Game implements IGameEventListenerHolder
 			pi.bombRange = pi.storedBombRange;
 			pi.storedBombRange = Integer.MIN_VALUE;
 		}
-		
         if ((pi.speedEndsAtFrame <= frame) && (pi.speedModifier != 1.0))
         {
             pi.speedModifier = 1.0;
@@ -803,6 +810,16 @@ public final class Game implements IGameEventListenerHolder
         		pi.kill();
         		events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
         	}
+        }
+        if ((pi.bombWalkingEndsAtFrame < frame) && (pi.canWalkBombs))
+        {
+            pi.canWalkBombs = false;
+            final Point xy = boardData.pixelToGrid(pi.location);
+            if (!canWalkOn(pi, xy))
+            {
+                pi.kill();
+                events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+            }
         }
 	}
 
@@ -966,7 +983,8 @@ public final class Game implements IGameEventListenerHolder
         CellType t = board.cellAt(txy).type;
         return t.isWalkable() 
         || (pi.isImmortal() && t == CellType.CELL_BOMB) 
-        || (pi.canWalkCrates && ((t == CellType.CELL_CRATE) ||(t == CellType.CELL_CRATE_OUT)));
+        || (pi.canWalkCrates && ((t == CellType.CELL_CRATE) ||(t == CellType.CELL_CRATE_OUT)))
+        || (pi.canWalkBombs && t == CellType.CELL_BOMB);
     }
 
     /**

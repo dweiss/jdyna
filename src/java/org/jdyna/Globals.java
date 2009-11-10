@@ -136,6 +136,12 @@ public final class Globals
     public static final int DEFAULT_SPEED_FRAMES = 10 * DEFAULT_FRAME_RATE;
         
     public static final int DEFAULT_CRATE_WALKING_FRAMES = 10* DEFAULT_FRAME_RATE;
+    
+    /**
+     * For how many frames the player can walk through bombs.
+     */
+    public static final int DEFAULT_BOMB_WALKING_FRAMES = 20 * DEFAULT_FRAME_RATE;
+        
     /*
      * 
      */

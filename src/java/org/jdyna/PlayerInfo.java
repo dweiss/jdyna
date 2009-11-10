@@ -90,6 +90,16 @@ final class PlayerInfo implements IPlayerSprite
     public boolean canWalkCrates = false; 
     
     /**
+     * Frames number the player is under Bomb Walking Bonus influence
+     */
+    int bombWalkingEndsAtFrame = Integer.MIN_VALUE;
+
+    /**
+     * Indicates whether or not player can walk through bombs
+     */
+    public boolean canWalkBombs = false; 
+    
+    /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.
      * 
