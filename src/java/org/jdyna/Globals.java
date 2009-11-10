@@ -8,6 +8,7 @@ import org.jdyna.view.swing.Magnification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * Global defaults.
  */
@@ -35,15 +36,15 @@ public final class Globals
      * @see PlayerInfo#speed
      */
     public static final int DEFAULT_PLAYER_SPEED = intProperty("dyna.player.speed", 2);
-
+    
     /**
      * Default pixel size of each cell in the playfield.
      */
     public static final int DEFAULT_CELL_SIZE = 16;
 
     /**
-     * After the game is over we may want to linger a bit so that views can paint the
-     * death sequence of the last player.
+     * After the game is over we may want to linger a bit so that views can paint the death
+     * sequence of the last player.
      */
     public static final int DEFAULT_LINGER_FRAMES = 45;
 
@@ -60,19 +61,18 @@ public final class Globals
     /**
      * In classic Dyna, all bombs connected by explosions explode at once. This alters
      * this behavior and only "chains" explosions by speeding up other bombs. This works
-     * fine, but the GUI is a bit screwed because explosion overlays don't work so well
-     * then.
+     * fine, but the GUI is a bit screwed because explosion overlays don't work so well then.
      */
     public static final boolean DELAYED_BOMB_EXPLOSIONS = false;
 
     /**
-     * When the player is on the edge between one cell and another, dropping a bomb may
-     * result in placing bombs in two adjecent cells. We add a small delay between placing
-     * two bombs, so that the player has a chance to depress the bomb drop key (or
-     * whatever stimuli).
+     * When the player is on the edge between one cell and another, dropping
+     * a bomb may result in placing bombs in two adjecent cells. We add a small
+     * delay between placing two bombs, so that the player has a chance to depress
+     * the bomb drop key (or whatever stimuli).
      * <p>
-     * This field is the number of frames that must pass before the player is allowed to
-     * drop another bomb.
+     * This field is the number of frames that must pass before the player is allowed
+     * to drop another bomb.
      */
     public static final int BOMB_DROP_DELAY = 5;
 
@@ -82,9 +82,9 @@ public final class Globals
     public static final int DEFAULT_FRAME_RATE = intProperty("dyna.framerate", 25);
 
     /**
-     * Default interval (in frames) between placing a new bonus on the playfield. The
-     * default is 15 seconds. Assign to a very large value to effectively prevent bonuses
-     * from showing up.
+     * Default interval (in frames) between placing a new bonus on the playfield.
+     * The default is 15 seconds. Assign to a very large value to effectively prevent
+     * bonuses from showing up.
      */
     public static final int DEFAULT_BONUS_PERIOD = 12 * DEFAULT_FRAME_RATE;
 
@@ -94,8 +94,7 @@ public final class Globals
     public static final int DEFAULT_CRATE_PERIOD = 17 * DEFAULT_FRAME_RATE;
 
     /**
-     * Number of frames it takes for a dead player to be ressurrected in deatch match
-     * mode.
+     * Number of frames it takes for a dead player to be ressurrected in deatch match mode.
      */
     public static final int DEFAULT_RESURRECTION_FRAMES = 5 * DEFAULT_FRAME_RATE;
 
@@ -113,14 +112,14 @@ public final class Globals
      * The default number of lives a player has in the {@link Game.Mode#DEATHMATCH} mode.
      */
     public static final int DEFAULT_LIVES = intProperty("dyna.lives", 3);
-
+    
     /**
-     * The default number of frames diarrhea occurs. It is a bit lower than
-     * {@link Globals#DEFAULT_FUSE_FRAMES} so that player can avoid self-destruction when
-     * having many bombs collected.
+     * The default number of frames diarrhea occurs.
+     * It is a bit lower than {@link Globals#DEFAULT_FUSE_FRAMES} so that
+     * player can avoid self-destruction when having many bombs collected.
      */
     public static final int DEFAULT_DIARRHEA_FRAMES = DEFAULT_FUSE_FRAMES - 20;
-
+    
     /**
      * For how many frames the player cannot place any bombs.
      */
@@ -129,25 +128,14 @@ public final class Globals
     /**
      * The default number of frames player poses the max explosion range.
      */
-    public static final int DEFAULT_MAXRANGE_FRAMES = 10 * DEFAULT_FRAME_RATE;
+    public static final int DEFAULT_MAXRANGE_FRAMES = 10*DEFAULT_FRAME_RATE;
 
     /**
      * The default number of frames player has a speed up or slow down bonus.
      */
     public static final int DEFAULT_SPEED_FRAMES = 10 * DEFAULT_FRAME_RATE;
-
-    public static final int DEFAULT_CRATE_WALKING_FRAMES = 10 * DEFAULT_FRAME_RATE;
-
-    /**
-     * For how many frames the player can walk through bombs.
-     */
-    public static final int DEFAULT_BOMB_WALKING_FRAMES = 20 * DEFAULT_FRAME_RATE;
-
-    /**
-     * The default number of frames player has a controller reverse disease.
-     */
-    public static final int DEFAULT_CONTROLLER_REVERSE_FRAMES = 10 * DEFAULT_FRAME_RATE;
-
+        
+    public static final int DEFAULT_CRATE_WALKING_FRAMES = 10* DEFAULT_FRAME_RATE;
     /*
      * 
      */
@@ -155,7 +143,7 @@ public final class Globals
     {
         // no instances.
     }
-
+    
     /**
      * Override a default with a system property.
      */
@@ -164,8 +152,7 @@ public final class Globals
         final String v = System.getProperty(propertyName);
         if (v != null)
         {
-            logger
-                .info("Overriding property: " + propertyName + " with: " + defaultValue);
+            logger.info("Overriding property: " + propertyName + " with: " + defaultValue);
             try
             {
                 return Integer.parseInt(v);
@@ -187,11 +174,11 @@ public final class Globals
         {
             case 0:
                 return new KeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
-                    KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
+                    KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);                
             case 1:
                 return new KeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
                     KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
         }
         throw new RuntimeException("No default keyboard mapping for player: " + num);
-    }
+    } 
 }

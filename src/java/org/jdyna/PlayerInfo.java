@@ -5,6 +5,7 @@ import java.awt.Point;
 import org.jdyna.IPlayerController.Direction;
 import org.jdyna.Player.State;
 
+
 /**
  * Extra {@link Player} information for the {@link Game}.
  */
@@ -12,7 +13,7 @@ final class PlayerInfo implements IPlayerSprite
 {
     /* */
     public final Player player;
-
+    
     /* */
     public final ISprite.Type spriteType;
 
@@ -28,11 +29,11 @@ final class PlayerInfo implements IPlayerSprite
     Point speed = new Point(Globals.DEFAULT_PLAYER_SPEED, Globals.DEFAULT_PLAYER_SPEED);
 
     /**
-     * If player collects the speed bonus the variable is changed. If player doesn't have
-     * speed bonus the variable is set to 1.0.
+     * If player collects the speed bonus the variable is changed. 
+     * If player doesn't have speed bonus the variable is set to 1.0. 
      */
     double speedModifier = 1.0;
-
+    
     /**
      * An increasing counter of frames if the player is in walking state.
      */
@@ -44,7 +45,7 @@ final class PlayerInfo implements IPlayerSprite
     private int frame;
 
     /**
-     * Current walking state.
+     * Current walking state. 
      */
     private Player.State state = Player.State.DOWN;
 
@@ -57,12 +58,12 @@ final class PlayerInfo implements IPlayerSprite
      * Bomb range for this player. Assigned to {@link BombCell#range}.
      */
     int bombRange = Globals.DEFAULT_BOMB_RANGE;
-
+    
     /**
      * Stores the actual bomb range when player is under the influence of max range bonus.
      */
     int storedBombRange = Integer.MIN_VALUE;
-
+    
     /**
      * Frame number after which diarrhea bonus ends for the player.
      */
@@ -72,7 +73,7 @@ final class PlayerInfo implements IPlayerSprite
      * Frame number after which max range bonus ends for the player.
      */
     int maxRangeEndsAtFrame = Integer.MIN_VALUE;
-
+    
     /**
      * Frame number after which slow down or speed up bonus ends for this player.
      */
@@ -82,26 +83,15 @@ final class PlayerInfo implements IPlayerSprite
      * Frames number the player is under Wall Walking Bonus influence
      */
     int crateWalkingEndsAtFrame = Integer.MIN_VALUE;
-
+    
     /**
      * Indicates whether or not player can walk trough crates
      */
-    public boolean canWalkCrates = false;
-
+    public boolean canWalkCrates = false; 
+    
     /**
-     * Frames number the player is under Bomb Walking Bonus influence
-     */
-    int bombWalkingEndsAtFrame = Integer.MIN_VALUE;
-
-    /**
-     * Indicates whether or not player can walk through bombs
-     */
-    public boolean canWalkBombs = false;
-
-    /**
-     * This field stores the most recent frame number when a bomb was dropped. The purpose
-     * of this is to avoid dropping two bombs when crossing the line between two grid
-     * cells.
+     * This field stores the most recent frame number when a bomb was dropped. The purpose of this
+     * is to avoid dropping two bombs when crossing the line between two grid cells.
      * 
      * @see Globals#BOMB_DROP_DELAY
      */
@@ -111,27 +101,22 @@ final class PlayerInfo implements IPlayerSprite
      * Frame number after which immortality ends for this player.
      */
     private int immortalityEndsAtFrame = Integer.MIN_VALUE;
-
+    
     /**
-     * If player collects the immortality bonus the variable is changed.
+     * If player collects the immortality bonus the variable is changed.  
      */
     public boolean immortalityBonusCollected = false;
-
+    
     /**
      * Frame number after which no bombs bonus ends for this player.
      */
-    int noBombsEndsAtFrame = Integer.MIN_VALUE;
-
-    /**
-     * Frame number after which controller reverse disease ends for this player.
-     */
-    int controllerReverseEndsAtFrame = Integer.MIN_VALUE;
+    int noBombsEndsAtFrame = Integer.MIN_VALUE; 
 
     /**
      * If the player is dead, this is the frame number of its death.
      */
     private int deathAtFrame;
-
+    
     /**
      * When did the player join the game?
      */
@@ -143,14 +128,14 @@ final class PlayerInfo implements IPlayerSprite
     private int killedEnemies;
 
     /**
-     * Number of lives lost in battle. The fewer, the better.
+     * Number of lives lost in battle. The fewer, the better.  
      */
-    private int reincarnations;
+    private int reincarnations; 
 
     /**
-     * Number of reincarnations a player has left.
+     * Number of reincarnations a player has left.  
      */
-    private int livesLeft;
+    private int livesLeft; 
 
     /*
      * 
@@ -171,10 +156,11 @@ final class PlayerInfo implements IPlayerSprite
     void nextFrameUpdate(Direction signal)
     {
         /*
-         * Keep on advancing frame counter even if dead.
+         * Keep on advancing frame counter even if dead. 
          */
         frame++;
-        if (state == Player.State.DEAD) return;
+        if (state == Player.State.DEAD)
+            return;
 
         if (signal == null)
         {
@@ -187,17 +173,13 @@ final class PlayerInfo implements IPlayerSprite
             switch (signal)
             {
                 case LEFT:
-                    state = Player.State.LEFT;
-                    break;
+                    state = Player.State.LEFT; break;
                 case RIGHT:
-                    state = Player.State.RIGHT;
-                    break;
+                    state = Player.State.RIGHT; break;
                 case UP:
-                    state = Player.State.UP;
-                    break;
+                    state = Player.State.UP; break;
                 case DOWN:
-                    state = Player.State.DOWN;
-                    break;
+                    state = Player.State.DOWN; break;
                 default:
                     throw new RuntimeException(/* unreachable */);
             }
@@ -208,11 +190,11 @@ final class PlayerInfo implements IPlayerSprite
             }
             else
             {
-                if (stateFrame == 0)
+                if (stateFrame == 0) 
                 {
-                    /*
-                     * If changed the mode, start from the first 'active' frame in the
-                     * animation sequence.
+                    /* 
+                     * If changed the mode, start from the first 'active' frame
+                     * in the animation sequence.
                      */
                     stateFrame = 1;
                 }
@@ -225,7 +207,7 @@ final class PlayerInfo implements IPlayerSprite
     }
 
     /**
-     * Kills the player, initiating the death state's animation.
+     * Kills the player, initiating the death state's animation. 
      */
     public void kill()
     {
@@ -237,12 +219,11 @@ final class PlayerInfo implements IPlayerSprite
         this.state = Player.State.DEAD;
         this.stateFrame = 0;
         this.deathAtFrame = frame;
-        this.livesLeft--;
+        this.livesLeft--;        
     }
 
     /**
-     * @return Returns <code>true</code> if the player is dead (dying sequence is
-     *         finished).
+     * @return Returns <code>true</code> if the player is dead (dying sequence is finished).
      */
     public boolean isDead()
     {
@@ -288,7 +269,7 @@ final class PlayerInfo implements IPlayerSprite
     {
         return new Point(location);
     }
-
+    
     /**
      * @see IPlayerSprite
      */
@@ -298,14 +279,13 @@ final class PlayerInfo implements IPlayerSprite
     }
 
     /**
-     * Temporal immortality is possible when the player is resurrected in deatch match
-     * mode.
+     * Temporal immortality is possible when the player is resurrected in deatch match mode.
      */
     public boolean isImmortal()
     {
         return !isStoneDead() && frame < immortalityEndsAtFrame;
     }
-
+    
     /**
      * Make the given player immortal for a little while.
      */
@@ -319,8 +299,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     boolean shouldResurrect()
     {
-        return livesLeft > 0
-            && frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
+        return livesLeft > 0 && frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
     }
 
     /**
@@ -333,12 +312,11 @@ final class PlayerInfo implements IPlayerSprite
         this.bombCount = Globals.DEFAULT_BOMB_COUNT;
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
         this.immortalityBonusCollected = false;
-        this.controllerReverseEndsAtFrame = Integer.MIN_VALUE;
 
         this.reincarnations++;
         makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
     }
-
+ 
     /**
      * Collect a token for killing an enemy.
      */

@@ -23,22 +23,22 @@ import com.google.common.collect.Sets;
  */
 public final class Game implements IGameEventListenerHolder
 {
-    private final static Logger logger = LoggerFactory.getLogger(Game.class);
+    private final static Logger logger = LoggerFactory.getLogger(Game.class); 
 
     /**
      * The game board (playfield cells).
      */
     public final Board board;
-
+    
     /**
-     * Game modes control how the game progresses, when the game terminates and what are
-     * the conditions to bring some players back to life.
+     * Game modes control how the game progresses, when the game terminates and
+     * what are the conditions to bring some players back to life.
      */
     public static enum Mode
     {
         /**
-         * In last man standing mode ("classic" Dyna Blaster), the purpose of the game is
-         * to kill all the enemies. The last player to survive wins the game. All players
+         * In last man standing mode ("classic" Dyna Blaster), the purpose of the game
+         * is to kill all the enemies. The last player to survive wins the game. All players
          * are ranked after the game is over.
          * 
          * @see GameResult
@@ -52,20 +52,20 @@ public final class Game implements IGameEventListenerHolder
          * initiated the explosion, the origin (bomb) of any 'flame' that kills player B
          * earns player A a credit. In case of overlapping flames, the credit is given to
          * all players that contributed to overlapping flame. The game ends when there is
-         * only one player (or zero players) that are still alive. The number of lives
-         * (reincarnations) for each player is controlled separately.
+         * only one player (or zero players) that are still alive. The number of lives (reincarnations)
+         * for each player is controlled separately.
          */
         DEATHMATCH,
 
         /**
-         * Same as {@link #DEATHMATCH}, but the game never finishes (even if there are no
-         * players on the board).
+         * Same as {@link #DEATHMATCH}, but the game never finishes (even if there
+         * are no players on the board).
          */
         INFINITE_DEATHMATCH
     }
 
     /**
-     * Dynamic information about players involved in the game. Indexed identically to
+     * Dynamic information about players involved in the game. Indexed identically to 
      * {@link #players}
      */
     private final List<PlayerInfo> playerInfos = Lists.newArrayList();
@@ -83,11 +83,11 @@ public final class Game implements IGameEventListenerHolder
      * How many frames to 'linger' after the game is over.
      */
     private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
-
+    
     /**
-     * If periodic bonuses are placed on the board, then this is the period after which a
-     * new bonus should be placed on the board. Bonuses will be placed at random board
-     * positions.
+     * If periodic bonuses are placed on the board, then this is 
+     * the period after which a new bonus should be placed on the board.
+     * Bonuses will be placed at random board positions.
      */
     private int bonusPeriod = Globals.DEFAULT_BONUS_PERIOD;
 
@@ -109,12 +109,11 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Bonus cells assigned every {@link #bonusPeriod}.
      */
-    private final static List<CellType> BONUSES = Arrays.asList(CellType.CELL_BONUS_BOMB,
-        CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA,
-        CellType.CELL_BONUS_NO_BOMBS, CellType.CELL_BONUS_MAXRANGE,
-        CellType.CELL_BONUS_IMMORTALITY, CellType.CELL_BONUS_SPEED,
-        CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-        CellType.CELL_BONUS_CONTROLLER_REVERSE);
+    private final static List<CellType> BONUSES = Arrays.asList(
+            CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
+            CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
+            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -147,7 +146,7 @@ public final class Game implements IGameEventListenerHolder
      * Last fully rendered frame.
      */
     private volatile int currentFrame;
-
+    
     /**
      * If <code>true</code>, a {@link GameStatusEvent} should be dispatched.
      */
@@ -171,13 +170,12 @@ public final class Game implements IGameEventListenerHolder
         this.board = board;
         this.boardData = boardInfo;
 
-        for (Player p : players)
-            addPlayer(p, 0);
+        for (Player p : players) addPlayer(p, 0);
     }
 
     /**
-     * Dynamically attach a new player to an existing game. If the player with the given
-     * identifier already exists, an exception is thrown.
+     * Dynamically attach a new player to an existing game. If the player with the
+     * given identifier already exists, an exception is thrown.
      */
     public synchronized void addPlayer(Player p)
     {
@@ -185,14 +183,14 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Dynamically attach a new player to an existing game. If the player with the given
-     * identifier already exists, an exception is thrown.
+     * Dynamically attach a new player to an existing game. If the player with the
+     * given identifier already exists, an exception is thrown.
      */
     private synchronized void addPlayer(Player p, int immortalityCount)
     {
         if (hasPlayer(p.name))
         {
-            throw new IllegalArgumentException("Player already exists: " + p.name);
+            throw new IllegalArgumentException("Player already exists: " + p.name);            
         }
 
         setupPlayer(p, immortalityCount);
@@ -237,7 +235,8 @@ public final class Game implements IGameEventListenerHolder
         events.add(new GameStartEvent(boardData));
         do
         {
-            if (interrupted || Thread.currentThread().isInterrupted()
+            if (interrupted 
+                || Thread.currentThread().isInterrupted()
                 || (result == null && frameLimit > 0 && frame > frameLimit))
             {
                 interrupted = true;
@@ -268,17 +267,17 @@ public final class Game implements IGameEventListenerHolder
                 processCrates(frame);
 
                 events.add(new GameStateEvent(board.cells, playerInfos));
-
+                
                 /*
-                 * Check if player status should be dispatched. Dispatch every 50 frames
-                 * or so anyway, so that clients that have just joined the game have their
-                 * status updated.
+                 * Check if player status should be dispatched. Dispatch
+                 * every 50 frames or so anyway, so that clients that have
+                 * just joined the game have their status updated. 
                  */
                 if (dispatchPlayerStatuses || (frame % 50) == 0)
                 {
                     events.add(new GameStatusEvent(getPlayerStats(), getTeamStats()));
                 }
-
+                
                 /*
                  * Fire frame events.
                  */
@@ -287,8 +286,8 @@ public final class Game implements IGameEventListenerHolder
                 frame++;
 
                 /*
-                 * The game may be finished, but there are still lingering frames we must
-                 * replay.
+                 * The game may be finished, but there are still
+                 * lingering frames we must replay.
                  */
                 if (result == null)
                 {
@@ -300,8 +299,7 @@ public final class Game implements IGameEventListenerHolder
             }
             firePostFrameEvent(frame);
 
-        }
-        while (result == null || lingerFrames-- > 0);
+        } while (result == null || lingerFrames-- > 0);
 
         /*
          * Check interrupted state and clear it.
@@ -328,11 +326,11 @@ public final class Game implements IGameEventListenerHolder
     {
         if (nextBonusFrame < frame)
         {
-            /*
-             * We pick the bonus location at random, avoiding cells where players are. We
-             * could try to make it smarter by placing bonuses in equal or at least
-             * maximum distance from all players, but it did not work that well in
-             * practice (I tried).
+            /* 
+             * We pick the bonus location at random, avoiding
+             * cells where players are. We could try to make it smarter
+             * by placing bonuses in equal or at least maximum distance from all
+             * players, but it did not work that well in practice (I tried).
              */
             final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
@@ -351,22 +349,22 @@ public final class Game implements IGameEventListenerHolder
         }
     }
 
-    private Point randomEmptyCell(Collection<Point> banned)
-    {
-        final ArrayList<Point> positions = Lists.newArrayListWithExpectedSize(board.width
-            * board.height / 2);
+    private Point randomEmptyCell(Collection<Point> banned) {
+        final ArrayList<Point> positions = 
+            Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
         for (int y = board.height - 1; y >= 0; y--)
         {
             for (int x = board.width - 1; x >= 0; x--)
             {
                 final Point p = new Point(x, y);
-                if (!banned.contains(p) && board.cellAt(p).type == CellType.CELL_EMPTY)
+                if (!banned.contains(p) 
+                    && board.cellAt(p).type == CellType.CELL_EMPTY)
                 {
                     positions.add(p);
                 }
             }
         }
-        final int size = positions.size();
+        final int size = positions.size(); 
         if (size > 0)
         {
             return positions.get(random.nextInt(size));
@@ -379,9 +377,8 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processCrates(int frame)
     {
-        if (nextCrateFrame < frame)
-        {
-            final HashSet<Point> banned = Sets.newHashSet();
+        if (nextCrateFrame < frame) {
+        	final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
             {
                 if (!pi.isDead())
@@ -392,8 +389,7 @@ public final class Game implements IGameEventListenerHolder
                 }
             }
 
-            for (Point point : board.defaultPlayerPositions)
-            {
+            for (Point point : board.defaultPlayerPositions) {
                 banned.add(point);
                 banned.addAll(BoardUtilities.findBlockingLocations(board, point));
             }
@@ -430,7 +426,7 @@ public final class Game implements IGameEventListenerHolder
         if (alive > 1) return null;
 
         /*
-         * Finito, basta, tutti morti.
+         * Finito, basta, tutti morti. 
          */
         return new GameResult(mode, getPlayerStats());
     }
@@ -445,7 +441,7 @@ public final class Game implements IGameEventListenerHolder
         {
             stats.add(pi.getStatus());
         }
-
+        
         return stats;
     }
 
@@ -456,8 +452,7 @@ public final class Game implements IGameEventListenerHolder
     {
         if (teams.size() == 0) return Collections.emptyList();
 
-        final ArrayList<TeamStatus> stats = Lists.newArrayListWithExpectedSize(teams
-            .size());
+        final ArrayList<TeamStatus> stats = Lists.newArrayListWithExpectedSize(teams.size());
         for (String teamName : teams.keySet())
         {
             stats.add(new TeamStatus(teamName));
@@ -488,13 +483,13 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Sets the frame limit for the game. The game will be interrupted if this limit is
-     * reached. A limit of zero means no limit.
+     * Sets the frame limit for the game. The game will be interrupted if this
+     * limit is reached. A limit of zero means no limit. 
      */
     public void setFrameLimit(int framesLimit)
     {
         assert framesLimit >= 0;
-
+    
         this.frameLimit = framesLimit;
     }
 
@@ -505,8 +500,8 @@ public final class Game implements IGameEventListenerHolder
     {
         if (listeners.contains(listener))
         {
-            throw new RuntimeException(
-                "It is an error to add the same listener more than once: " + listener);
+            throw new RuntimeException("It is an error to add the same listener more than once: "
+                + listener);
         }
         listeners.add(listener);
     }
@@ -526,8 +521,8 @@ public final class Game implements IGameEventListenerHolder
     {
         if (frameListeners.contains(listener))
         {
-            throw new RuntimeException(
-                "It is an error to add the same listener more than once: " + listener);
+            throw new RuntimeException("It is an error to add the same listener more than once: "
+                + listener);
         }
         frameListeners.add(listener);
     }
@@ -541,8 +536,8 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Interrupt the currently running game. The interrupted game may be delayed for the
-     * duration of a frame to allow dispatching finalizing events.
+     * Interrupt the currently running game. The interrupted game may be delayed for the duration
+     * of a frame to allow dispatching finalizing events.
      */
     public void interrupt()
     {
@@ -573,8 +568,7 @@ public final class Game implements IGameEventListenerHolder
      */
     private void firePostFrameEvent(int frame)
     {
-        for (IFrameListener l : frameListeners)
-            l.postFrame(frame);
+        for (IFrameListener l : frameListeners) l.postFrame(frame);
     }
 
     /*
@@ -582,45 +576,26 @@ public final class Game implements IGameEventListenerHolder
      */
     private void firePreFrameEvent(final int frame)
     {
-        for (IFrameListener l : frameListeners)
-            l.preFrame(frame);
+        for (IFrameListener l : frameListeners) l.preFrame(frame);
     }
-
+    
     /**
-     * Move players according to their controller signals, drop bombs, check collisions.
+     * Move players according to their controller signals, drop bombs,
+     * check collisions.
      */
     private void processPlayers(int frame)
     {
         final ArrayList<PlayerInfo> killed = Lists.newArrayList();
 
         /*
-         * Process controller direction signals, drop bombs, check collisions and bring
-         * the dead back to life.
+         * Process controller direction signals, drop bombs, check collisions
+         * and bring the dead back to life.  
          */
         for (PlayerInfo pi : playerInfos)
         {
             final IPlayerController c = pi.player.controller;
 
-            final IPlayerController.Direction originalSignal = c.getCurrent();
-            final IPlayerController.Direction signal;
-            if (originalSignal != null && frame < pi.controllerReverseEndsAtFrame) switch (originalSignal)
-            {
-                case DOWN:
-                    signal = Direction.UP;
-                    break;
-                case UP:
-                    signal = Direction.DOWN;
-                    break;
-                case LEFT:
-                    signal = Direction.RIGHT;
-                    break;
-                case RIGHT:
-                    signal = Direction.LEFT;
-                    break;
-                default:
-                    signal = originalSignal;
-            }
-            else signal = originalSignal;
+            final IPlayerController.Direction signal = c.getCurrent();
             pi.nextFrameUpdate(signal);
 
             /*
@@ -645,13 +620,13 @@ public final class Game implements IGameEventListenerHolder
              * check collisions against bombs and other active cells.
              */
             checkCollisions(frame, killed, pi);
-
+            
             /*
              * execute bonuses that player doesn't have influence on.
              */
             executeBonuses(frame, pi);
         }
-
+        
         /*
          * Add sound effect to the queue, if any.
          */
@@ -690,12 +665,12 @@ public final class Game implements IGameEventListenerHolder
         if (pi.isImmortal()) return;
 
         /*
-         * Check collisions against grid cells. We only care about the cell directly under
-         * the player.
+         * Check collisions against grid cells. We only care about the cell directly 
+         * under the player.
          */
         final Point xy = boardData.pixelToGrid(pi.location);
         final Cell c = board.cellAt(xy);
-
+        
         // For whom the bell tolls...
         if (c.type.isLethal())
         {
@@ -723,10 +698,10 @@ public final class Game implements IGameEventListenerHolder
         }
 
         /*
-         * Process bonuses. The bonus-assignment is not entirely fair, because if two
-         * players touch the bonus at once, the player with lower index will collect the
-         * bonus. With randomized player order, however, this should be of no practical
-         * importance.
+         * Process bonuses. The bonus-assignment is not entirely fair, because if
+         * two players touch the bonus at once, the player with lower index will collect
+         * the bonus. With randomized player order, however, this should be of no 
+         * practical importance.
          */
         boolean bonusCollected = false;
         if (c.type == CellType.CELL_BONUS_BOMB)
@@ -737,39 +712,39 @@ public final class Game implements IGameEventListenerHolder
 
         if (c.type == CellType.CELL_BONUS_RANGE)
         {
-            if ((pi.maxRangeEndsAtFrame > frame) && (pi.bombRange == Integer.MAX_VALUE))
-            {
-                pi.storedBombRange++;
-            }
-            else pi.bombRange++;
-            bonusCollected = true;
+        	if ((pi.maxRangeEndsAtFrame > frame) && (pi.bombRange == Integer.MAX_VALUE)) 
+        	{
+        		pi.storedBombRange++;
+        	}
+        	else pi.bombRange++;
+        	bonusCollected = true;
         }
-
+        
         if (c.type == CellType.CELL_BONUS_DIARRHEA)
         {
-            pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
-            bonusCollected = true;
+        	pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
+        	bonusCollected = true;
         }
 
         if (c.type == CellType.CELL_BONUS_MAXRANGE)
         {
-            pi.storedBombRange = pi.bombRange;
-            pi.bombRange = Integer.MAX_VALUE;
-            pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
-            bonusCollected = true;
+        	pi.storedBombRange = pi.bombRange;
+        	pi.bombRange = Integer.MAX_VALUE;
+        	pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
+        	bonusCollected = true;
         }
-
+        
         if (c.type == CellType.CELL_BONUS_IMMORTALITY)
         {
-            pi.makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
-            pi.immortalityBonusCollected = true;
-            bonusCollected = true;
+        	pi.makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
+        	pi.immortalityBonusCollected = true;
+        	bonusCollected = true;
         }
-
+        
         if (c.type == CellType.CELL_BONUS_NO_BOMBS)
         {
-            pi.noBombsEndsAtFrame = frame + Globals.DEFAULT_NO_BOMBS_FRAMES;
-            bonusCollected = true;
+        	pi.noBombsEndsAtFrame = frame + Globals.DEFAULT_NO_BOMBS_FRAMES;
+        	bonusCollected = true;
         }
 
         if (c.type == CellType.CELL_BONUS_SPEED)
@@ -782,28 +757,14 @@ public final class Game implements IGameEventListenerHolder
                 (int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED));
             bonusCollected = true;
         }
-
+        
         if (c.type == CellType.CELL_BONUS_CRATE_WALKING)
         {
-            pi.crateWalkingEndsAtFrame = frame + Globals.DEFAULT_CRATE_WALKING_FRAMES;
-            pi.canWalkCrates = true;
-            bonusCollected = true;
+        	pi.crateWalkingEndsAtFrame = frame + Globals.DEFAULT_CRATE_WALKING_FRAMES;
+        	pi.canWalkCrates = true;
+        	bonusCollected = true;
         }
-
-        if (c.type == CellType.CELL_BONUS_BOMB_WALKING)
-        {
-            pi.bombWalkingEndsAtFrame = frame + Globals.DEFAULT_BOMB_WALKING_FRAMES;
-            pi.canWalkBombs = true;
-            bonusCollected = true;
-        }
-
-        if (c.type == CellType.CELL_BONUS_CONTROLLER_REVERSE)
-        {
-            pi.controllerReverseEndsAtFrame = frame
-                + Globals.DEFAULT_CONTROLLER_REVERSE_FRAMES;
-            bonusCollected = true;
-        }
-
+        
         if (bonusCollected)
         {
             dispatchPlayerStatuses = true;
@@ -811,56 +772,43 @@ public final class Game implements IGameEventListenerHolder
             events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
         }
     }
-
+    
     /**
-     * Execute bonuses that aren't controlled by the player, like diarrhea.
-     */
+	 * Execute bonuses that aren't controlled by the player, like diarrhea.
+	 */
     private void executeBonuses(int frame, PlayerInfo pi)
-    {
-        if (pi.diarrheaEndsAtFrame > frame)
-        {
-            dropBombAttempt(frame, pi);
-        }
-
-        if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
-        {
-            pi.bombRange = pi.storedBombRange;
-            pi.storedBombRange = Integer.MIN_VALUE;
-        }
-
+	{
+		if (pi.diarrheaEndsAtFrame > frame)
+		{
+			dropBombAttempt(frame, pi);
+		}
+		if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
+		{
+			pi.bombRange = pi.storedBombRange;
+			pi.storedBombRange = Integer.MIN_VALUE;
+		}
+		
         if ((pi.speedEndsAtFrame <= frame) && (pi.speedModifier != 1.0))
         {
             pi.speedModifier = 1.0;
             pi.speed = new Point((int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED),
                 (int) (pi.speedModifier * Globals.DEFAULT_PLAYER_SPEED));
         }
-
         if ((pi.crateWalkingEndsAtFrame < frame) && (pi.canWalkCrates))
         {
-            pi.canWalkCrates = false;
-            final Point xy = boardData.pixelToGrid(pi.location);
-            if (!canWalkOn(pi, xy))
-            {
-                pi.kill();
-                events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
-            }
+        	pi.canWalkCrates = false;
+        	final Point xy = boardData.pixelToGrid(pi.location);
+        	if (!canWalkOn(pi, xy))
+        	{
+        		pi.kill();
+        		events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+        	}
         }
-
-        if ((pi.bombWalkingEndsAtFrame < frame) && (pi.canWalkBombs))
-        {
-            pi.canWalkBombs = false;
-            final Point xy = boardData.pixelToGrid(pi.location);
-            if (!canWalkOn(pi, xy))
-            {
-                pi.kill();
-                events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
-            }
-        }
-    }
+	}
 
     /**
-     * Attempt to drop a bomb at the given location (if the player has any bombs left and
-     * the cell under its feet is empty).
+     * Attempt to drop a bomb at the given location (if the player has any bombs left
+     * and the cell under its feet is empty).
      */
     private void dropBombAttempt(int frame, PlayerInfo pi)
     {
@@ -928,32 +876,33 @@ public final class Game implements IGameEventListenerHolder
             if (!canWalkOn(pi, txy))
             {
                 /*
-                 * We try to perform 'easing', that is moving the player towards the cell
-                 * from which he or she will be able to move further.
+                 * We try to perform 'easing', that is moving
+                 * the player towards the cell from which he or she will
+                 * be able to move further.
                  */
-                final Point offset = boardData.pixelToGridOffset(pi.location);
+                final Point offset = boardData.pixelToGridOffset(pi.location); 
 
                 final boolean easingApplied;
                 switch (signal)
                 {
                     case LEFT:
-                        easingApplied = ease(pi, xy, offset.y, 0, 1, -1, 1,
-                            Direction.DOWN, 0, -1, -1, -1, Direction.UP);
+                        easingApplied = ease(pi, xy, offset.y, 
+                            0, 1, -1, 1, Direction.DOWN, 0, -1, -1, -1, Direction.UP);
                         break;
 
                     case RIGHT:
-                        easingApplied = ease(pi, xy, offset.y, 0, 1, 1, 1,
-                            Direction.DOWN, 0, -1, 1, -1, Direction.UP);
+                        easingApplied = ease(pi, xy, offset.y, 
+                            0, 1, 1, 1, Direction.DOWN, 0, -1, 1, -1, Direction.UP);
                         break;
 
                     case DOWN:
-                        easingApplied = ease(pi, xy, offset.x, 1, 0, 1, 1,
-                            Direction.RIGHT, -1, 0, -1, 1, Direction.LEFT);
+                        easingApplied = ease(pi, xy, offset.x, 
+                            1, 0, 1, 1, Direction.RIGHT, -1, 0, -1, 1, Direction.LEFT);
                         break;
 
                     case UP:
-                        easingApplied = ease(pi, xy, offset.x, 1, 0, 1, -1,
-                            Direction.RIGHT, -1, 0, -1, -1, Direction.LEFT);
+                        easingApplied = ease(pi, xy, offset.x, 
+                            1, 0, 1, -1, Direction.RIGHT, -1, 0, -1, -1, Direction.LEFT);
                         break;
 
                     default:
@@ -963,7 +912,8 @@ public final class Game implements IGameEventListenerHolder
                 if (easingApplied) return;
 
                 /*
-                 * We can't step over a cell that has contents, no easing.
+                 * We can't step over a cell that has contents,
+                 * no easing.
                  */
                 dx = 0;
                 dy = 0;
@@ -974,34 +924,39 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * A helper function that tests if we can apply easing in one of the directions. This
-     * is generalized for all the possibilities, so it may be vague a bit.
+     * A helper function that tests if we can apply easing in one 
+     * of the directions. This is generalized for all the possibilities,
+     * so it may be vague a bit.
      */
-    private boolean ease(PlayerInfo pi, Point xy, int o, int x1, int y1, int x2, int y2,
-        Direction d1, int x3, int y3, int x4, int y4, Direction d2)
+    private boolean ease(
+        PlayerInfo pi, Point xy, int o,
+        int x1, int y1, int x2, int y2, Direction d1,
+        int x3, int y3, int x4, int y4, Direction d2)
     {
         final int easeMargin = boardData.cellSize / 3;
 
         if (o > boardData.cellSize - easeMargin
-            && canWalkOn(pi, new Point(xy.x + x1, xy.y + y1))
+            && canWalkOn(pi, new Point(xy.x + x1, xy.y + y1)) 
             && canWalkOn(pi, new Point(xy.x + x2, xy.y + y2)))
         {
             movePlayer(pi, d1);
             return true;
         }
 
-        if (o < easeMargin && canWalkOn(pi, new Point(xy.x + x3, xy.y + y3))
+        if (o < easeMargin
+            && canWalkOn(pi, new Point(xy.x + x3, xy.y + y3)) 
             && canWalkOn(pi, new Point(xy.x + x4, xy.y + y4)))
         {
             movePlayer(pi, d2);
             return true;
         }
-
+        
         return false;
     }
 
     /**
-     * Returns <code>true</code> if a player can walk on the grid's given coordinates.
+     * Returns <code>true</code> if a player can walk on the grid's
+     * given coordinates.
      */
     private boolean canWalkOn(PlayerInfo pi, Point txy)
     {
@@ -1009,10 +964,9 @@ public final class Game implements IGameEventListenerHolder
          * Players in immortality mode can walk over bombs, but not anything else.
          */
         CellType t = board.cellAt(txy).type;
-        return t.isWalkable()
-            || (pi.isImmortal() && t == CellType.CELL_BOMB)
-            || (pi.canWalkCrates
-                && ((t == CellType.CELL_CRATE) || (t == CellType.CELL_CRATE_OUT)) || (pi.canWalkBombs && t == CellType.CELL_BOMB));
+        return t.isWalkable() 
+        || (pi.isImmortal() && t == CellType.CELL_BOMB) 
+        || (pi.canWalkCrates && ((t == CellType.CELL_CRATE) ||(t == CellType.CELL_CRATE_OUT)));
     }
 
     /**
@@ -1023,12 +977,11 @@ public final class Game implements IGameEventListenerHolder
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < playerInfos.size())
         {
-            logger.warn("The board has fewer positions than players: " + defaults.length
-                + " < " + playerInfos.size());
+            logger.warn("The board has fewer positions than players: "
+                + defaults.length + " < " + playerInfos.size());
         }
 
-        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1
-            : Globals.DEFAULT_LIVES);
+        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : Globals.DEFAULT_LIVES);
 
         if (p.controller instanceof IGameEventListener)
         {
@@ -1045,14 +998,14 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Return the sprite type (color and shape) for a given player.
+     * Return the sprite type (color and shape) for a given player. 
      */
     private Type getSpriteType(Player p, int playerIndex)
     {
-        final ISprite.Type[] playerSprites = ISprite.Type.getPlayerSprites();
+        final ISprite.Type [] playerSprites = ISprite.Type.getPlayerSprites();
         if (StringUtils.isEmpty(p.team))
         {
-            return playerSprites[playerIndex % playerSprites.length];
+            return playerSprites[playerIndex % playerSprites.length]; 
         }
         else
         {
@@ -1071,7 +1024,7 @@ public final class Game implements IGameEventListenerHolder
      */
     private Point getDefaultLocation(int i)
     {
-        final Point [] defaults = board.defaultPlayerPositions;
+        final Point [] defaults = board.defaultPlayerPositions;        
         return boardData.gridToPixel(defaults[i % defaults.length]);
     }
 
@@ -1101,8 +1054,8 @@ public final class Game implements IGameEventListenerHolder
                 final CellType type = cell.type;
 
                 /*
-                 * Advance counter frame on cells that use it. Clean up cells that have
-                 * finished animating.
+                 * Advance counter frame on cells that use it.
+                 * Clean up cells that have finished animating.
                  */
                 cell.counter++;
 
@@ -1124,7 +1077,7 @@ public final class Game implements IGameEventListenerHolder
         {
             for (int y = board.height - 1; y >= 0; y--)
             {
-                final Cell cell = board.cellAt(x, y);
+                final Cell cell =  board.cellAt(x, y);
                 final CellType type = cell.type;
 
                 if (type == CellType.CELL_BOMB)

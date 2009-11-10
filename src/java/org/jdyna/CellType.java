@@ -7,7 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * A cell type contains the cell's numeric code and exposes several properties, including
+ * A cell type contains the cell's numeric code and exposes several properties, including 
  * walkability, hostility against the player, etc.
  */
 public enum CellType
@@ -19,19 +19,31 @@ public enum CellType
     CELL_WALL('#'),
 
     /* Crates (destroyable). */
-    CELL_CRATE('X'), CELL_CRATE_OUT('x'), CELL_RANDOM_CRATE('~'),
+    CELL_CRATE('X'), 
+    CELL_CRATE_OUT('x'),
+    CELL_RANDOM_CRATE('~'),
 
     /* Bomb. */
     CELL_BOMB('b'),
 
     /* Explosions. */
-    CELL_BOOM_LX('<'), CELL_BOOM_RX('>'), CELL_BOOM_X('-'), CELL_BOOM_TY('^'), CELL_BOOM_BY(
-        'v'), CELL_BOOM_Y('|'), CELL_BOOM_XY('+'),
+    CELL_BOOM_LX('<'), 
+    CELL_BOOM_RX('>'), 
+    CELL_BOOM_X('-'), 
+    CELL_BOOM_TY('^'), 
+    CELL_BOOM_BY('v'), 
+    CELL_BOOM_Y('|'), 
+    CELL_BOOM_XY('+'),
 
     /* Bonuses */
-    CELL_BONUS_BOMB('@'), CELL_BONUS_RANGE('*'), CELL_BONUS_DIARRHEA('d'), CELL_BONUS_IMMORTALITY(
-        'i'), CELL_BONUS_MAXRANGE('m'), CELL_BONUS_NO_BOMBS('n'), CELL_BONUS_SPEED('s'), CELL_BONUS_CRATE_WALKING(
-        'c'), CELL_BONUS_BOMB_WALKING('q'), CELL_BONUS_CONTROLLER_REVERSE('r');
+    CELL_BONUS_BOMB('@'),
+    CELL_BONUS_RANGE('*'),
+    CELL_BONUS_DIARRHEA('d'),
+    CELL_BONUS_IMMORTALITY('i'),
+    CELL_BONUS_MAXRANGE('m'),
+    CELL_BONUS_NO_BOMBS('n'),
+    CELL_BONUS_SPEED('s'),
+    CELL_BONUS_CRATE_WALKING('c');
 
     /**
      * Character code for the cell (16 bits).
@@ -58,7 +70,7 @@ public enum CellType
     public boolean isLethal()
     {
         return LETHAL.contains(this);
-    }
+    }   
 
     /**
      * @return Returns <code>true</code> if this cell type is empty (players can walk on
@@ -66,9 +78,9 @@ public enum CellType
      */
     public boolean isWalkable()
     {
-        return WALKABLES.contains(this);
+    	return WALKABLES.contains(this);
     }
-
+    
     /**
      * Return the frame counter after which the cell should be replaced with
      * {@link #CELL_EMPTY}. If zero, the cell should not be removed from the grid at all.
@@ -88,8 +100,8 @@ public enum CellType
         final CellType c = CODE_TO_CELL_TYPE[code];
         if (c == null)
         {
-            throw new RuntimeException("No cell type with code: " + (int) code + " ('"
-                + code + "')");
+            throw new RuntimeException("No cell type with code: " 
+                + (int) code + " ('" + code + "')");
         }
 
         return CODE_TO_CELL_TYPE[code];
@@ -115,8 +127,8 @@ public enum CellType
         CODE_TO_CELL_TYPE = new CellType [Character.MAX_VALUE];
         for (CellType c : CellType.values())
         {
-            if (CODE_TO_CELL_TYPE[c.code] != null) throw new RuntimeException(
-                "Two cells have the same code.");
+            if (CODE_TO_CELL_TYPE[c.code] != null)
+                throw new RuntimeException("Two cells have the same code.");
 
             CODE_TO_CELL_TYPE[c.code] = c;
         }
@@ -129,13 +141,11 @@ public enum CellType
     static
     {
         int max = 0;
-        for (CellType t : CellType.values())
-            max = Math.max(max, t.ordinal());
+        for (CellType t : CellType.values()) max = Math.max(max, t.ordinal());
         ORDINAL_TO_CELL_TYPE = new CellType [max + 1];
-        for (CellType t : CellType.values())
-            ORDINAL_TO_CELL_TYPE[t.ordinal()] = t;
+        for (CellType t : CellType.values()) ORDINAL_TO_CELL_TYPE[t.ordinal()] = t;
     }
-
+    
     /**
      * A static set of all cells that are explosions.
      * 
@@ -144,7 +154,8 @@ public enum CellType
     private final static EnumSet<CellType> EXPLOSION_CELLS;
     static
     {
-        EXPLOSION_CELLS = EnumSet.of(CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
+        EXPLOSION_CELLS = EnumSet.of(
+            CellType.CELL_BOOM_BY, CellType.CELL_BOOM_TY,
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX,
             CellType.CELL_BOOM_RX, CellType.CELL_BOOM_XY);
     }
@@ -159,18 +170,16 @@ public enum CellType
     }
 
     /**
-     * All cells on which the player can walk. This does not mean that they are safe,
-     * explosion cells are also walkable.
+     * All cells on which the player can walk. This does not mean that they are
+     * safe, explosion cells are also walkable.
      */
     private final static EnumSet<CellType> WALKABLES;
     static
     {
         WALKABLES = EnumSet.of(CellType.CELL_EMPTY, CellType.CELL_BONUS_BOMB,
-            CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA,
-            CellType.CELL_BONUS_NO_BOMBS, CellType.CELL_BONUS_MAXRANGE,
-            CellType.CELL_BONUS_IMMORTALITY, CellType.CELL_BONUS_SPEED,
-            CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE);
+            CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
+            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 
@@ -182,8 +191,8 @@ public enum CellType
     static
     {
         /*
-         * Number of frames frameRate. These values should be image-independent, but we
-         * hardcode the constants used in classic dyna.
+         * Number of frames * frameRate. These values should be image-independent,
+         * but we hardcode the constants used in classic dyna.
          */
         final int explosionFrameCount = 7 * 2;
         final int crateFrameCount = 7 * 2;
@@ -194,5 +203,5 @@ public enum CellType
             ANIMATING_CELLS.put(c, explosionFrameCount);
         }
         ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
-    }
+    }    
 }
