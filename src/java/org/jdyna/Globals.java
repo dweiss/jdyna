@@ -141,6 +141,11 @@ public final class Globals
      * For how many frames the player can walk through bombs.
      */
     public static final int DEFAULT_BOMB_WALKING_FRAMES = 20 * DEFAULT_FRAME_RATE;
+
+    /**
+     * The default number of frames player has a controller reverse disease.
+     */
+    public static final int DEFAULT_CONTROLLER_REVERSE_FRAMES = 10 * DEFAULT_FRAME_RATE;
         
     /*
      * 

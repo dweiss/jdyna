@@ -123,6 +123,11 @@ final class PlayerInfo implements IPlayerSprite
     int noBombsEndsAtFrame = Integer.MIN_VALUE; 
 
     /**
+     * Frame number after which controller reverse disease ends for this player.
+     */
+    int controllerReverseEndsAtFrame = Integer.MIN_VALUE;
+
+    /**
      * If the player is dead, this is the frame number of its death.
      */
     private int deathAtFrame;
@@ -322,6 +327,7 @@ final class PlayerInfo implements IPlayerSprite
         this.bombCount = Globals.DEFAULT_BOMB_COUNT;
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
         this.immortalityBonusCollected = false;
+        this.controllerReverseEndsAtFrame = Integer.MIN_VALUE;
 
         this.reincarnations++;
         makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);

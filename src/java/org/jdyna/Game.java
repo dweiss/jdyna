@@ -114,7 +114,7 @@ public final class Game implements IGameEventListenerHolder
             CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
             CellType.CELL_BONUS_SPEED, CellType.CELL_BONUS_CRATE_WALKING,
-            CellType.CELL_BONUS_BOMB_WALKING);
+            CellType.CELL_BONUS_BOMB_WALKING, CellType.CELL_BONUS_CONTROLLER_REVERSE);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -596,7 +596,26 @@ public final class Game implements IGameEventListenerHolder
         {
             final IPlayerController c = pi.player.controller;
 
-            final IPlayerController.Direction signal = c.getCurrent();
+            final IPlayerController.Direction originalSignal = c.getCurrent();
+            final IPlayerController.Direction signal;
+            if (originalSignal != null && frame < pi.controllerReverseEndsAtFrame) switch (originalSignal)
+            {
+                case DOWN:
+                    signal = Direction.UP;
+                    break;
+                case UP:
+                    signal = Direction.DOWN;
+                    break;
+                case LEFT:
+                    signal = Direction.RIGHT;
+                    break;
+                case RIGHT:
+                    signal = Direction.LEFT;
+                    break;
+                default:
+                    signal = originalSignal;
+            }
+            else signal = originalSignal;
             pi.nextFrameUpdate(signal);
 
             /*
@@ -770,6 +789,13 @@ public final class Game implements IGameEventListenerHolder
         {
             pi.bombWalkingEndsAtFrame = frame + Globals.DEFAULT_BOMB_WALKING_FRAMES;
             pi.canWalkBombs = true;
+            bonusCollected = true;
+        }
+        
+        if (c.type == CellType.CELL_BONUS_CONTROLLER_REVERSE)
+        {
+            pi.controllerReverseEndsAtFrame = frame
+                + Globals.DEFAULT_CONTROLLER_REVERSE_FRAMES;
             bonusCollected = true;
         }
         
