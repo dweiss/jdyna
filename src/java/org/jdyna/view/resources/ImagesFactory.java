@@ -122,7 +122,7 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_MAXRANGE, 4, sb2.tile(new int [][] {
                 {10, 0}, {11, 0} })
             ),
-            create(CellType.CELL_BONUS_SPEED, 4, sb2.tile(new int [][] {
+            create(CellType.CELL_BONUS_SPEED_UP, 4, sb2.tile(new int [][] {
                 {14, 0}, {15, 0} })
             ),
             create(CellType.CELL_BONUS_CRATE_WALKING, 4, sb2.tile(new int [][] {
@@ -133,6 +133,9 @@ public final class ImagesFactory
             ),
             create(CellType.CELL_BONUS_CONTROLLER_REVERSE, 4, sb2.tile(new int [][] {
                 {0, 1}, {1, 1} })
+            ),
+            create(CellType.CELL_BONUS_SLOW_DOWN, 4, sb2.tile(new int [][] {
+                {2, 1}, {3, 1} })
             ),
         });
 

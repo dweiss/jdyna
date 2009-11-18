@@ -32,7 +32,7 @@ final class PlayerInfo implements IPlayerSprite
      * If player collects the speed bonus the variable is changed. 
      * If player doesn't have speed bonus the variable is set to 1.0. 
      */
-    double speedModifier = 1.0;
+    double speedMultiplier = 1.0;
     
     /**
      * An increasing counter of frames if the player is in walking state.
