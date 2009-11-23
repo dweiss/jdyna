@@ -816,17 +816,20 @@ public final class Game implements IGameEventListenerHolder
 		{
 			dropBombAttempt(frame, pi);
 		}
+
 		if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
 		{
 			pi.bombRange = pi.storedBombRange;
 			pi.storedBombRange = Integer.MIN_VALUE;
 		}
+
         if ((pi.speedEndsAtFrame <= frame) && (pi.speedMultiplier != 1.0))
         {
             pi.speedMultiplier = 1.0;
             pi.speed = new Point((int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
                 (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED));
         }
+
         if ((pi.crateWalkingEndsAtFrame < frame) && (pi.canWalkCrates))
         {
         	pi.canWalkCrates = false;
@@ -835,8 +838,10 @@ public final class Game implements IGameEventListenerHolder
         	{
         		pi.kill();
         		events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+        		return;
         	}
         }
+
         if ((pi.bombWalkingEndsAtFrame < frame) && (pi.canWalkBombs))
         {
             pi.canWalkBombs = false;
@@ -845,6 +850,7 @@ public final class Game implements IGameEventListenerHolder
             {
                 pi.kill();
                 events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+                return;
             }
         }
 	}
