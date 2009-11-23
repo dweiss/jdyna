@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.sound.sampled.*;
+import javax.sound.sampled.Line.Info;
 
 import org.apache.commons.io.IOUtils;
 
@@ -34,8 +35,6 @@ public final class ClipManager<T extends Enum<T>>
     /**
      * Creates a sound manager attached to a particular enum constant for selecting sound
      * effects to be played.
-     * 
-     * @param mixerInfo The mixer to be used, <code>null</code> for the default.
      */
     public <V extends Collection<Clip>> ClipManager(Class<T> keyType, EnumMap<T, V> clips)
     {
@@ -118,7 +117,7 @@ public final class ClipManager<T extends Enum<T>>
     /**
      * Loads a sample (clip) in multiple copies, closing the input stream (always).
      * <p>
-     * I experimented a bit with various ways of loading clips and {@link AudioSystem#getLine(Clip)}
+     * I experimented a bit with various ways of loading clips and {@link AudioSystem#getLine(Info)}
      * seems to work most reliable on multiple systems (Linux, Windows). It selects proper
      * mixer internally and the logic of selecting such a mixer is not trivial. 
      */

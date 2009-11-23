@@ -78,8 +78,6 @@ public final class OpenALClipManager<T extends Enum<T>>
     /**
      * Creates a sound manager attached to a particular enum constant for selecting sound
      * effects to be played.
-     * 
-     * @param mixerInfo The mixer to be used, <code>null</code> for the default.
      */
     public <V extends WaveData> OpenALClipManager(Class<T> keyType, EnumMap<T, V> clips)
     {

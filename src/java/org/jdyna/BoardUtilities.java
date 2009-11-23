@@ -25,7 +25,7 @@ public final class BoardUtilities
     /**
      * A grid of resulting {@link CellType}s when two explosions overlap.
      * 
-     * @see #overlap(Cell, Cell)
+     * @see #overlap(Cell, ExplosionCell, BombCell)
      */
     private final static EnumMap<CellType, EnumMap<CellType, CellType>> EXPLOSION_OVERLAPS;
     static
@@ -117,7 +117,7 @@ public final class BoardUtilities
     }
 
     /**
-     * Helper method for {@link #explode(List, int, int, int)}, propagation
+     * Helper method for {@link #explode(Board, List, List, int, int)}7, propagation
      * of the explosion. 
      */
     private static void explode0(
@@ -232,7 +232,6 @@ public final class BoardUtilities
      * 
      * @param p
      *            Coordinates of the cell the player is standing on
-     * @return
      */
     public static Collection<Point> findBlockingLocations(Board board, Point p)
     {
@@ -277,13 +276,10 @@ public final class BoardUtilities
     /**
      * Determines whether a player standing on given board on given location
      * is blocked inside a tunnel without turns.
-     * @param board
-     * @param p
-     * @return
      */
     public static boolean isBlocked(Board board, Point p)
     {
-        boolean[] directionBlocked = new boolean[4];
+        final boolean [] directionBlocked = new boolean [4];
         for (int d = 0; d < 4; d++)
         {
             for (int i = 0; ; i++)

@@ -6,7 +6,7 @@ import java.awt.Point;
  * A sprite is an object that is superimposed on top of {@link Board}'s cells. The name
  * is traditional.
  * <p>
- * All animation sequences for each {@link SpriteType} are split into "states". Each state
+ * All animation sequences for each {@link ISprite.Type} are split into "states". Each state
  * may have one or more image frames. The controller manages animation states and frames,
  * although their interpretation and mapping to actual images is up to the view.
  */
@@ -39,13 +39,13 @@ public interface ISprite
     Type getType();
 
     /**
-     * Current animation state (managed for each {@link SpriteType} by the controller, but
+     * Current animation state (managed for each {@link ISprite.Type} by the controller, but
      * interpreted by views.
      */
     int getAnimationState();
 
     /**
-     * Current animation frame (managed for each {@link SpriteType} by the controller, but
+     * Current animation frame (managed for each {@link ISprite.Type} by the controller, but
      * interpreted by views.
      */
     int getAnimationFrame();

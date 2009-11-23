@@ -183,8 +183,6 @@ public final class GameServer
 
     /**
      * Handle a controller update message.
-     * 
-     * @param inetAddress
      */
     protected void handle(SerializablePacket p) throws IOException
     {

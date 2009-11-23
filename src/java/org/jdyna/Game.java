@@ -42,7 +42,6 @@ public final class Game implements IGameEventListenerHolder
          * are ranked after the game is over.
          * 
          * @see GameResult
-         * @see Standing
          */
         LAST_MAN_STANDING,
 
@@ -65,8 +64,7 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Dynamic information about players involved in the game. Indexed identically to 
-     * {@link #players}
+     * Dynamic information about players involved in the game.
      */
     private final List<PlayerInfo> playerInfos = Lists.newArrayList();
 
@@ -120,7 +118,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Reusable array of events dispatched in each frame.
      * 
-     * @see #run()
+     * @see #run(Mode)
      */
     private final ArrayList<GameEvent> events = Lists.newArrayList();
 

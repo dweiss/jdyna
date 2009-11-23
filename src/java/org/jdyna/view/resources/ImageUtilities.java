@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import org.jdyna.Globals;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -89,7 +91,7 @@ public final class ImageUtilities
     }
 
     /**
-     * Same as {@link #cell(GraphicsConfiguration, BufferedImage, int, int, int[]...)} but
+     * Same as {@link #cell(GraphicsConfiguration, BufferedImage, int, int, int[][])} but
      * for single-frame cells.
      */
     public static BufferedImage cell(GraphicsConfiguration conf, BufferedImage bricks,
@@ -110,7 +112,7 @@ public final class ImageUtilities
      * @param h Height of each frame's image.
      * @param offsets An array of <code>int[2]</code> with each frame's positions on the
      *            source bricks image. The coordinates are multiplied by
-     *            {@link #CELL_SIZE}.
+     *            {@link Globals#DEFAULT_CELL_SIZE}.
      */
     public static BufferedImage [] cell(GraphicsConfiguration conf, BufferedImage bricks,
         int w, int h, int []... offsets) throws IOException
