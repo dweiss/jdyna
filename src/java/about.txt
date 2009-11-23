@@ -30,6 +30,8 @@ JDyna:
 	Piotr Jędrzejczak (bug fixes, improvements)
 	Michał Kozłowski (bug fixes)
 	Krzysztof Kaźmierczyk (improvements)
+	
+	[TODO: Add new jdyna-developers]
 
 Bots (artificial intelligence):
 
