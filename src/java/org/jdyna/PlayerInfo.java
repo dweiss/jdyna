@@ -87,7 +87,7 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Indicates whether or not player can walk trough crates
      */
-    public boolean canWalkCrates = false; 
+    boolean canWalkCrates = false; 
     
     /**
      * Frames number the player is under Bomb Walking Bonus influence
@@ -97,7 +97,7 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Indicates whether or not player can walk through bombs
      */
-    public boolean canWalkBombs = false; 
+    boolean canWalkBombs = false; 
     
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
@@ -105,7 +105,7 @@ final class PlayerInfo implements IPlayerSprite
      * 
      * @see Globals#BOMB_DROP_DELAY
      */
-    public int lastBombFrame = Integer.MIN_VALUE;
+    int lastBombFrame = Integer.MIN_VALUE;
 
     /**
      * Frame number after which immortality ends for this player.
@@ -115,7 +115,7 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * If player collects the immortality bonus the variable is changed.  
      */
-    public boolean immortalityBonusCollected = false;
+    boolean immortalityBonusCollected = false;
     
     /**
      * Frame number after which no bombs bonus ends for this player.
