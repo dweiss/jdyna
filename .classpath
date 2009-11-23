@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/boards"/>
 	<classpathentry kind="src" path="src/graphics"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/google-collections.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/args4j-2.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/commons-io-1.4.jar"/>
@@ -21,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/runtime/jinput.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/lwjgl.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/lwjgl_util.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>
