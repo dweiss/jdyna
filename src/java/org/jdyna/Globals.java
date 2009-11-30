@@ -134,6 +134,18 @@ public final class Globals
      * The default number of frames player has a speed up or slow down bonus.
      */
     public static final int DEFAULT_SPEED_FRAMES = 10 * DEFAULT_FRAME_RATE;
+    
+    /**
+     * Multiplier for speed up bonus. It should not be changed because
+     * other values can cause unreal effects in walking. 
+     */
+    public static final float SPEED_UP_MULTIPLIER = 1.5f;
+    
+    /**
+     * Multiplier for slow down bonus. It should not be changed because
+     * other values can cause unreal effects in walking.
+     */
+    public static final float SLOW_DOWN_MULTIPLIER = 0.5f;
         
     public static final int DEFAULT_CRATE_WALKING_FRAMES = 10* DEFAULT_FRAME_RATE;
     

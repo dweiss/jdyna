@@ -771,7 +771,8 @@ public final class Game implements IGameEventListenerHolder
         {
             pi.speedEndsAtFrame = frame + Globals.DEFAULT_SPEED_FRAMES;
 
-            pi.speedMultiplier = c.type == CellType.CELL_BONUS_SPEED_UP ? 1.5 : 0.5;
+            pi.speedMultiplier = c.type == CellType.CELL_BONUS_SPEED_UP ?
+                Globals.SPEED_UP_MULTIPLIER	: Globals.SLOW_DOWN_MULTIPLIER;
             pi.speed = new Point(
                 (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
                 (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED));
@@ -823,9 +824,9 @@ public final class Game implements IGameEventListenerHolder
 			pi.storedBombRange = Integer.MIN_VALUE;
 		}
 
-        if ((pi.speedEndsAtFrame <= frame) && (pi.speedMultiplier != 1.0))
+        if ((pi.speedEndsAtFrame <= frame) && (pi.speedMultiplier != 1.0f))
         {
-            pi.speedMultiplier = 1.0;
+            pi.speedMultiplier = 1.0f;
             pi.speed = new Point((int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
                 (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED));
         }
