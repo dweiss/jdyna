@@ -77,6 +77,16 @@ public final class Globals
     public static final int BOMB_DROP_DELAY = 5;
 
     /**
+     * Time of animation for explosion flames.
+     */
+    public static final int DEFAULT_EXPLOSION_FRAMES = 14;
+
+    /**
+     * Time of animation for crates being destroyed by explosion.
+     */
+    public static final int DEFAULT_CRATE_OUT_FRAMES = 14;
+
+    /**
      * Default frame rate for playing games.
      */
     public static final int DEFAULT_FRAME_RATE = intProperty("dyna.framerate", 25);

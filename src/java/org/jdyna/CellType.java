@@ -46,7 +46,8 @@ public enum CellType
     CELL_BONUS_SLOW_DOWN('s'),
     CELL_BONUS_CRATE_WALKING('c'),
     CELL_BONUS_BOMB_WALKING('q'),
-    CELL_BONUS_CONTROLLER_REVERSE('r');
+    CELL_BONUS_CONTROLLER_REVERSE('r'),
+    CELL_BONUS_AHMED('a');
 
     /**
      * Character code for the cell (16 bits).
@@ -184,7 +185,7 @@ public enum CellType
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
             CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN, 
             CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE);
+            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 
@@ -195,18 +196,11 @@ public enum CellType
     private final static EnumMap<CellType, Integer> ANIMATING_CELLS;
     static
     {
-        /*
-         * Number of frames * frameRate. These values should be image-independent,
-         * but we hardcode the constants used in classic dyna.
-         */
-        final int explosionFrameCount = 7 * 2;
-        final int crateFrameCount = 7 * 2;
-
         ANIMATING_CELLS = Maps.newEnumMap(CellType.class);
         for (CellType c : EXPLOSION_CELLS)
         {
-            ANIMATING_CELLS.put(c, explosionFrameCount);
+            ANIMATING_CELLS.put(c, Globals.DEFAULT_EXPLOSION_FRAMES);
         }
-        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
+        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, Globals.DEFAULT_CRATE_OUT_FRAMES);
     }    
 }

@@ -97,7 +97,14 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Indicates whether or not player can walk through bombs
      */
-    boolean canWalkBombs = false; 
+    boolean canWalkBombs = false;
+
+    /**
+     * Indicates whether or not the player has the Ahmed bonus.
+     * Ahmed bonus means that the next bomb the player drops explodes
+     * immediately but doesn't kill the player.
+     */
+    boolean isAhmed = false;
     
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
@@ -328,6 +335,7 @@ final class PlayerInfo implements IPlayerSprite
         this.bombRange = Globals.DEFAULT_BOMB_RANGE;
         this.immortalityBonusCollected = false;
         this.controllerReverseEndsAtFrame = Integer.MIN_VALUE;
+        this.isAhmed = false;
 
         this.reincarnations++;
         makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);

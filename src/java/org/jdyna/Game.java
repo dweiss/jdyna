@@ -113,7 +113,7 @@ public final class Game implements IGameEventListenerHolder
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
             CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN,
             CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE);
+            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -799,7 +799,13 @@ public final class Game implements IGameEventListenerHolder
                 + Globals.DEFAULT_CONTROLLER_REVERSE_FRAMES;
             bonusCollected = true;
         }
-        
+
+        if (c.type == CellType.CELL_BONUS_AHMED)
+        {
+            pi.isAhmed = true;
+            bonusCollected = true;
+        }
+
         if (bonusCollected)
         {
             dispatchPlayerStatuses = true;
@@ -878,6 +884,12 @@ public final class Game implements IGameEventListenerHolder
             bomb.player = pi;
             bomb.range = pi.bombRange;
             board.cellAt(xy, bomb);
+
+            if (pi.isAhmed) {
+                bomb.fuseCounter = 1;
+                pi.makeImmortal(Globals.DEFAULT_EXPLOSION_FRAMES + 2);
+                pi.isAhmed = false;
+            }
         }
     }
 

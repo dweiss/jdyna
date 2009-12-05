@@ -137,6 +137,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_SLOW_DOWN, 4, sb2.tile(new int [][] {
                 {2, 1}, {3, 1} })
             ),
+            create(CellType.CELL_BONUS_AHMED, 4, sb2.tile(new int [][] {
+                {4, 1}, {5, 1} })
+            ),
         });
 
         /*
