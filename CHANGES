@@ -1,7 +1,25 @@
 
 VERSION <HEAD>
 
-    - [Fill in, please]
+    - Added bomb diarrhea bonus.
+	
+	- Added no bombs bonus.
+	
+	- Added maximum available range bonus.
+	
+	- Added immortality bonus.
+	
+	- Added speed-up and slow-down bonuses.
+	
+	- Added walking trough walls bonus. In addition after the bonus runs out for the player who is still inside a crate - the player dies. Player standing on a crate that just exploded does not die, the vanishing crate shields him against explosion.
+ 
+	- Added walking through bombs bonus.
+	
+	- Added controller reverse disease.
+
+	- Added random placing of crates on the board. 
+	
+	- Fixed several bugs.
 
 VERSION 0.94
 
