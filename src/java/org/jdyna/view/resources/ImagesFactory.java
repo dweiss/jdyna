@@ -140,6 +140,9 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_AHMED, 4, sb2.tile(new int [][] {
                 {4, 1}, {5, 1} })
             ),
+            create(CellType.CELL_BONUS_EASTER_EGG, 4, sb2.tile(new int [][] {
+                {6, 1}, {7, 1} })
+            ),
         });
 
         /*

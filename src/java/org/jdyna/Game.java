@@ -113,7 +113,8 @@ public final class Game implements IGameEventListenerHolder
             CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
             CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN,
             CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED);
+            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED,
+            CellType.CELL_BONUS_EASTER_EGG);
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -715,21 +716,31 @@ public final class Game implements IGameEventListenerHolder
                 }
             }
         }
-
+        
         /*
-         * Process bonuses. The bonus-assignment is not entirely fair, because if
-         * two players touch the bonus at once, the player with lower index will collect
-         * the bonus. With randomized player order, however, this should be of no 
-         * practical importance.
+         * Process bonuses.
          */
-        boolean bonusCollected = false;
-        if (c.type == CellType.CELL_BONUS_BOMB)
+		processCollectedBonus(frame, pi, c.type);
+    }
+    
+    /**
+     * Process bonuses. The bonus-assignment is not entirely fair, because if
+     * two players touch the bonus at once, the player with lower index will collect
+     * the bonus. With randomized player order, however, this should be of no 
+     * practical importance.
+     */    
+    private void processCollectedBonus(int frame, PlayerInfo pi, CellType ct)
+    {
+        final Point xy = boardData.pixelToGrid(pi.location);
+        
+    	boolean bonusCollected = false;
+        if (ct == CellType.CELL_BONUS_BOMB)
         {
             pi.bombCount++;
             bonusCollected = true;
         }
 
-        if (c.type == CellType.CELL_BONUS_RANGE)
+        if (ct == CellType.CELL_BONUS_RANGE)
         {
         	if ((pi.maxRangeEndsAtFrame > frame) && (pi.bombRange == Integer.MAX_VALUE)) 
         	{
@@ -739,13 +750,13 @@ public final class Game implements IGameEventListenerHolder
         	bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_DIARRHEA)
+        if (ct == CellType.CELL_BONUS_DIARRHEA)
         {
         	pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
         	bonusCollected = true;
         }
 
-        if (c.type == CellType.CELL_BONUS_MAXRANGE)
+        if (ct == CellType.CELL_BONUS_MAXRANGE)
         {
         	pi.storedBombRange = pi.bombRange;
         	pi.bombRange = Integer.MAX_VALUE;
@@ -753,25 +764,25 @@ public final class Game implements IGameEventListenerHolder
         	bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_IMMORTALITY)
+        if (ct == CellType.CELL_BONUS_IMMORTALITY)
         {
         	pi.makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
         	pi.immortalityBonusCollected = true;
         	bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_NO_BOMBS)
+        if (ct == CellType.CELL_BONUS_NO_BOMBS)
         {
         	pi.noBombsEndsAtFrame = frame + Globals.DEFAULT_NO_BOMBS_FRAMES;
         	bonusCollected = true;
         }
 
-        if (c.type == CellType.CELL_BONUS_SPEED_UP
-            || c.type == CellType.CELL_BONUS_SLOW_DOWN)
+        if (ct == CellType.CELL_BONUS_SPEED_UP
+            || ct == CellType.CELL_BONUS_SLOW_DOWN)
         {
             pi.speedEndsAtFrame = frame + Globals.DEFAULT_SPEED_FRAMES;
 
-            pi.speedMultiplier = c.type == CellType.CELL_BONUS_SPEED_UP ?
+            pi.speedMultiplier = ct == CellType.CELL_BONUS_SPEED_UP ?
                 Globals.SPEED_UP_MULTIPLIER	: Globals.SLOW_DOWN_MULTIPLIER;
             pi.speed = new Point(
                 (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
@@ -779,31 +790,43 @@ public final class Game implements IGameEventListenerHolder
             bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_CRATE_WALKING)
+        if (ct == CellType.CELL_BONUS_CRATE_WALKING)
         {
         	pi.crateWalkingEndsAtFrame = frame + Globals.DEFAULT_CRATE_WALKING_FRAMES;
         	pi.canWalkCrates = true;
         	bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_BOMB_WALKING)
+        if (ct == CellType.CELL_BONUS_BOMB_WALKING)
         {
             pi.bombWalkingEndsAtFrame = frame + Globals.DEFAULT_BOMB_WALKING_FRAMES;
             pi.canWalkBombs = true;
             bonusCollected = true;
         }
         
-        if (c.type == CellType.CELL_BONUS_CONTROLLER_REVERSE)
+        if (ct == CellType.CELL_BONUS_CONTROLLER_REVERSE)
         {
             pi.controllerReverseEndsAtFrame = frame
                 + Globals.DEFAULT_CONTROLLER_REVERSE_FRAMES;
             bonusCollected = true;
         }
 
-        if (c.type == CellType.CELL_BONUS_AHMED)
+        if (ct == CellType.CELL_BONUS_AHMED)
         {
             pi.isAhmed = true;
             bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_EASTER_EGG)
+        {
+        	/*
+        	 * Random bonus CellType
+        	 */
+        	CellType rct;
+			do {
+				rct = BONUSES.get(random.nextInt(BONUSES.size()));
+			} while (rct == CellType.CELL_BONUS_EASTER_EGG);
+        	processCollectedBonus(frame, pi, rct);
         }
 
         if (bonusCollected)
@@ -811,7 +834,7 @@ public final class Game implements IGameEventListenerHolder
             dispatchPlayerStatuses = true;
             board.cellAt(xy, Cell.getInstance(CellType.CELL_EMPTY));
             events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
-        }
+        }    	
     }
     
     /**
