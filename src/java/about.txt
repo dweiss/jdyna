@@ -31,7 +31,16 @@ JDyna:
 	Michał Kozłowski (bug fixes)
 	Krzysztof Kaźmierczyk (improvements)
 	
-	[TODO: Add new jdyna-developers]
+Contributors:
+
+	Marta Dudek
+	Sebastian Hetman
+	Bartosz Kita
+	Bartosz Królikowski
+	Mateusz Matela
+	Krzysztof Niespodziany
+	Krzysztof Nowaczyk
+	Tomasz Szymanowski
 
 Bots (artificial intelligence):
 
