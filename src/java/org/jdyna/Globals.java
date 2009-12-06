@@ -87,6 +87,21 @@ public final class Globals
      * bonuses from showing up.
      */
     public static final int DEFAULT_BONUS_PERIOD = 12 * DEFAULT_FRAME_RATE;
+    
+    /**
+     * Weight of most often appearing bonuses.
+     */
+    public static final int OFTEN_BONUS_WEIGHT = 5;
+    
+    /**
+     * Weight of bonuses appearing with default probability.
+     */
+    public static final int COMMON_BONUS_WEIGHT = 3;
+    
+    /**
+     * Weight of bonuses appearing most seldom.
+     */
+    public static final int RARE_BONUS_WEIGHT = 1;
 
     /**
      * Default period for adding crates at random positions on the board.

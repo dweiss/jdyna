@@ -75,7 +75,7 @@ public enum CellType
     CELL_BONUS_AHMED('a'),
     
     /** A bonus that gives the player a randomly selected bonus or disease */
-    CELL_BONUS_EASTER_EGG('e');
+    CELL_BONUS_SURPRISE('e');
 
     /**
      * Character code for the cell (16 bits).
@@ -214,7 +214,7 @@ public enum CellType
             CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN, 
             CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
             CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED,
-            CELL_BONUS_EASTER_EGG);
+            CELL_BONUS_SURPRISE);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 
