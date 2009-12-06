@@ -36,18 +36,45 @@ public enum CellType
     CELL_BOOM_XY('+'),
 
     /* Bonuses */
+    /** Bonus that adds a bomb to the player's arsenal */
     CELL_BONUS_BOMB('@'),
+    
+    /** Bonus that increases range of player's bombs by one tile */
     CELL_BONUS_RANGE('*'),
+    
+    /** Disease that causes the player to drop bombs uncontrollably, as fast as possible */
     CELL_BONUS_DIARRHEA('d'),
+    
+    /** Bonus that grants the player temporary immunity to explosions
+     * (and prevents him from picking up other bonuses) */
     CELL_BONUS_IMMORTALITY('i'),
+    
+    /** Bonus that temporarily increases range of player's bombs to infinity */
     CELL_BONUS_MAXRANGE('m'),
+    
+    /** Dissease that prevents the player from dropping bombs. */
     CELL_BONUS_NO_BOMBS('n'),
+    
+    /** Bonus that temporarily increases the player's speed */
     CELL_BONUS_SPEED_UP('u'),
+    
+    /** Disease that temporarily decreases the player's speed */
     CELL_BONUS_SLOW_DOWN('s'),
+    
+    /** Bonus that gives the player temporal ability to walk through crates */
     CELL_BONUS_CRATE_WALKING('c'),
+    
+    /** Bonus that gives the player temporal ability to walk through bombs */
     CELL_BONUS_BOMB_WALKING('q'),
+    
+    /** Disease that reverses the player's movement direction */
     CELL_BONUS_CONTROLLER_REVERSE('r'),
+    
+    /** Bonus that causes the next bomb dropped by the player to explode immediately,
+     *  killing only other players */
     CELL_BONUS_AHMED('a'),
+    
+    /** A bonus that gives the player a randomly selected bonus or disease */
     CELL_BONUS_EASTER_EGG('e');
 
     /**
@@ -198,11 +225,18 @@ public enum CellType
     private final static EnumMap<CellType, Integer> ANIMATING_CELLS;
     static
     {
+        /*
+         * Number of frames * frameRate. These values should be image-independent,
+         * but we hardcode the constants used in classic dyna.
+         */
+        final int explosionFrameCount = 7 * 2;
+        final int crateFrameCount = 7 * 2;
+
         ANIMATING_CELLS = Maps.newEnumMap(CellType.class);
         for (CellType c : EXPLOSION_CELLS)
         {
-            ANIMATING_CELLS.put(c, Globals.DEFAULT_EXPLOSION_FRAMES);
+            ANIMATING_CELLS.put(c, explosionFrameCount);
         }
-        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, Globals.DEFAULT_CRATE_OUT_FRAMES);
+        ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
     }    
 }

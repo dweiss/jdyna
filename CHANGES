@@ -17,8 +17,10 @@ VERSION <HEAD>
 	
 	- Added controller reverse disease.
 
-	- Added random placing of crates on the board. 
-	
+	- Added random placing of crates on the board.
+
+	- Added Ahmed bonus.
+
 	- Fixed several bugs.
 
 VERSION 0.94

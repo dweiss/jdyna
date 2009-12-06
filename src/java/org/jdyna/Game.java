@@ -910,7 +910,8 @@ public final class Game implements IGameEventListenerHolder
 
             if (pi.isAhmed) {
                 bomb.fuseCounter = 1;
-                pi.makeImmortal(Globals.DEFAULT_EXPLOSION_FRAMES + 2);
+                final int explosionFramesSpan = CellType.CELL_BOOM_XY.getRemoveAtCounter();
+                pi.makeImmortal(explosionFramesSpan + 2);
                 pi.isAhmed = false;
             }
         }
