@@ -105,40 +105,6 @@ public final class Game implements IGameEventListenerHolder
     private int nextCrateFrame;
 
     /**
-     * Bonus cells assigned every {@link #bonusPeriod}.
-     */
-    private final static List<CellType> BONUSES = Arrays.asList(
-            CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE,
-            CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
-            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
-            CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN,
-            CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED,
-            CellType.CELL_BONUS_SURPRISE);
-    
-    /**
-     * Often bonus cells. 
-     */
-    private final static List<CellType> OFTEN_BONUSES = Arrays.asList(
-    		CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE);
-    
-    /**
-     * Common bonus cells. 
-     */
-    private final static List<CellType> COMMON_BONUSES = Arrays.asList(
-            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_SPEED_UP, 
-            CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_AHMED);
-    
-    /**
-     * Rare bonus cells. 
-     */
-    private final static List<CellType> RARE_BONUSES = Arrays.asList(
-            CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
-            CellType.CELL_BONUS_IMMORTALITY, CellType.CELL_BONUS_SLOW_DOWN,
-            CellType.CELL_BONUS_BOMB_WALKING, CellType.CELL_BONUS_CONTROLLER_REVERSE,
-            CellType.CELL_BONUS_SURPRISE);
-
-    /**
      * Reusable array of events dispatched in each frame.
      * 
      * @see #run(Mode)
@@ -364,22 +330,7 @@ public final class Game implements IGameEventListenerHolder
             final Point p = randomEmptyCell(banned);
             if (p != null)
             {
-				final CellType bonus;
-				final int group = random.nextInt(Globals.OFTEN_BONUS_WEIGHT
-						+ Globals.COMMON_BONUS_WEIGHT
-						+ Globals.RARE_BONUS_WEIGHT);
-
-				if (group < Globals.OFTEN_BONUS_WEIGHT)
-					bonus = OFTEN_BONUSES.get(random.nextInt(OFTEN_BONUSES
-							.size()));
-				else if (group < Globals.OFTEN_BONUS_WEIGHT
-						+ Globals.COMMON_BONUS_WEIGHT)
-					bonus = COMMON_BONUSES.get(random.nextInt(COMMON_BONUSES
-							.size()));
-				else
-					bonus = RARE_BONUSES.get(random
-							.nextInt(RARE_BONUSES.size()));
-
+				final CellType bonus = CellType.randomBonus();
 				board.cellAt(p, Cell.getInstance(bonus));
             }
 
@@ -859,10 +810,7 @@ public final class Game implements IGameEventListenerHolder
         	/*
         	 * Random bonus CellType
         	 */
-        	CellType rct;
-			do {
-				rct = BONUSES.get(random.nextInt(BONUSES.size()));
-			} while (rct == CellType.CELL_BONUS_SURPRISE);
+        	final CellType rct = CellType.surpriseBonus();
         	processCollectedBonus(frame, pi, rct);
         }
 
