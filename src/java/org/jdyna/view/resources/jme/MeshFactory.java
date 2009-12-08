@@ -24,7 +24,7 @@ import com.jme.util.resource.SimpleResourceLocator;
 
 public class MeshFactory
 {
-    private static final String BASE_DIR = "../../branches/3d-view/dyna-jme-view/resources";
+    private static final String BASE_DIR = "src/graphics/jme";
     private EnumMap<DynaCell, String> modelPaths = new EnumMap<DynaCell, String>(
         DynaCell.class);
     private EnumMap<DynaCell, Spatial> meshes = new EnumMap<DynaCell, Spatial>(

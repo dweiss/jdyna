@@ -21,5 +21,18 @@
 	<classpathentry kind="lib" path="lib/runtime/lwjgl.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/lwjgl_util.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-audio.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-awt.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-collada.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-editors.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-effects.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-font.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-gamestates.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-model.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-ogrexml.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-scene.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-swt.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-terrain.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme.jar"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>
