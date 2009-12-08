@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.jme.JMEBoardWindow;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,10 @@ public final class Main
          * Attach a display view to the game.
          */
         final BoardFrame frame = new BoardFrame();
+        final JMEBoardWindow window = new JMEBoardWindow();
+                
         game.addListener(frame);
+        game.addListener(window);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
