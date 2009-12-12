@@ -30,6 +30,16 @@ import com.google.common.collect.Maps;
 public final class BoardPanel extends JPanel implements IGameEventListener
 {
     /**
+     * Default view scaling.
+     */
+    public static final Magnification DEFAULT_VIEW_MAGNIFICATION = Magnification.TIMES_2;
+
+    /**
+     * Paint player labels by default.
+     */
+    public static final boolean PAINT_PLAYER_LABELS = true;
+
+    /**
      * Maximum width for the displayed player name.
      */
     private final static int MAX_PLAYER_NAME_WIDTH = 10;
@@ -71,7 +81,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /**
      * Should player labels be painted or not?
      */
-    private boolean paintPlayerLabels = Globals.SWING_VIEW_PAINT_PLAYER_LABELS;
+    private boolean paintPlayerLabels = PAINT_PLAYER_LABELS;
     
     /**
      * Magnification level. Zoom level are fixed to doubling because we're really
@@ -143,7 +153,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
          * out to be much slower under Linux. I don't see any sense in this...
          */
         this.setDoubleBuffered(false);
-        this.setMagnification(Globals.DEFAULT_VIEW_MAGNIFICATION);
+        this.setMagnification(DEFAULT_VIEW_MAGNIFICATION);
     }
 
     /**

@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
+import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.serialization.GameWriter;
 import org.jdyna.view.jme.JMEBoardWindow;
 import org.jdyna.view.swing.BoardFrame;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *  <li>both players controlled via keyboard (default mappings).</li>
  * </ul>
  * 
- * @see Globals#getDefaultKeyboardController(int)
+ * @see HumanPlayerFactory#getDefaultKeyboardController(int)
  */
 public final class Main
 {
@@ -46,8 +47,8 @@ public final class Main
          */
         final Board board = boards.get("classic-random");
 
-        final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
-        final IPlayerController c2 = Globals.getDefaultKeyboardController(1);
+        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0);
+        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);

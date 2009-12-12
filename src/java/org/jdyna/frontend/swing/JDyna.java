@@ -353,8 +353,8 @@ public final class JDyna
         runLocalGame(
             board,
             null,
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(0), "Player 1"),
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(1), "Player 2"));
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0), "Player 1"),
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(1), "Player 2"));
     }
 
     /**
@@ -378,7 +378,7 @@ public final class JDyna
         runLocalGame(
             board,
             playerName,
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(0), playerName),
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0), playerName),
             getBot(bot));        
     }
     
@@ -494,7 +494,7 @@ public final class JDyna
              * Join the given game.
              */
             final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                Globals.getDefaultKeyboardController(0), fullName.playerName);
+                HumanPlayerFactory.getDefaultKeyboardController(0), fullName.playerName);
 
             final GameServerClient client = new GameServerClient(gameEntry.server);
             client.connect();
@@ -586,7 +586,7 @@ public final class JDyna
         try
         {
             final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                Globals.getDefaultKeyboardController(0), fullName.playerName);
+                HumanPlayerFactory.getDefaultKeyboardController(0), fullName.playerName);
 
             /*
              * Start the server. 

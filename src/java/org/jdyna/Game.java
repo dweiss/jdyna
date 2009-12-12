@@ -95,16 +95,6 @@ public final class Game implements IGameEventListenerHolder
     private int nextBonusFrame;
 
     /**
-     * The period after which a crate should be randomly placed on the board.
-     */
-    private int cratePeriod = Globals.DEFAULT_CRATE_PERIOD;
-
-    /**
-     * The next time a crate will be added to the board.
-     */
-    private int nextCrateFrame;
-
-    /**
      * Reusable array of events dispatched in each frame.
      * 
      * @see #run(Mode)
@@ -217,7 +207,6 @@ public final class Game implements IGameEventListenerHolder
         this.mode = mode;
 
         nextBonusFrame = bonusPeriod;
-        nextCrateFrame = cratePeriod;
 
         int frame = 0;
         GameResult result = null;
@@ -366,7 +355,11 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processCrates(int frame)
     {
-        if (nextCrateFrame < frame) {
+        if (!Globals.ADD_RANDOM_CRATES)
+            return;
+
+        if (((frame + 1) % Globals.DEFAULT_CRATE_PERIOD) == 0)
+        {
         	final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
             {
@@ -378,7 +371,8 @@ public final class Game implements IGameEventListenerHolder
                 }
             }
 
-            for (Point point : board.defaultPlayerPositions) {
+            for (Point point : board.defaultPlayerPositions)
+            {
                 banned.add(point);
                 banned.addAll(BoardUtilities.findBlockingLocations(board, point));
             }
@@ -388,8 +382,6 @@ public final class Game implements IGameEventListenerHolder
             {
                 board.cellAt(p, Cell.getInstance(CellType.CELL_CRATE));
             }
-
-            this.nextCrateFrame = frame + cratePeriod;
         }
     }
 
