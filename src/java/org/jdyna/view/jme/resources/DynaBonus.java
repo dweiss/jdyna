@@ -1,4 +1,4 @@
-package org.jdyna.view.resources.jme;
+package org.jdyna.view.jme.resources;
 
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;

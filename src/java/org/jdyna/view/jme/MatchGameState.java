@@ -8,11 +8,11 @@ import org.jdyna.view.jme.adapter.GameListener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
-import org.jdyna.view.resources.jme.DynaBomb;
-import org.jdyna.view.resources.jme.DynaBonus;
-import org.jdyna.view.resources.jme.DynaCrate;
-import org.jdyna.view.resources.jme.DynaExplosion;
-import org.jdyna.view.resources.jme.DynaPlayer;
+import org.jdyna.view.jme.resources.DynaBomb;
+import org.jdyna.view.jme.resources.DynaBonus;
+import org.jdyna.view.jme.resources.DynaCrate;
+import org.jdyna.view.jme.resources.DynaExplosion;
+import org.jdyna.view.jme.resources.DynaPlayer;
 
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.KeyInput;

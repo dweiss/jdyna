@@ -1,4 +1,4 @@
-package org.jdyna.view.resources.jme;
+package org.jdyna.view.jme.resources;
 
 import com.jme.scene.Node;
 

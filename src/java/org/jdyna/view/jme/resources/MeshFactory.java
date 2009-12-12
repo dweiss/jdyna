@@ -1,4 +1,4 @@
-package org.jdyna.view.resources.jme;
+package org.jdyna.view.jme.resources;
 
 import java.io.File;
 import java.io.IOException;

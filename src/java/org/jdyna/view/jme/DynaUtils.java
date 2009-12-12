@@ -4,12 +4,12 @@ import java.awt.Point;
 
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
 import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
-import org.jdyna.view.resources.jme.DynaBomb;
-import org.jdyna.view.resources.jme.DynaBonus;
-import org.jdyna.view.resources.jme.DynaCrate;
-import org.jdyna.view.resources.jme.DynaFloor;
-import org.jdyna.view.resources.jme.DynaObject;
-import org.jdyna.view.resources.jme.DynaWall;
+import org.jdyna.view.jme.resources.DynaBomb;
+import org.jdyna.view.jme.resources.DynaBonus;
+import org.jdyna.view.jme.resources.DynaCrate;
+import org.jdyna.view.jme.resources.DynaFloor;
+import org.jdyna.view.jme.resources.DynaObject;
+import org.jdyna.view.jme.resources.DynaWall;
 
 public class DynaUtils {
 	

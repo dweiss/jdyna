@@ -1,6 +1,6 @@
 package org.jdyna.view.jme.controller;
 
-import org.jdyna.view.resources.jme.DynaPlayer;
+import org.jdyna.view.jme.resources.DynaPlayer;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;

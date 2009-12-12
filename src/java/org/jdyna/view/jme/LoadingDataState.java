@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
-import org.jdyna.view.resources.jme.MeshFactory;
+import org.jdyna.view.jme.resources.MeshFactory;
 
 import com.jme.scene.Text;
 import com.jme.util.GameTaskQueueManager;

@@ -4,10 +4,10 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jdyna.view.resources.jme.DynaBomb;
-import org.jdyna.view.resources.jme.DynaBonus;
-import org.jdyna.view.resources.jme.DynaCrate;
-import org.jdyna.view.resources.jme.DynaPlayer;
+import org.jdyna.view.jme.resources.DynaBomb;
+import org.jdyna.view.jme.resources.DynaBonus;
+import org.jdyna.view.jme.resources.DynaCrate;
+import org.jdyna.view.jme.resources.DynaPlayer;
 
 import com.jme.scene.Node;
 
