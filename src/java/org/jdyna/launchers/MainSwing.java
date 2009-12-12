@@ -12,25 +12,22 @@ import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.serialization.GameWriter;
-import org.jdyna.view.jme.JMEBoardWindow;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 /**
- * Start a game:
+ * Start a game using local Swing view:
  * <ul>
  *  <li>two players,</li>
  *  <li>one game,</li>
  *  <li>both players controlled via keyboard (default mappings).</li>
  * </ul>
- * 
- * @see HumanPlayerFactory#getDefaultKeyboardController(int)
  */
-public final class Main
+public final class MainSwing
 {
-    private final static Logger logger = LoggerFactory.getLogger(Main.class);
+    private final static Logger logger = LoggerFactory.getLogger(Main3D.class);
 
     /* Command-line entry point. */
     public static void main(String [] args) throws IOException
@@ -89,10 +86,7 @@ public final class Main
          * Attach a display view to the game.
          */
         final BoardFrame frame = new BoardFrame();
-        final JMEBoardWindow window = new JMEBoardWindow();
-                
         game.addListener(frame);
-        game.addListener(window);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
