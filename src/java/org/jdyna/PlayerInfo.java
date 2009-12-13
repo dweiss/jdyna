@@ -371,4 +371,11 @@ final class PlayerInfo implements IPlayerSprite
         ps.livesLeft = livesLeft;
         return ps;
     }
+
+    /* */
+    @Override
+    public int getBombCount()
+    {
+        return bombCount;
+    }
 }

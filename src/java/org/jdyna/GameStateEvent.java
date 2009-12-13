@@ -133,8 +133,12 @@ public final class GameStateEvent extends GameEvent
         int index = 0;
         for (IPlayerSprite player : players)
         {
-            final PlayerSpriteImpl p = new PlayerSpriteImpl(player.getType(), player.getName(), 
-                player.isDead(), player.isImmortal());
+            final PlayerSpriteImpl p = new PlayerSpriteImpl(
+                player.getType(), 
+                player.getName(),
+                player.isDead(), 
+                player.isImmortal(),
+                player.getBombCount());
             p.position.setLocation(player.getPosition());
             p.animationFrame = player.getAnimationFrame();
             p.animationState = player.getAnimationState();

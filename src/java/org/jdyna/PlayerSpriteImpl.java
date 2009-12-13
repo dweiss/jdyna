@@ -12,15 +12,20 @@ public final class PlayerSpriteImpl extends SpriteImpl implements IPlayerSprite
     private final static int FLAG_IMMORTAL = 1 << 0;
     private final static int FLAG_DEAD = 1 << 1;
     private final short flags;
+    private final short bombCount;
 
     public final String name;
 
-    public PlayerSpriteImpl(ISprite.Type type, String name, boolean dead, boolean immortal)
+    public PlayerSpriteImpl(
+        ISprite.Type type, String name, boolean dead, boolean immortal,
+        int bombCount)
     {
         super(type);
 
         this.name = name;
-        flags = (short) ((dead ? FLAG_DEAD : 0) | (immortal ? FLAG_IMMORTAL : 0)); 
+        flags = (short) ((dead ? FLAG_DEAD : 0) | (immortal ? FLAG_IMMORTAL : 0));
+
+        this.bombCount = (short) bombCount;
     }
 
     @Override
@@ -39,5 +44,11 @@ public final class PlayerSpriteImpl extends SpriteImpl implements IPlayerSprite
     public boolean isImmortal()
     {
         return (flags & FLAG_IMMORTAL) != 0;
-    }    
+    }
+    
+    @Override
+    public int getBombCount()
+    {
+        return bombCount;
+    }
 }

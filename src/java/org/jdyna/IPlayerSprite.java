@@ -19,4 +19,9 @@ public interface IPlayerSprite extends ISprite
      * @return The player is immortal.
      */
     boolean isImmortal();
+    
+    /**
+     * @return The number of available bombs for this player.
+     */
+    int getBombCount();
 }
