@@ -1,6 +1,6 @@
 package org.jdyna.view.jme.resources;
 
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
+import org.jdyna.CellType;
 import org.jdyna.view.jme.controller.DestroyableController;
 
 @SuppressWarnings("serial")
@@ -16,7 +16,7 @@ public class DynaCrate extends DynaObject
     public DynaCrate(int i, int j)
     {
         super(i,j);
-        attachChild(mf.createMesh(DynaCell.CRATE));
+        attachChild(mf.createMesh(CellType.CELL_CRATE));
         
         destroyable = new DestroyableController(this);
         addController(destroyable);

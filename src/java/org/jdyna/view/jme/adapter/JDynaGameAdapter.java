@@ -16,7 +16,7 @@ import org.jdyna.GameStateEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IPlayerSprite;
 
-public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventListener
+public class JDynaGameAdapter implements IGameEventListener
 {
     private boolean gameStarted;
     private final BlockingQueue<GameStateEvent> eventQueue = new LinkedBlockingQueue<GameStateEvent>(
@@ -74,7 +74,6 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
         }
     }
 
-    @Override
     public void dispatchEvents(GameListener l,boolean wait)
     {
         if (!wait && eventQueue.isEmpty()) return;
@@ -93,7 +92,7 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
             
             boardWidth = cells.length;
             boardHeight = cells[0].length;
-            DynaCell[][] adapted = adaptCells(cells);
+            CellType[][] adapted = adaptCells(cells);
             l.gameStarted(adapted, boardWidth, boardHeight);
             gameStarted = true;
             playersAlive = new HashMap<String, Boolean>();
@@ -101,41 +100,38 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
         }
     }
 
-    private static DynaCell [][] adaptCells(Cell [][] cells)
+    private static CellType [][] adaptCells(Cell [][] cells)
     {
         int w = cells.length;
         int h = cells[0].length;
         
-        DynaCell adapted[][] = new DynaCell[w][h];
+        CellType adapted[][] = new CellType[w][h];
         
         for (int i = 0; i < w; i++)
         {
             for (int j = 0; j < h; j++)
             {
-                DynaCell cell;
+                CellType cell;
                 switch (cells[i][j].type) {
                     case CELL_EMPTY:
-                        cell = DynaCell.EMPTY;
+                        cell = CellType.CELL_EMPTY;
                         break;
                     case CELL_BOMB:
-                        cell = DynaCell.BOMB;
+                        cell = CellType.CELL_BOMB;
                         break;
                     case CELL_CRATE:
                     case CELL_CRATE_OUT:
-                        cell = DynaCell.CRATE;
-                        break;
-                    case CELL_BONUS_BOMB:
-                        cell = DynaCell.BONUS_BOMB;
-                        break;
-                    case CELL_BONUS_RANGE:
-                        cell = DynaCell.BONUS_RANGE;
+                        cell = CellType.CELL_CRATE;
                         break;
                     case CELL_WALL:
-                        cell = DynaCell.WALL;
+                        cell = CellType.CELL_WALL;
+                        break;
+                    case CELL_BONUS_BOMB:
+                        cell = cells[i][j].type;
                         break;
                     default:
                     	System.err.println("Unknown cell type: "+cells[i][j].type);
-                    	cell = DynaCell.OTHER_CELL;
+                    	cell = null;
                         //throw new RuntimeException("Unknown cell type: "+cells[i][j].type);
                 }
                 adapted[i][j] = cell;
@@ -163,13 +159,13 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
                 if (cur.type == CellType.CELL_BONUS_RANGE
                     && prev.type != CellType.CELL_BONUS_RANGE)
                 {
-                    l.bonusSpawned(i, j, BonusType.EXTRA_RANGE);
+                    l.bonusSpawned(i, j, CellType.CELL_BONUS_RANGE);
                     System.out.println("bonus spawned (extra range)");
                 } 
                 else if (cur.type == CellType.CELL_BONUS_BOMB
                     && prev.type != CellType.CELL_BONUS_BOMB)
                 {
-                    l.bonusSpawned(i, j, BonusType.EXTRA_BOMB);
+                    l.bonusSpawned(i, j, CellType.CELL_BONUS_BOMB);
                     System.out.println("bonus spawned (extra bomb)");
                 }
                 else if (cur.type != prev.type
@@ -191,8 +187,10 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
                     l.bonusTaken(i, j);
                     System.out.println("bonus taken");
                 }
-                else if (cur.type != CellType.CELL_CRATE
-                    && prev.type == CellType.CELL_CRATE)
+                else if ((cur.type != CellType.CELL_CRATE
+                		&& prev.type == CellType.CELL_CRATE)
+                    || (cur.type != CellType.CELL_CRATE_OUT
+                    		&& prev.type == CellType.CELL_CRATE_OUT))
                 {
                     System.out.println("create destroyed "+pos);
                     l.crateDestroyed(i, j);
@@ -227,9 +225,11 @@ public class JDynaGameAdapter extends AbstractGameAdapter implements IGameEventL
                         	&& prev.type != CellType.CELL_BONUS_SLOW_DOWN)
                         || (cur.type == CellType.CELL_BONUS_SPEED_UP
                         	&& prev.type != CellType.CELL_BONUS_SPEED_UP)
+                        || (cur.type == CellType.CELL_BONUS_AHMED
+                        	&& prev.type != CellType.CELL_BONUS_AHMED)
                 )
                 {
-                	l.bonusSpawned(i, j, BonusType.OTHER_BONUS);
+                	l.bonusSpawned(i, j, null);
                     System.out.println("other bonus spawned");
                 }
                 else if (cur.type == CellType.CELL_CRATE

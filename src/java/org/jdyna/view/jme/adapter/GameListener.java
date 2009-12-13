@@ -1,11 +1,10 @@
 package org.jdyna.view.jme.adapter;
 
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
+import org.jdyna.CellType;
 
 public interface GameListener
 {
-    void gameStarted(DynaCell cells[][],int w,int h);
+    void gameStarted(CellType cells[][],int w,int h);
     
     void playerMoved(String name,float px,float py, boolean immortal);
     void playerSpawned(String name, int x, int y, boolean joined);
@@ -14,7 +13,7 @@ public interface GameListener
     void bombPlanted(int i,int j);
     void bombExploded(int i, int j, int left, int right, int up, int down);
     
-    void bonusSpawned(int i,int j,BonusType bonusType);
+    void bonusSpawned(int i,int j, CellType bonusType);
     void bonusTaken(int i,int j);
     
     void crateCreated(int i,int j);

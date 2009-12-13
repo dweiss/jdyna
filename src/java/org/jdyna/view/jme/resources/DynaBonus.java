@@ -1,7 +1,6 @@
 package org.jdyna.view.jme.resources;
 
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
+import org.jdyna.CellType;
 import org.jdyna.view.jme.controller.BonusController;
 import org.jdyna.view.jme.controller.DestroyableController;
 
@@ -14,20 +13,15 @@ public class DynaBonus extends DynaObject
     private BonusController controller;
     private DestroyableController destroyable;
 
-    public DynaBonus(int i, int j, BonusType type)
+    public DynaBonus(int i, int j, CellType type)
     {
         super(i, j);
         
-        DynaCell dc = null; 
+        if (type != null)
+        	mesh = mf.createMesh(type);
+    	else
+    		mesh = mf.getUnknownBonus();
         
-        if (type==BonusType.EXTRA_RANGE)
-        	dc = DynaCell.BONUS_RANGE;
-        else if (type==BonusType.EXTRA_BOMB)
-        	dc = DynaCell.BONUS_BOMB;
-        else if (type==BonusType.OTHER_BONUS)
-        	dc = DynaCell.OTHER_CELL;
-        
-        mesh = mf.createMesh(dc);
         attachChild(mesh);
 
         controller = new BonusController(mesh);

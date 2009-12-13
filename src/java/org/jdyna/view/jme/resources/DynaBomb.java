@@ -1,6 +1,6 @@
 package org.jdyna.view.jme.resources;
 
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
+import org.jdyna.CellType;
 import org.jdyna.view.jme.controller.DestroyableController;
 
 import com.jme.math.Vector3f;
@@ -17,7 +17,7 @@ public class DynaBomb extends DynaObject
     public DynaBomb(int i, int j)
     {
         super(i, j);
-        mesh = mf.createMesh(DynaCell.BOMB);
+        mesh = mf.createMesh(CellType.CELL_BOMB);
         attachChild(mesh);
         
         controller = new BombController();

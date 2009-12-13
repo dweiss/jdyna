@@ -4,10 +4,10 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.jdyna.CellType;
+
 import org.jdyna.view.jme.adapter.GameListener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.BonusType;
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
 import org.jdyna.view.jme.resources.DynaBomb;
 import org.jdyna.view.jme.resources.DynaBonus;
 import org.jdyna.view.jme.resources.DynaCrate;
@@ -93,7 +93,7 @@ public class MatchGameState extends GameState implements GameListener {
 	}
 
 	@Override
-	public void gameStarted(DynaCell[][] cells, int w, int h) {
+	public void gameStarted(CellType[][] cells, int w, int h) {
 		
 		boardData = DynaUtils.createBoard(cells);
 		
@@ -172,14 +172,14 @@ public class MatchGameState extends GameState implements GameListener {
     }
 
     @Override
-    public void bonusSpawned(int i, int j, BonusType bonusType)
+    public void bonusSpawned(int i, int j, CellType bonusType)
     {
         DynaBonus bonus = new DynaBonus(i,j,bonusType);
         boardData.bonuses.put(new Point(i,j),bonus);
         boardData.boardNode.attachChild(bonus);
         boardData.boardNode.updateRenderState();
     }
-
+    
     @Override
     public void bonusTaken(int i, int j)
     {

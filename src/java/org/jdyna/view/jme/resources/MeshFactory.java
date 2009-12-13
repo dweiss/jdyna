@@ -7,7 +7,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.jdyna.view.jme.adapter.AbstractGameAdapter.DynaCell;
+import org.jdyna.CellType;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.Node;
@@ -25,10 +25,11 @@ import com.jme.util.resource.SimpleResourceLocator;
 public class MeshFactory
 {
     private static final String BASE_DIR = "src/graphics/jme";
-    private EnumMap<DynaCell, String> modelPaths = new EnumMap<DynaCell, String>(
-        DynaCell.class);
-    private EnumMap<DynaCell, Spatial> meshes = new EnumMap<DynaCell, Spatial>(
-        DynaCell.class);
+    private EnumMap<CellType, String> modelPaths = new EnumMap<CellType, String>(
+    		CellType.class);
+    private EnumMap<CellType, Spatial> meshes = new EnumMap<CellType, Spatial>(
+    		CellType.class);
+    private Spatial unknownBonus;
     private Spatial[] playerMeshes;
     private Spatial[] playerDyingMeshes;
     private static CullState cull = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
@@ -39,13 +40,12 @@ public class MeshFactory
     }
     
     {
-        modelPaths.put(DynaCell.EMPTY, "floor");
-        modelPaths.put(DynaCell.WALL, "wall");
-        modelPaths.put(DynaCell.CRATE, "crate");
-        modelPaths.put(DynaCell.BOMB, "bomb");
-        modelPaths.put(DynaCell.BONUS_RANGE, "bonus_range");
-        modelPaths.put(DynaCell.BONUS_BOMB, "bonus_bomb");
-        modelPaths.put(DynaCell.OTHER_CELL, "other_bonus");
+        modelPaths.put(CellType.CELL_EMPTY, "floor");
+        modelPaths.put(CellType.CELL_WALL, "wall");
+        modelPaths.put(CellType.CELL_CRATE, "crate");
+        modelPaths.put(CellType.CELL_BOMB, "bomb");
+        modelPaths.put(CellType.CELL_BONUS_RANGE, "bonus_range");
+        modelPaths.put(CellType.CELL_BONUS_BOMB, "bonus_bomb");
     }
 
     static MeshFactory inst;
@@ -64,11 +64,13 @@ public class MeshFactory
 
     public MeshFactory()
     {
-        for (Entry<DynaCell, String> entry : modelPaths.entrySet())
+        for (Entry<CellType, String> entry : modelPaths.entrySet())
         {
         	Spatial model = loadModel(entry.getValue());
             meshes.put(entry.getKey(), model);
         }
+        
+        unknownBonus = loadModel("unknown_bonus");
         
         String[] names = getAnimatedModelFiles("player/player");
         playerMeshes = new Spatial[names.length]; //a separate cloner for each frame
@@ -166,11 +168,10 @@ public class MeshFactory
     	return copy;
     }
     
-    public Spatial createMesh(DynaCell type)
+    public Spatial createMesh(CellType type)
     {
     	Spatial mesh = meshes.get(type);
-        
-        return copySpatial(mesh);
+   		return copySpatial(mesh);
     }
 
     public Spatial[] createPlayer()
@@ -195,5 +196,10 @@ public class MeshFactory
         	models[i] = model;
         }
         return models;
+    }
+    
+    public Spatial getUnknownBonus()
+    {
+    	return copySpatial(unknownBonus);
     }
 }
