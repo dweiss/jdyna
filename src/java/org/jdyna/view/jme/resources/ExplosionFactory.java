@@ -23,41 +23,42 @@ public class ExplosionFactory
     private static BlendState bs;
     private static TextureState ts;
     private static ZBufferState zstate;
-    
-    static {
+
+    static
+    {
         warmup();
     }
 
-    public static ParticleMesh createExplosion(int left,int right)
+    public static ParticleMesh createExplosion(int left, int right)
     {
-        int len = right+left+1;
-        
+        int len = right + left + 1;
+
         ParticleMesh explosion = ParticleFactory.buildParticles("big", len * 30);
-        
-        //emiter
+
+        // emiter
         explosion.setEmitType(EmitType.Rectangle);
         explosion.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
         float emitSize = 0.2f;
-        Vector3f a = new Vector3f(+emitSize+right,0,+emitSize);
-        Vector3f b = new Vector3f(+emitSize+right,0,-emitSize);
-        Vector3f c = new Vector3f(-emitSize-left,0,+emitSize);
-        explosion.setGeometry(new Rectangle(a,b,c));
-        
-        //emit direction
+        Vector3f a = new Vector3f(+emitSize + right, 0, +emitSize);
+        Vector3f b = new Vector3f(+emitSize + right, 0, -emitSize);
+        Vector3f c = new Vector3f(-emitSize - left, 0, +emitSize);
+        explosion.setGeometry(new Rectangle(a, b, c));
+
+        // emit direction
         explosion.setMinimumAngle(0);
         explosion.setMaximumAngle(FastMath.HALF_PI);
-        
-        //lifetime
+
+        // lifetime
         explosion.setMinimumLifeTime(500.0f);
         explosion.setMaximumLifeTime(800.0f);
 
-        //misc
+        // misc
         explosion.setStartSize(0.2f);
         explosion.setEndSize(0.4f);
-        
+
         explosion.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         explosion.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
-        
+
         explosion.setControlFlow(false);
         explosion.setInitialVelocity(0.0005f);
         explosion.setParticleSpinSpeed(0.0f);

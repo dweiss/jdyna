@@ -19,8 +19,7 @@ import org.jdyna.IPlayerSprite;
 public class JDynaGameAdapter implements IGameEventListener
 {
     private boolean gameStarted;
-    private final BlockingQueue<GameStateEvent> eventQueue = new LinkedBlockingQueue<GameStateEvent>(
-        3);
+    private final BlockingQueue<GameStateEvent> eventQueue = new LinkedBlockingQueue<GameStateEvent>(3);
     private int boardWidth;
     private int boardHeight;
     private Cell [][] cells;

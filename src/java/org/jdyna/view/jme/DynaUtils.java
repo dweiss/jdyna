@@ -10,26 +10,26 @@ import org.jdyna.view.jme.resources.DynaFloor;
 import org.jdyna.view.jme.resources.DynaObject;
 import org.jdyna.view.jme.resources.DynaWall;
 
-public class DynaUtils {
-	
-	public static BoardData createBoard(CellType[][] cells)
+public class DynaUtils
+{
+    public static BoardData createBoard(CellType [][] cells)
     {
         BoardData data = new BoardData();
-        
+
         int width = cells.length;
         int height = cells[0].length;
-        
+
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
                 Point pos = new Point(i, j);
                 CellType cell = cells[i][j];
-                if (cell==null)
-                	continue;
+                if (cell == null) continue;
                 DynaObject obj;
-                
-                switch (cell) {
+
+                switch (cell)
+                {
                     case CELL_WALL:
                         obj = new DynaWall(i, j);
                         break;
@@ -42,7 +42,7 @@ public class DynaUtils {
                         obj = crate;
                         break;
                     case CELL_BOMB:
-                        DynaBomb bomb = new DynaBomb(i,j);
+                        DynaBomb bomb = new DynaBomb(i, j);
                         data.bombs.put(pos, bomb);
                         obj = bomb;
                         break;
@@ -51,16 +51,16 @@ public class DynaUtils {
                         obj = new DynaBonus(i, j, cell);
                         break;
                     default:
-                       throw new IllegalArgumentException("Unknown cell type");
+                        throw new IllegalArgumentException("Unknown cell type");
                 }
-                
-                if (cell != CellType.CELL_WALL && cell != CellType.CELL_EMPTY) {
+
+                if (cell != CellType.CELL_WALL && cell != CellType.CELL_EMPTY)
+                {
                     data.boardNode.attachChild(new DynaFloor(i, j));
                 }
                 data.boardNode.attachChild(obj);
             }
         }
-        
         return data;
     }
 }

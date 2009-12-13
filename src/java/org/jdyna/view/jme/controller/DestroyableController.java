@@ -10,7 +10,6 @@ import com.jme.system.DisplaySystem;
 @SuppressWarnings("serial")
 public class DestroyableController extends Controller
 {
-
     boolean destroyed = false;
     float opacity = 1.0f;
     private Spatial spatial;
@@ -23,7 +22,8 @@ public class DestroyableController extends Controller
         state.setBlendEnabled(true);
         state.setEnabled(true);
         state.setSourceFunction(BlendState.SourceFunction.ConstantAlpha);
-        state.setDestinationFunction(BlendState.DestinationFunction.OneMinusConstantAlpha);
+        state
+            .setDestinationFunction(BlendState.DestinationFunction.OneMinusConstantAlpha);
         state.setConstantColor(new ColorRGBA(0, 0, 0, 1));
     }
 
@@ -48,7 +48,7 @@ public class DestroyableController extends Controller
         spatial.setRenderState(state);
         spatial.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
         spatial.updateRenderState();
-        
+
         destroyed = true;
     }
 }

@@ -16,20 +16,20 @@ public class DynaBonus extends DynaObject
     public DynaBonus(int i, int j, CellType type)
     {
         super(i, j);
-        
-        if (type != null)
-        	mesh = mf.createMesh(type);
-    	else
-    		mesh = mf.getUnknownBonus();
-        
+
+        if (type != null) mesh = mf.createMesh(type);
+        else mesh = mf.getUnknownBonus();
+
         attachChild(mesh);
 
         controller = new BonusController(mesh);
         addController(controller);
         destroyable = new DestroyableController(this);
-        addController(destroyable);    }
-    
-    public void take() {
+        addController(destroyable);
+    }
+
+    public void take()
+    {
         destroyable.destroy();
     }
 }
