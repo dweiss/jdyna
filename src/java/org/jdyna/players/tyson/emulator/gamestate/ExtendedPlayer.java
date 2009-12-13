@@ -3,7 +3,7 @@ package org.jdyna.players.tyson.emulator.gamestate;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 import org.jdyna.IPlayerSprite;
 
 import com.google.common.collect.Maps;
@@ -22,12 +22,12 @@ public class ExtendedPlayer
     private int range;
     private int bombsCount;
     private Map<GridCoord, Integer> bombs = Maps.newHashMap();
-    private Globals conf;
+    private GameConfiguration conf;
 
     /**
      * @param src Source of information about player.
      */
-    public ExtendedPlayer(Globals conf, IPlayerSprite src)
+    public ExtendedPlayer(GameConfiguration conf, IPlayerSprite src)
     {
         name = src.getName();
         position = new PointCoord(src.getPosition());

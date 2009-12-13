@@ -2,7 +2,7 @@ package org.jdyna.players.n00b.state;
 
 import java.awt.Point;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 /**
  * Represents a single player taking part in the game.
@@ -37,9 +37,9 @@ public class Player
     /**
      * Configuration and settings.
      */
-    Globals conf;
+    GameConfiguration conf;
 
-    Player(Globals conf, String name, Point position)
+    Player(GameConfiguration conf, String name, Point position)
     {
         this.name = name;
         this.range = conf.DEFAULT_BOMB_RANGE;

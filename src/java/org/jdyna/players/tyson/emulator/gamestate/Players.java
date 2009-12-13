@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 import org.jdyna.IPlayerSprite;
 import org.jdyna.players.tyson.emulator.gamestate.ExtendedCell.TypeChangedEvent;
 import org.jdyna.players.tyson.emulator.gamestate.bombs.AllSimulatedBombs;
@@ -30,13 +30,13 @@ final class Players
     private final List<IPlayersInformationListener> rangesListeners = Lists
         .newArrayList();
     private GridCoord playerGrid;
-    private Globals conf;
+    private GameConfiguration conf;
 
     /**
      * @param playersSrc Source of information about players.
      * @param currentPlayer Name of current player.
      */
-    public Players(Globals conf, final List<? extends IPlayerSprite> playersSrc,
+    public Players(GameConfiguration conf, final List<? extends IPlayerSprite> playersSrc,
         final String currentPlayer)
     {
         this.currentPlayer = currentPlayer;

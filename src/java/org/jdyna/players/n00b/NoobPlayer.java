@@ -21,7 +21,7 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
     /**
      * Max value of bomb timer in {@link GameState}.
      */
-    private int TIMER_MAX_VALUE = Globals._DEFAULT_FUSE_FRAMES + 1;
+    private int TIMER_MAX_VALUE = GameConfiguration._DEFAULT_FUSE_FRAMES + 1;
 
     /**
      * n00b will place a bomb in range of another bomb if this bomb won't explode in
@@ -68,7 +68,7 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
     /**
      * Configuration and settings.
      */
-    private Globals conf;
+    private GameConfiguration conf;
 
     public NoobPlayer(String name)
     {

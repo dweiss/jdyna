@@ -14,12 +14,12 @@ final class BombCell extends Cell
     /**
      * How many frames until explosion (down-to-zero counter).
      */
-    public int fuseCounter = Globals._DEFAULT_FUSE_FRAMES;
+    public int fuseCounter = GameConfiguration._DEFAULT_FUSE_FRAMES;
 
     /**
      * Explosion range (number of cells in each direction).
      */
-    public int range = Globals._DEFAULT_BOMB_RANGE;
+    public int range = GameConfiguration._DEFAULT_BOMB_RANGE;
 
     /*
      * 

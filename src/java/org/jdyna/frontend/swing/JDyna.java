@@ -694,7 +694,7 @@ public final class JDyna
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
         // TODO: this configuration should be modifiable in the settings dialog and passed here.
-        final Globals conf = new Globals();
+        final GameConfiguration conf = new GameConfiguration();
         final Game game = new Game(conf, board, boardInfo);
     
         for (IPlayerFactory pf : players)

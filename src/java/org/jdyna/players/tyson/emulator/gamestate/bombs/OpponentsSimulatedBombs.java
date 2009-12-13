@@ -1,6 +1,6 @@
 package org.jdyna.players.tyson.emulator.gamestate.bombs;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 import org.jdyna.players.tyson.emulator.gamestate.Board;
 
 /**
@@ -10,7 +10,7 @@ import org.jdyna.players.tyson.emulator.gamestate.Board;
  */
 public class OpponentsSimulatedBombs extends SimulatedBombs
 {
-    public OpponentsSimulatedBombs(Board board, Globals conf)
+    public OpponentsSimulatedBombs(Board board, GameConfiguration conf)
     {
         super(board, conf);
     }

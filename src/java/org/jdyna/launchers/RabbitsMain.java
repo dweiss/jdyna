@@ -44,7 +44,7 @@ public final class RabbitsMain
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
-        final Globals conf = new Globals();
+        final GameConfiguration conf = new GameConfiguration();
         final Game game = new Game(conf, board, boardInfo, 
             new Player("Player 1", c1),
             Rabbit.createPlayer("Rabbit 1"),

@@ -127,7 +127,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Game configuration settings (immutable for the game duration).
      */
-    private final Globals conf;
+    private final GameConfiguration conf;
     
     /**
      * Interrupted flag.
@@ -137,7 +137,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Creates a single game.
      */
-    public Game(Globals conf, Board board, BoardInfo boardInfo, Player... players)
+    public Game(GameConfiguration conf, Board board, BoardInfo boardInfo, Player... players)
     {
         this.conf = conf;
         this.board = board;
@@ -150,7 +150,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Creates a single game, without players initially.
      */
-    public Game(Globals conf, Board board, BoardInfo boardInfo)
+    public Game(GameConfiguration conf, Board board, BoardInfo boardInfo)
     {
         this(conf, board, boardInfo, new Player [0]);
     }

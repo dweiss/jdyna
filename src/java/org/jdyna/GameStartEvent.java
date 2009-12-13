@@ -19,7 +19,7 @@ public final class GameStartEvent extends GameEvent
     /**
      * Configuration and settings for the game.
      */
-    private Globals conf;
+    private GameConfiguration conf;
 
     /*
      * 
@@ -32,7 +32,7 @@ public final class GameStartEvent extends GameEvent
     /*
      *  
      */
-    public GameStartEvent(Globals conf, BoardInfo boardInfo)
+    public GameStartEvent(GameConfiguration conf, BoardInfo boardInfo)
     {
         this();
         this.boardInfo = boardInfo;
@@ -50,7 +50,7 @@ public final class GameStartEvent extends GameEvent
     /*
      * 
      */
-    public Globals getConfiguration()
+    public GameConfiguration getConfiguration()
     {
         return conf;
     }

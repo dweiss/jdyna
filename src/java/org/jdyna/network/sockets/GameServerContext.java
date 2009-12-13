@@ -182,7 +182,7 @@ public final class GameServerContext
     /*
      * 
      */
-    public GameHandle createNewGame(Globals conf, String gameName, String boardName)
+    public GameHandle createNewGame(GameConfiguration conf, String gameName, String boardName)
     {
         synchronized (this)
         {

@@ -1,6 +1,6 @@
 package org.jdyna.players.tyson.emulator.gamestate.bombs;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 /**
  * <p>
@@ -47,7 +47,7 @@ public class BombState
     /**
      * Creates object with default range value.
      */
-    public BombState(Globals conf, final int timer, final BombStatus status)
+    public BombState(GameConfiguration conf, final int timer, final BombStatus status)
     {
         this(timer, conf.DEFAULT_BOMB_RANGE, status);
     }

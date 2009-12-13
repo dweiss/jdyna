@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Game settings and configuration.
  */
-public final class Globals implements Serializable
+public final class GameConfiguration implements Serializable
 {
     /**
      * @see GameEvent#serialVersionUID
@@ -64,7 +64,7 @@ public final class Globals implements Serializable
 
     /**
      * The default number of frames for which bomb-dropping-diarrhea lasts. It is a bit
-     * lower than {@link Globals#DEFAULT_FUSE_FRAMES} so that the player can avoid
+     * lower than {@link GameConfiguration#DEFAULT_FUSE_FRAMES} so that the player can avoid
      * self-destruction when having many bombs collected.
      */
     public int DEFAULT_DIARRHEA_FRAMES = DEFAULT_FUSE_FRAMES - 20;

@@ -52,7 +52,7 @@ public final class ReplaySavedGame
 
             logger.info("Replaying...");
 
-            final Globals conf = new Globals();
+            final GameConfiguration conf = new GameConfiguration();
             this.board = new ReplayFrame(conf, findBoardInfo(frames), frames);
             board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             board.setVisible(true);

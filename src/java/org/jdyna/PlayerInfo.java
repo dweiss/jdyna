@@ -162,12 +162,12 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Global configuration for the player.
      */
-    private Globals conf;
+    private GameConfiguration conf;
 
     /*
      * 
      */
-    PlayerInfo(Globals conf, Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
+    PlayerInfo(GameConfiguration conf, Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
     {
         assert lives > 0 : "Number of lives must be > 0";
 

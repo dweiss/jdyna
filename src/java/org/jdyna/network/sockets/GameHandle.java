@@ -3,7 +3,7 @@ package org.jdyna.network.sockets;
 import java.io.Serializable;
 
 import org.jdyna.BoardInfo;
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 
 /**
@@ -16,7 +16,7 @@ public final class GameHandle implements Serializable
     public BoardInfo info;
     
     /** Configuration. */
-    public Globals conf;
+    public GameConfiguration conf;
 
     /** Game name. */
     public String gameName;
@@ -41,7 +41,7 @@ public final class GameHandle implements Serializable
     /*
      * 
      */
-    public GameHandle(int id, String gameName, String boardName, BoardInfo info, Globals conf)
+    public GameHandle(int id, String gameName, String boardName, BoardInfo info, GameConfiguration conf)
     {
         this.info = info;
         this.gameName = gameName;

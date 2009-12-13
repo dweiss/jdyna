@@ -21,7 +21,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
 {
     protected final Player player;
     protected GameState state;
-    protected Globals conf;
+    protected GameConfiguration conf;
 
     /**
      * @param name Player's name.

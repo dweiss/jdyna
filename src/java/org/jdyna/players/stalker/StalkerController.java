@@ -71,7 +71,7 @@ class StalkerController implements IGameEventListener, IPlayerController
     /**
      * Configuration for the game.
      */
-    private Globals conf;
+    private GameConfiguration conf;
 
     /**
      * Bomb indicator

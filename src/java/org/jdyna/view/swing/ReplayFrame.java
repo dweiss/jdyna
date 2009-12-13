@@ -30,7 +30,7 @@ public final class ReplayFrame extends JFrame
     private int frame;
    
     private final GameTimer timer;
-    private final Globals conf;
+    private final GameConfiguration conf;
 
     private JSlider slider; 
 
@@ -121,7 +121,7 @@ public final class ReplayFrame extends JFrame
     /*
      * 
      */
-    private ReplayFrame(Globals conf, GraphicsConfiguration graphicsConf)
+    private ReplayFrame(GameConfiguration conf, GraphicsConfiguration graphicsConf)
     {
         this.conf = conf;
         this.graphicsConf = graphicsConf;
@@ -131,7 +131,7 @@ public final class ReplayFrame extends JFrame
     /*
      * 
      */
-    public ReplayFrame(Globals c, BoardInfo boardInfo, List<FrameData> frameData)
+    public ReplayFrame(GameConfiguration c, BoardInfo boardInfo, List<FrameData> frameData)
     {
         this(c, ImageUtilities.getGraphicsConfiguration());
 

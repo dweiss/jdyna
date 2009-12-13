@@ -40,7 +40,7 @@ public class GameState
     /**
      * Game settings and configuration.
      */
-    private Globals conf;
+    private GameConfiguration conf;
 
     public GameState(GameStartEvent event)
     {

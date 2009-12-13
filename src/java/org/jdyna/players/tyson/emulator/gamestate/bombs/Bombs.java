@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.jdyna.CellType;
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -29,17 +29,17 @@ public class Bombs implements IPlayersInformationListener
 {
     // TODO: We rely on the default game setup here (Dyna Classic). 
     public final static int EXPLOSION_FRAMES = 14;
-    public final static int BOMB_LIFETIME = Globals._DEFAULT_FUSE_FRAMES + EXPLOSION_FRAMES;
+    public final static int BOMB_LIFETIME = GameConfiguration._DEFAULT_FUSE_FRAMES + EXPLOSION_FRAMES;
 
     protected final Map<GridCoord, BombState> bombs = new HashMap<GridCoord, BombState>();
     private final ZoneSafetyUpdater zoneSafetyUpdater;
 
-    protected final Globals conf;
+    protected final GameConfiguration conf;
 
     /**
      * @param board Source of information about board.
      */
-    public Bombs(final Board board, Globals conf)
+    public Bombs(final Board board, GameConfiguration conf)
     {
         this.conf = conf;
 
