@@ -1,6 +1,8 @@
 
 VERSION <HEAD>
 
+    - Refactored the code to allow runtime adjustments to game settings and configuration.
+
     - Added bomb diarrhea bonus.
 	
 	- Added no bombs bonus.
@@ -20,8 +22,6 @@ VERSION <HEAD>
 	- Added random placing of crates on the board.
 
 	- Added Ahmed bonus.
-
-	- Fixed several bugs.
 
 VERSION 0.94
 
