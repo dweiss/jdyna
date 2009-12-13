@@ -85,7 +85,8 @@ public final class BoardUtilities
      * @param bombs A list of bombs that exploded during this call.
      * @param crates A list of crate positions that should be removed as part of this explosion. 
      */
-    static void explode(Board board, List<BombCell> bombs, List<Point> crates, int x, int y)
+    static void explode(Board board, List<ExplosionMetadata> explosionMetadata, 
+        List<Point> crates, int x, int y)
     {
         // Horizontal mode.
         final BombCell c = (BombCell) board.cellAt(x, y);
@@ -99,20 +100,21 @@ public final class BoardUtilities
         // Push the bomb on the list of exploded bombs and mark it as the centerpoint.
         if (c.type == CellType.CELL_BOMB)
         {
-            bombs.add(c);
+            explosionMetadata.add(new ExplosionMetadata(x, y, c));
         }
+
         // Add flame attribution here. 
         board.cellAt(x, y, 
             overlap(c, (ExplosionCell) Cell.getInstance(CellType.CELL_BOOM_XY), c));
 
         // Propagate in all directions from the centerpoint.
-        explode0(board, c, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
+        explode0(board, c, explosionMetadata, crates, range, x - 1, xmin, -1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX);
-        explode0(board, c, bombs, crates, range, x + 1, xmax, +1, x, y, true,  
+        explode0(board, c, explosionMetadata, crates, range, x + 1, xmax, +1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_RX);
-        explode0(board, c, bombs, crates, range, y - 1, ymin, -1, x, y, false, 
+        explode0(board, c, explosionMetadata, crates, range, y - 1, ymin, -1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_TY);
-        explode0(board, c, bombs, crates, range, y + 1, ymax, +1, x, y, false, 
+        explode0(board, c, explosionMetadata, crates, range, y + 1, ymax, +1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_BY);
     }
 
@@ -121,7 +123,7 @@ public final class BoardUtilities
      * of the explosion. 
      */
     private static void explode0(
-        Board board, BombCell bomb, List<BombCell> bombs, List<Point> crates,
+        Board board, BombCell bomb, List<ExplosionMetadata> explosionMetadata, List<Point> crates,
         int range,
         int from, int to, int step,
         final int x, final int y,
@@ -156,7 +158,7 @@ public final class BoardUtilities
                      * Default Dyna behavior: recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
-                    explode(board, bombs, crates, lx, ly);
+                    explode(board, explosionMetadata, crates, lx, ly);
                     break;
             }
 

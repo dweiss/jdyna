@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -82,6 +83,29 @@ public final class MainSwing
          */
         game.addListener(new GameWriter(new FileOutputStream("game.log")));
 
+        /*
+         * Attach exlosion location logger.
+         */
+        game.addListener(new IGameEventListener()
+        {
+            public void onFrame(int frame, List<? extends GameEvent> events)
+            {
+                for (GameEvent e : events)
+                {
+                    if (e instanceof ExplosionEvent)
+                    {
+                        for (ExplosionMetadata m : ((ExplosionEvent) e).getMetadata())
+                        {
+                            logger.info("Explosion at frame: "
+                                + frame + ", position: "
+                                + m.getPosition() + ", range: "
+                                + m.getRange());
+                        }
+                    }
+                }
+            }
+        });
+        
         /*
          * Attach a display view to the game.
          */

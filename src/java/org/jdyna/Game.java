@@ -1126,7 +1126,7 @@ public final class Game implements IGameEventListenerHolder
          * Detect and propagate explosions.
          */
         final ArrayList<Point> crates = Lists.newArrayList();
-        final ArrayList<BombCell> bombs = Lists.newArrayList();
+        final ArrayList<ExplosionMetadata> explosionMetadata = Lists.newArrayList();
         for (int x = board.width - 1; x >= 0; x--)
         {
             for (int y = board.height - 1; y >= 0; y--)
@@ -1139,7 +1139,7 @@ public final class Game implements IGameEventListenerHolder
                     final BombCell bomb = (BombCell) cell;
                     if (bomb.fuseCounter-- <= 0)
                     {
-                        BoardUtilities.explode(board, bombs, crates, x, y);
+                        BoardUtilities.explode(board, explosionMetadata, crates, x, y);
                     }
                 }
             }
@@ -1148,9 +1148,10 @@ public final class Game implements IGameEventListenerHolder
         /*
          * Add sound events to the queue.
          */
-        if (bombs.size() > 0)
+        if (explosionMetadata.size() > 0)
         {
-            events.add(new SoundEffectEvent(SoundEffect.BOMB, bombs.size()));
+            events.add(new SoundEffectEvent(SoundEffect.BOMB, explosionMetadata.size()));
+            events.add(new ExplosionEvent(explosionMetadata));
         }
 
         /*
@@ -1164,8 +1165,9 @@ public final class Game implements IGameEventListenerHolder
         /*
          * Update player bomb counters.
          */
-        for (BombCell bomb : bombs)
+        for (ExplosionMetadata e : explosionMetadata)
         {
+            final BombCell bomb = e.getBombCell();
             if (bomb.player != null)
             {
                 bomb.player.bombCount++;
