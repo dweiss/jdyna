@@ -42,15 +42,15 @@ public final class RabbitsMain
         final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0);
 
         final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+            new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
-        final Game game = new Game(board, boardInfo, 
+        final Globals conf = new Globals();
+        final Game game = new Game(conf, board, boardInfo, 
             new Player("Player 1", c1),
             Rabbit.createPlayer("Rabbit 1"),
             Rabbit.createPlayer("Rabbit 2"),
             Rabbit.createPlayer("Rabbit 3")
         );
-        game.setFrameRate(25);
 
         /*
          * Attach sounds view to the game.

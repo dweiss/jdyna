@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
+import org.jdyna.Globals;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.TCPPacketEmitter;
 import org.jdyna.network.sockets.packets.CreateGameRequest;
@@ -169,7 +170,9 @@ final class ServerControlConnectionHandler extends Thread
             throw new FailureResponseException("Board does not exist: " + req.boardName);
         }
 
-        final GameHandle handle = context.createNewGame(req.gameName, req.boardName);
+        // TODO: This configuration should be part of CreateGameRequest (serialized options).
+        final Globals conf = new Globals();
+        final GameHandle handle = context.createNewGame(conf, req.gameName, req.boardName);
         send(new CreateGameResponse(handle));
     }
 

@@ -26,7 +26,7 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Movement speed in each direction.
      */
-    Point speed = new Point(Globals.DEFAULT_PLAYER_SPEED, Globals.DEFAULT_PLAYER_SPEED);
+    Point speed = new Point(Constants.DEFAULT_PLAYER_SPEED, Constants.DEFAULT_PLAYER_SPEED);
 
     /**
      * If player collects the speed bonus the variable is changed. 
@@ -52,12 +52,12 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Current arsenal to use (bomb count).
      */
-    int bombCount = Globals.DEFAULT_BOMB_COUNT;
+    int bombCount;
 
     /**
      * Bomb range for this player. Assigned to {@link BombCell#range}.
      */
-    int bombRange = Globals.DEFAULT_BOMB_RANGE;
+    int bombRange;
     
     /**
      * Stores the actual bomb range when player is under the influence of max range bonus.
@@ -110,7 +110,7 @@ final class PlayerInfo implements IPlayerSprite
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.
      * 
-     * @see Globals#BOMB_DROP_DELAY
+     * @see Constants#BOMB_DROP_DELAY
      */
     int lastBombFrame = Integer.MIN_VALUE;
 
@@ -159,10 +159,15 @@ final class PlayerInfo implements IPlayerSprite
      */
     private int livesLeft; 
 
+    /**
+     * Global configuration for the player.
+     */
+    private Globals conf;
+
     /*
      * 
      */
-    PlayerInfo(Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
+    PlayerInfo(Globals conf, Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
     {
         assert lives > 0 : "Number of lives must be > 0";
 
@@ -170,6 +175,10 @@ final class PlayerInfo implements IPlayerSprite
         this.spriteType = spriteType;
         this.livesLeft = lives;
         this.joinedAtFrame = joinedAtFrame;
+        this.conf = conf;
+
+        bombCount = conf.DEFAULT_BOMB_COUNT;
+        bombRange = conf.DEFAULT_BOMB_RANGE;
     }
 
     /**
@@ -321,7 +330,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     boolean shouldResurrect()
     {
-        return livesLeft > 0 && frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
+        return livesLeft > 0 && frame > deathAtFrame + conf.DEFAULT_RESURRECTION_FRAMES;
     }
 
     /**
@@ -331,14 +340,14 @@ final class PlayerInfo implements IPlayerSprite
     {
         this.stateFrame = 0;
         this.state = State.DOWN;
-        this.bombCount = Globals.DEFAULT_BOMB_COUNT;
-        this.bombRange = Globals.DEFAULT_BOMB_RANGE;
+        this.bombCount = conf.DEFAULT_BOMB_COUNT;
+        this.bombRange = conf.DEFAULT_BOMB_RANGE;
         this.immortalityBonusCollected = false;
         this.controllerReverseEndsAtFrame = Integer.MIN_VALUE;
         this.isAhmed = false;
 
         this.reincarnations++;
-        makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
+        makeImmortal(conf.DEFAULT_IMMORTALITY_FRAMES);
     }
  
     /**

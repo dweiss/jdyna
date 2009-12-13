@@ -88,7 +88,7 @@ public final class Utils
     public static PointCoord getLeftPoint(final GridCoord cell)
     {
         final PointCoord center = Utils.gridToPixel(cell);
-        final int x = center.x - Globals.DEFAULT_CELL_SIZE / 2;
+        final int x = center.x - Constants.DEFAULT_CELL_SIZE / 2;
         final int y = center.y;
         return new PointCoord(x, y);
     }
@@ -97,7 +97,7 @@ public final class Utils
     public static PointCoord getRightPoint(final GridCoord cell)
     {
         final PointCoord center = Utils.gridToPixel(cell);
-        final int x = center.x + Globals.DEFAULT_CELL_SIZE / 2 - 1;
+        final int x = center.x + Constants.DEFAULT_CELL_SIZE / 2 - 1;
         final int y = center.y;
         return new PointCoord(x, y);
     }
@@ -107,7 +107,7 @@ public final class Utils
     {
         final PointCoord center = Utils.gridToPixel(cell);
         final int x = center.x;
-        final int y = center.y - Globals.DEFAULT_CELL_SIZE / 2;
+        final int y = center.y - Constants.DEFAULT_CELL_SIZE / 2;
         return new PointCoord(x, y);
     }
 
@@ -116,7 +116,7 @@ public final class Utils
     {
         final PointCoord center = Utils.gridToPixel(cell);
         final int x = center.x;
-        final int y = center.y + Globals.DEFAULT_CELL_SIZE / 2 - 1;
+        final int y = center.y + Constants.DEFAULT_CELL_SIZE / 2 - 1;
         return new PointCoord(x, y);
     }
 
@@ -126,8 +126,8 @@ public final class Utils
      */
     public static GridCoord pixelToGrid(PointCoord location)
     {
-        return new GridCoord(location.x / Globals.DEFAULT_CELL_SIZE, location.y
-            / Globals.DEFAULT_CELL_SIZE);
+        return new GridCoord(location.x / Constants.DEFAULT_CELL_SIZE, location.y
+            / Constants.DEFAULT_CELL_SIZE);
     }
 
     /**
@@ -136,9 +136,9 @@ public final class Utils
      */
     public static PointCoord gridToPixel(GridCoord location)
     {
-        return new PointCoord(location.x * Globals.DEFAULT_CELL_SIZE
-            + Globals.DEFAULT_CELL_SIZE / 2, location.y * Globals.DEFAULT_CELL_SIZE
-            + Globals.DEFAULT_CELL_SIZE / 2);
+        return new PointCoord(location.x * Constants.DEFAULT_CELL_SIZE
+            + Constants.DEFAULT_CELL_SIZE / 2, location.y * Constants.DEFAULT_CELL_SIZE
+            + Constants.DEFAULT_CELL_SIZE / 2);
     }
 
     /**
@@ -147,8 +147,8 @@ public final class Utils
      */
     public static PointCoord pixelToGridOffset(PointCoord location)
     {
-        return new PointCoord(location.x % Globals.DEFAULT_CELL_SIZE, location.y
-            % Globals.DEFAULT_CELL_SIZE);
+        return new PointCoord(location.x % Constants.DEFAULT_CELL_SIZE, location.y
+            % Constants.DEFAULT_CELL_SIZE);
     }
 
     /** @return Whether the point is inside the cell or not. */
@@ -161,8 +161,8 @@ public final class Utils
     public static int estimateCost(final PointCoord from, final GridCoord to)
     {
         final PointCoord toPoint = Utils.gridToPixel(to);
-        final int dx = Math.abs(from.x - toPoint.x) / 2 - Globals.DEFAULT_CELL_SIZE / 4;
-        final int dy = Math.abs(from.y - toPoint.y) / 2 - Globals.DEFAULT_CELL_SIZE / 4;
+        final int dx = Math.abs(from.x - toPoint.x) / 2 - Constants.DEFAULT_CELL_SIZE / 4;
+        final int dy = Math.abs(from.y - toPoint.y) / 2 - Constants.DEFAULT_CELL_SIZE / 4;
         return Math.max(dx, dy);
     }
 

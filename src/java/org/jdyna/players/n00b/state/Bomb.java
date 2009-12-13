@@ -34,7 +34,7 @@ class Bomb
      */
     private int timer;
 
-    Bomb(Player owner)
+    Bomb(Player owner, Globals conf)
     {
         this.owner = owner;
 
@@ -45,7 +45,7 @@ class Bomb
         }
         else
         {
-            range = Globals.DEFAULT_BOMB_RANGE;
+            range = conf.DEFAULT_BOMB_RANGE;
         }
     }
 
@@ -101,5 +101,4 @@ class Bomb
             owner.collectBomb();
         }
     }
-
 }

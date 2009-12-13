@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jdyna.CellType;
 import org.jdyna.GameStateEvent;
+import org.jdyna.Globals;
 import org.jdyna.IPlayerController.Direction;
 
 import com.google.common.collect.Lists;
@@ -45,22 +46,22 @@ public class GameState
      * @param event Source of information about state of game.
      * @param currentPlayer Name of player who asks for state of game.
      */
-    public GameState(final int frame, final GameStateEvent event,
+    public GameState(Globals conf, final int frame, final GameStateEvent event,
         final String currentPlayer)
     {
         lastFrame = frame - 1;
         board = new Board(event.getCells());
-        bombs = new Bombs(board);
-        players = new Players(event.getPlayers(), currentPlayer);
+        bombs = new Bombs(board, conf);
+        players = new Players(conf, event.getPlayers(), currentPlayer);
         players.addRangesListener(bombs);
 
         // initialize object with simulated bombs on opponents positions
-        opponentsPossibleBombs = new OpponentsSimulatedBombs(board);
+        opponentsPossibleBombs = new OpponentsSimulatedBombs(board, conf);
         players.addPlayersPositionsListener(opponentsPossibleBombs);
         players.addRangesListener(opponentsPossibleBombs);
 
         // initialize object with simulated bombs on all players positions
-        allPossibleBombs = new AllSimulatedBombs(board);
+        allPossibleBombs = new AllSimulatedBombs(board, conf);
         players.addPlayersPositionsListener(allPossibleBombs);
         players.addRangesListener(allPossibleBombs);
 

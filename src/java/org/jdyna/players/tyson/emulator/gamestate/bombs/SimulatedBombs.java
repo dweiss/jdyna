@@ -22,15 +22,15 @@ public abstract class SimulatedBombs extends Bombs implements
     IPlayersInformationListener, IBombsListener
 {
 
-    public SimulatedBombs(Board board)
+    public SimulatedBombs(Board board, Globals conf)
     {
-        super(board);
+        super(board, conf);
     }
 
     @Override
     public void update(final ExtendedPlayer exPl)
     {
-        bombs.put(exPl.getCell(), new BombState(Globals.DEFAULT_FUSE_FRAMES, exPl
+        bombs.put(exPl.getCell(), new BombState(conf.DEFAULT_FUSE_FRAMES, exPl
             .getRange(), BombStatus.READY));
     }
 

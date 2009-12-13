@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.jdyna.Globals;
+import org.jdyna.Constants;
 
 import com.google.common.collect.Lists;
 
@@ -112,7 +112,7 @@ public final class ImageUtilities
      * @param h Height of each frame's image.
      * @param offsets An array of <code>int[2]</code> with each frame's positions on the
      *            source bricks image. The coordinates are multiplied by
-     *            {@link Globals#DEFAULT_CELL_SIZE}.
+     *            {@link Constants#DEFAULT_CELL_SIZE}.
      */
     public static BufferedImage [] cell(GraphicsConfiguration conf, BufferedImage bricks,
         int w, int h, int []... offsets) throws IOException

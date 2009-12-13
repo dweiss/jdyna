@@ -143,7 +143,7 @@ public final class BoardUtilities
                     return;
 
                 case CELL_BOMB:
-                    if (Globals.DELAYED_BOMB_EXPLOSIONS)
+                    if (Constants.DELAYED_BOMB_EXPLOSIONS)
                     {
                         /*
                          * Don't explode bombs immediately, just speed up their explosion.

@@ -21,20 +21,19 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
     /**
      * Max value of bomb timer in {@link GameState}.
      */
-    private final static int TIMER_MAX_VALUE = Globals.DEFAULT_FUSE_FRAMES + 1;
+    private int TIMER_MAX_VALUE = Globals._DEFAULT_FUSE_FRAMES + 1;
 
     /**
      * n00b will place a bomb in range of another bomb if this bomb won't explode in
-     * number of fromes specified by this parameter
+     * number of frames specified by this parameter
      */
-    private final static int BOMB_SAFETY_TRESHOLD = TIMER_MAX_VALUE
-        - Globals.DEFAULT_CELL_SIZE / 2;
+    private int BOMB_SAFETY_TRESHOLD = TIMER_MAX_VALUE - Constants.DEFAULT_CELL_SIZE / 2;
 
     /**
      * n00b will walk into bomb explosion range if it won't explode in number of frames
      * specified by this parameter.
      */
-    private final static int WALK_SAFETY_TRESHOLD = 1 + 3 * (Globals.DEFAULT_CELL_SIZE / 2);
+    private final static int WALK_SAFETY_TRESHOLD = 1 + 3 * (Constants.DEFAULT_CELL_SIZE / 2);
 
     /**
      * In-game n00b's name.
@@ -66,6 +65,11 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
      */
     private Direction direction;
 
+    /**
+     * Configuration and settings.
+     */
+    private Globals conf;
+
     public NoobPlayer(String name)
     {
         this.name = name;
@@ -93,6 +97,10 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
             if (event.type == Type.GAME_START)
             {
                 state = new GameState((GameStartEvent) event);
+
+                this.conf = ((GameStartEvent) event).getConfiguration();
+                TIMER_MAX_VALUE = conf.DEFAULT_FUSE_FRAMES + 1;
+                BOMB_SAFETY_TRESHOLD = TIMER_MAX_VALUE - Constants.DEFAULT_CELL_SIZE / 2;
             }
             else if (event.type == Type.GAME_STATE)
             {
@@ -102,7 +110,6 @@ public class NoobPlayer implements IPlayerController, IGameEventListener
                 {
                     think();
                 }
-
             }
             else if (event.type == Type.GAME_OVER)
             {

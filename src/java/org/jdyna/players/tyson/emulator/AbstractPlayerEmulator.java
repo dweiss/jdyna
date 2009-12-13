@@ -21,6 +21,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
 {
     protected final Player player;
     protected GameState state;
+    protected Globals conf;
 
     /**
      * @param name Player's name.
@@ -39,7 +40,11 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
     {
         for (GameEvent event : events)
         {
-            if (event instanceof GameStateEvent)
+            if (event instanceof GameStartEvent)
+            {
+                conf = ((GameStartEvent) event).getConfiguration();
+            }
+            else if (event instanceof GameStateEvent)
             {
                 if (state != null)
                 {
@@ -47,7 +52,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
                 }
                 else
                 {
-                    state = new GameState(frame, (GameStateEvent) event, player.name);
+                    state = new GameState(conf, frame, (GameStateEvent) event, player.name);
                 }
             }
         }

@@ -691,10 +691,11 @@ public final class JDyna
     private void runLocalGame(Board board, String highlightPlayer, IPlayerFactory... players)
     {
         final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
-    
-        final Game game = new Game(board, boardInfo);
-        game.setFrameRate(Globals.DEFAULT_FRAME_RATE);
+            new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
+
+        // TODO: this configuration should be modifiable in the settings dialog and passed here.
+        final Globals conf = new Globals();
+        final Game game = new Game(conf, board, boardInfo);
     
         for (IPlayerFactory pf : players)
         {

@@ -22,13 +22,15 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("serial")
 public final class ReplayFrame extends JFrame
 {
-    private final GraphicsConfiguration conf;
+    private final GraphicsConfiguration graphicsConf;
     private BoardPanel gamePanel;
     private List<FrameData> frameData;
 
     private boolean playing;
     private int frame;
-    private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
+   
+    private final GameTimer timer;
+    private final Globals conf;
 
     private JSlider slider; 
 
@@ -111,6 +113,7 @@ public final class ReplayFrame extends JFrame
             return events;
         }
     };
+
     private JButton slow;
     private JButton play;
     private JButton stop;
@@ -118,20 +121,23 @@ public final class ReplayFrame extends JFrame
     /*
      * 
      */
-    private ReplayFrame(GraphicsConfiguration conf)
+    private ReplayFrame(Globals conf, GraphicsConfiguration graphicsConf)
     {
         this.conf = conf;
+        this.graphicsConf = graphicsConf;
+        this.timer = new GameTimer(conf.DEFAULT_FRAME_RATE);
     }
 
     /*
      * 
      */
-    public ReplayFrame(BoardInfo boardInfo, List<FrameData> frameData)
+    public ReplayFrame(Globals c, BoardInfo boardInfo, List<FrameData> frameData)
     {
-        this(ImageUtilities.getGraphicsConfiguration());
+        this(c, ImageUtilities.getGraphicsConfiguration());
+
         final Images images = ImagesFactory.DYNA_CLASSIC;
 
-        gamePanel = new BoardPanel(images, conf);
+        gamePanel = new BoardPanel(images, graphicsConf);
         gamePanel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e)
             {
@@ -143,7 +149,7 @@ public final class ReplayFrame extends JFrame
         });
 
         this.frameData = frameData;
-        gamePanel.onFrame(0, Arrays.asList(new GameStartEvent(boardInfo)));
+        gamePanel.onFrame(0, Arrays.asList(new GameStartEvent(c, boardInfo)));
 
         final JPanel panel = createMainPanel();
         getContentPane().add(panel);
@@ -240,7 +246,7 @@ public final class ReplayFrame extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                timer.setFrameRate(Globals.DEFAULT_FRAME_RATE);
+                timer.setFrameRate(conf.DEFAULT_FRAME_RATE);
                 play();
             }
         });

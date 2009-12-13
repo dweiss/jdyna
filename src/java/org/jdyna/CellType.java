@@ -261,7 +261,7 @@ public enum CellType
             CELL_BONUS_BOMB, 
             CELL_BONUS_RANGE))
         {
-            BONUS_WEIGHTS.put(ct, Globals.FREQUENT_BONUS_WEIGHT);
+            BONUS_WEIGHTS.put(ct, Constants.FREQUENT_BONUS_WEIGHT);
         }
 
         for (CellType ct : EnumSet.of(
@@ -270,7 +270,7 @@ public enum CellType
             CELL_BONUS_CRATE_WALKING, 
             CELL_BONUS_AHMED))
         {
-            BONUS_WEIGHTS.put(ct, Globals.COMMON_BONUS_WEIGHT);
+            BONUS_WEIGHTS.put(ct, Constants.COMMON_BONUS_WEIGHT);
         }
 
         for (CellType ct : EnumSet.of(
@@ -282,7 +282,7 @@ public enum CellType
             CELL_BONUS_CONTROLLER_REVERSE,
             CELL_BONUS_SURPRISE))
         {
-            BONUS_WEIGHTS.put(ct, Globals.COMMON_BONUS_WEIGHT);
+            BONUS_WEIGHTS.put(ct, Constants.COMMON_BONUS_WEIGHT);
         }
 
         // Static, random-access view of all possible bonuses.

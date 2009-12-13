@@ -22,17 +22,19 @@ public class ExtendedPlayer
     private int range;
     private int bombsCount;
     private Map<GridCoord, Integer> bombs = Maps.newHashMap();
+    private Globals conf;
 
     /**
      * @param src Source of information about player.
      */
-    public ExtendedPlayer(final IPlayerSprite src)
+    public ExtendedPlayer(Globals conf, IPlayerSprite src)
     {
         name = src.getName();
         position = new PointCoord(src.getPosition());
         grid = Utils.pixelToGrid(position);
-        range = Globals.DEFAULT_BOMB_RANGE;
-        bombsCount = Globals.DEFAULT_BOMB_COUNT;
+        range = conf.DEFAULT_BOMB_RANGE;
+        bombsCount = conf.DEFAULT_BOMB_COUNT;
+        this.conf = conf;
     }
 
     /**
@@ -73,7 +75,7 @@ public class ExtendedPlayer
      */
     public void addBomb()
     {
-        bombs.put(grid, Globals.DEFAULT_FUSE_FRAMES);
+        bombs.put(grid, conf.DEFAULT_FUSE_FRAMES);
     }
 
     /**

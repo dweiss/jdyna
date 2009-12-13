@@ -12,6 +12,7 @@ import org.jdyna.Globals;
 public class BombState
 {
     private BombStatus status;
+
     /**
      * Nr of frames when this state will disappear from board. In {@link BombStatus#READY}
      * it means time of explosion, in state {@link BombStatus#EXPLODED} it means time of
@@ -19,7 +20,7 @@ public class BombState
      */
     private int timer;
 
-    private int range = Globals.DEFAULT_BOMB_RANGE;
+    private int range;
 
     public enum BombStatus
     {
@@ -46,10 +47,9 @@ public class BombState
     /**
      * Creates object with default range value.
      */
-    public BombState(final int timer, final BombStatus status)
+    public BombState(Globals conf, final int timer, final BombStatus status)
     {
-        this.timer = timer;
-        this.status = status;
+        this(timer, conf.DEFAULT_BOMB_RANGE, status);
     }
 
     public BombState(final int timer, final int range, final BombStatus status)
@@ -61,9 +61,7 @@ public class BombState
 
     public BombState(final BombState src)
     {
-        this.timer = src.timer;
-        this.status = src.getStatus();
-        this.range = src.getRange();
+        this(src.timer, src.getRange(), src.getStatus());
     }
 
     public BombStatus getStatus()

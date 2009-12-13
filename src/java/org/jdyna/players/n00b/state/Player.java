@@ -34,18 +34,20 @@ public class Player
      */
     private PlayerState state;
 
-    Player(String name, int x, int y)
-    {
-        this(name, new Point(x, y));
-    }
+    /**
+     * Configuration and settings.
+     */
+    Globals conf;
 
-    Player(String name, Point position)
+    Player(Globals conf, String name, Point position)
     {
         this.name = name;
-        this.range = Globals.DEFAULT_BOMB_RANGE;
-        this.bombsRemaining = Globals.DEFAULT_BOMB_COUNT;
+        this.range = conf.DEFAULT_BOMB_RANGE;
+        this.bombsRemaining = conf.DEFAULT_BOMB_COUNT;
         this.position = position;
         this.state = PlayerState.CHEATING;
+        
+        this.conf = conf;
     }
 
     public Point getPosition()
@@ -115,8 +117,8 @@ public class Player
      */
     private void reset()
     {
-        this.range = Globals.DEFAULT_BOMB_RANGE;
-        this.bombsRemaining = Globals.DEFAULT_BOMB_COUNT;
+        this.range = conf.DEFAULT_BOMB_RANGE;
+        this.bombsRemaining = conf.DEFAULT_BOMB_COUNT;
     }
 
     @Override

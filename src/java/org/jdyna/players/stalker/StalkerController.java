@@ -69,6 +69,11 @@ class StalkerController implements IGameEventListener, IPlayerController
     private String myName;
 
     /**
+     * Configuration for the game.
+     */
+    private Globals conf;
+
+    /**
      * Bomb indicator
      */
     private static final int F_BOMB = Integer.MAX_VALUE;
@@ -88,7 +93,12 @@ class StalkerController implements IGameEventListener, IPlayerController
 
         for (GameEvent ge : events)
         {
-            if (ge.type == Type.GAME_OVER)
+            if (ge.type == Type.GAME_START)
+            {
+                GameStartEvent gse = (GameStartEvent) ge;
+                this.conf = gse.getConfiguration();
+            }
+            else if (ge.type == Type.GAME_OVER)
             {
                 try
                 {
@@ -99,9 +109,8 @@ class StalkerController implements IGameEventListener, IPlayerController
                 {
                     logger.error("Could not finalize the controller", e);
                 }
-            }
-
-            if (ge.type == Type.GAME_STATE)
+            } 
+            else if (ge.type == Type.GAME_STATE)
             {
                 GameStateEvent gse = (GameStateEvent) ge;
                 this.cells = gse.getCells();
@@ -412,7 +421,7 @@ class StalkerController implements IGameEventListener, IPlayerController
     private boolean canReachField(PointS p)
     {
         return (isSafe(p) && (board[p.x][p.y][0] == 0 || board[p.x][p.y][0]
-            - ((double) p.depth + 1) * Globals.DEFAULT_CELL_SIZE > 0));
+            - ((double) p.depth + 1) * Constants.DEFAULT_CELL_SIZE > 0));
     }
 
     /**
@@ -469,7 +478,7 @@ class StalkerController implements IGameEventListener, IPlayerController
         {
             if (ips.isDead())
             {
-                ranges.put(ips.getName(), Globals.DEFAULT_BOMB_RANGE);
+                ranges.put(ips.getName(), conf.DEFAULT_BOMB_RANGE);
             }
         }
     }
@@ -536,7 +545,7 @@ class StalkerController implements IGameEventListener, IPlayerController
         int x = p.x;
         int y = p.y;
         int range = board[p.x][p.y][2];
-        int explosionTime = Globals.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
+        int explosionTime = conf.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
 
         while (range > 0 && x > 0)
         {
@@ -570,7 +579,7 @@ class StalkerController implements IGameEventListener, IPlayerController
         x = p.x;
         y = p.y;
         range = board[p.x][p.y][2];
-        explosionTime = Globals.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
+        explosionTime = conf.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
         while (range > 0 && x < board.length - 1)
         {
             x++;
@@ -603,7 +612,7 @@ class StalkerController implements IGameEventListener, IPlayerController
         x = p.x;
         y = p.y;
         range = board[p.x][p.y][2];
-        explosionTime = Globals.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
+        explosionTime = conf.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
         while (range > 0 && y > 0)
         {
             y--;
@@ -636,7 +645,7 @@ class StalkerController implements IGameEventListener, IPlayerController
         x = p.x;
         y = p.y;
         range = board[p.x][p.y][2];
-        explosionTime = Globals.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
+        explosionTime = conf.DEFAULT_FUSE_FRAMES - (frame - board[p.x][p.y][1]);
         while (range > 0 && y < board[x].length - 1)
         {
             y++;
@@ -715,7 +724,7 @@ class StalkerController implements IGameEventListener, IPlayerController
      */
     private int getPlayerRange(Point p)
     {
-        int maxRange = Globals.DEFAULT_BOMB_RANGE;
+        int maxRange = conf.DEFAULT_BOMB_RANGE;
         for (IPlayerSprite ips : players)
         {
             if (!ips.isDead() && getBoardPosition(ips.getPosition()).equals(p))
@@ -738,7 +747,7 @@ class StalkerController implements IGameEventListener, IPlayerController
      */
     private Point getBoardPosition(Point p)
     {
-        return new Point(p.x / Globals.DEFAULT_CELL_SIZE, p.y / Globals.DEFAULT_CELL_SIZE);
+        return new Point(p.x / Constants.DEFAULT_CELL_SIZE, p.y / Constants.DEFAULT_CELL_SIZE);
     }
 
     /**

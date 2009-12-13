@@ -80,19 +80,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * How many frames to 'linger' after the game is over.
      */
-    private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
-    
-    /**
-     * If periodic bonuses are placed on the board, then this is 
-     * the period after which a new bonus should be placed on the board.
-     * Bonuses will be placed at random board positions.
-     */
-    private int bonusPeriod = Globals.DEFAULT_BONUS_PERIOD;
-
-    /**
-     * The next time a bonus will be added to the board.
-     */
-    private int nextBonusFrame;
+    private int lingerFrames = Constants.DEFAULT_LINGER_FRAMES;
 
     /**
      * Reusable array of events dispatched in each frame.
@@ -109,7 +97,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Game timer.
      */
-    private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
+    private final GameTimer timer;
 
     /**
      * Game mode of the current competition.
@@ -137,6 +125,11 @@ public final class Game implements IGameEventListenerHolder
     private Map<String, Integer> teams = Maps.newHashBiMap();
 
     /**
+     * Game configuration settings (immutable for the game duration).
+     */
+    private final Globals conf;
+    
+    /**
      * Interrupted flag.
      */
     private volatile boolean interrupted;
@@ -144,12 +137,22 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Creates a single game.
      */
-    public Game(Board board, BoardInfo boardInfo, Player... players)
+    public Game(Globals conf, Board board, BoardInfo boardInfo, Player... players)
     {
+        this.conf = conf;
         this.board = board;
         this.boardData = boardInfo;
+        this.timer = new GameTimer(conf.DEFAULT_FRAME_RATE);
 
         for (Player p : players) addPlayer(p, 0);
+    }
+
+    /**
+     * Creates a single game, without players initially.
+     */
+    public Game(Globals conf, Board board, BoardInfo boardInfo)
+    {
+        this(conf, board, boardInfo, new Player [0]);
     }
 
     /**
@@ -158,7 +161,7 @@ public final class Game implements IGameEventListenerHolder
      */
     public synchronized void addPlayer(Player p)
     {
-        addPlayer(p, Globals.DEFAULT_JOINING_IMMORTALITY_FRAMES);
+        addPlayer(p, conf.DEFAULT_JOINING_IMMORTALITY_FRAMES);
     }
 
     /**
@@ -191,14 +194,6 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Creates a single game, without players initially.
-     */
-    public Game(Board board, BoardInfo boardInfo)
-    {
-        this(board, boardInfo, new Player [0]);
-    }
-
-    /**
      * Starts the game, does not return until the game ends. The game can be interrupted
      * by setting the running thread's interrupted flag.
      */
@@ -206,11 +201,9 @@ public final class Game implements IGameEventListenerHolder
     {
         this.mode = mode;
 
-        nextBonusFrame = bonusPeriod;
-
         int frame = 0;
         GameResult result = null;
-        events.add(new GameStartEvent(boardData));
+        events.add(new GameStartEvent(conf, boardData));
         do
         {
             if (interrupted 
@@ -302,7 +295,7 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processBonuses(int frame)
     {
-        if (nextBonusFrame < frame)
+        if (((frame + 1) % conf.DEFAULT_BONUS_PERIOD) == 0)
         {
             /* 
              * We pick the bonus location at random, avoiding
@@ -322,14 +315,16 @@ public final class Game implements IGameEventListenerHolder
 				final CellType bonus = CellType.randomBonus();
 				board.cellAt(p, Cell.getInstance(bonus));
             }
-
-            this.nextBonusFrame = frame + bonusPeriod;
         }
     }
 
+    /*
+     * TODO: javadoc.
+     */
     private Point randomEmptyCell(Collection<Point> banned) {
         final ArrayList<Point> positions = 
             Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
+
         for (int y = board.height - 1; y >= 0; y--)
         {
             for (int x = board.width - 1; x >= 0; x--)
@@ -342,11 +337,13 @@ public final class Game implements IGameEventListenerHolder
                 }
             }
         }
+
         final int size = positions.size(); 
         if (size > 0)
         {
             return positions.get(random.nextInt(size));
         }
+
         return null;
     }
 
@@ -355,10 +352,10 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processCrates(int frame)
     {
-        if (!Globals.ADD_RANDOM_CRATES)
+        if (!conf.ADD_RANDOM_CRATES)
             return;
 
-        if (((frame + 1) % Globals.DEFAULT_CRATE_PERIOD) == 0)
+        if (((frame + 1) % conf.DEFAULT_CRATE_PERIOD) == 0)
         {
         	final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
@@ -453,14 +450,6 @@ public final class Game implements IGameEventListenerHolder
         }
 
         return stats;
-    }
-
-    /**
-     * Set the frame rate. Zero means no delays.
-     */
-    public void setFrameRate(double framesPerSecond)
-    {
-        timer.setFrameRate(framesPerSecond);
     }
 
     /**
@@ -732,7 +721,7 @@ public final class Game implements IGameEventListenerHolder
         
         if (ct == CellType.CELL_BONUS_DIARRHEA)
         {
-        	pi.diarrheaEndsAtFrame = frame + Globals.DEFAULT_DIARRHEA_FRAMES;
+        	pi.diarrheaEndsAtFrame = frame + conf.DEFAULT_DIARRHEA_FRAMES;
         	bonusCollected = true;
         }
 
@@ -740,46 +729,46 @@ public final class Game implements IGameEventListenerHolder
         {
         	pi.storedBombRange = pi.bombRange;
         	pi.bombRange = Integer.MAX_VALUE;
-        	pi.maxRangeEndsAtFrame = frame + Globals.DEFAULT_MAXRANGE_FRAMES;
+        	pi.maxRangeEndsAtFrame = frame + conf.DEFAULT_MAXRANGE_FRAMES;
         	bonusCollected = true;
         }
         
         if (ct == CellType.CELL_BONUS_IMMORTALITY)
         {
-        	pi.makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
+        	pi.makeImmortal(conf.DEFAULT_IMMORTALITY_FRAMES);
         	pi.immortalityBonusCollected = true;
         	bonusCollected = true;
         }
         
         if (ct == CellType.CELL_BONUS_NO_BOMBS)
         {
-        	pi.noBombsEndsAtFrame = frame + Globals.DEFAULT_NO_BOMBS_FRAMES;
+        	pi.noBombsEndsAtFrame = frame + conf.DEFAULT_NO_BOMBS_FRAMES;
         	bonusCollected = true;
         }
 
         if (ct == CellType.CELL_BONUS_SPEED_UP
             || ct == CellType.CELL_BONUS_SLOW_DOWN)
         {
-            pi.speedEndsAtFrame = frame + Globals.DEFAULT_SPEED_FRAMES;
+            pi.speedEndsAtFrame = frame + conf.DEFAULT_SPEED_FRAMES;
 
             pi.speedMultiplier = ct == CellType.CELL_BONUS_SPEED_UP ?
-                Globals.SPEED_UP_MULTIPLIER	: Globals.SLOW_DOWN_MULTIPLIER;
+                conf.SPEED_UP_MULTIPLIER	: conf.SLOW_DOWN_MULTIPLIER;
             pi.speed = new Point(
-                (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
-                (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED));
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED));
             bonusCollected = true;
         }
         
         if (ct == CellType.CELL_BONUS_CRATE_WALKING)
         {
-        	pi.crateWalkingEndsAtFrame = frame + Globals.DEFAULT_CRATE_WALKING_FRAMES;
+        	pi.crateWalkingEndsAtFrame = frame + conf.DEFAULT_CRATE_WALKING_FRAMES;
         	pi.canWalkCrates = true;
         	bonusCollected = true;
         }
         
         if (ct == CellType.CELL_BONUS_BOMB_WALKING)
         {
-            pi.bombWalkingEndsAtFrame = frame + Globals.DEFAULT_BOMB_WALKING_FRAMES;
+            pi.bombWalkingEndsAtFrame = frame + conf.DEFAULT_BOMB_WALKING_FRAMES;
             pi.canWalkBombs = true;
             bonusCollected = true;
         }
@@ -787,7 +776,7 @@ public final class Game implements IGameEventListenerHolder
         if (ct == CellType.CELL_BONUS_CONTROLLER_REVERSE)
         {
             pi.controllerReverseEndsAtFrame = frame
-                + Globals.DEFAULT_CONTROLLER_REVERSE_FRAMES;
+                + conf.DEFAULT_CONTROLLER_REVERSE_FRAMES;
             bonusCollected = true;
         }
 
@@ -833,8 +822,8 @@ public final class Game implements IGameEventListenerHolder
         if ((pi.speedEndsAtFrame <= frame) && (pi.speedMultiplier != 1.0f))
         {
             pi.speedMultiplier = 1.0f;
-            pi.speed = new Point((int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED),
-                (int) (pi.speedMultiplier * Globals.DEFAULT_PLAYER_SPEED));
+            pi.speed = new Point((int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED));
         }
 
         if ((pi.crateWalkingEndsAtFrame < frame) && (pi.canWalkCrates))
@@ -872,7 +861,7 @@ public final class Game implements IGameEventListenerHolder
 
         final boolean canPlaceBomb = board.cellAt(xy).type == CellType.CELL_EMPTY;
         final boolean hasBombs = pi.bombCount > 0;
-        final boolean dropDelay = (pi.lastBombFrame + Globals.BOMB_DROP_DELAY > frame);
+        final boolean dropDelay = (pi.lastBombFrame + Constants.BOMB_DROP_DELAY > frame);
         final boolean noBombs = (pi.noBombsEndsAtFrame > frame);
 
         if (canPlaceBomb && hasBombs && !dropDelay && !noBombs)
@@ -881,8 +870,9 @@ public final class Game implements IGameEventListenerHolder
             pi.lastBombFrame = frame;
 
             final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
-            bomb.player = pi;
             bomb.range = pi.bombRange;
+            bomb.fuseCounter = conf.DEFAULT_FUSE_FRAMES;
+            bomb.player = pi;
             board.cellAt(xy, bomb);
 
             if (pi.isAhmed) {
@@ -1045,7 +1035,7 @@ public final class Game implements IGameEventListenerHolder
                 + defaults.length + " < " + playerInfos.size());
         }
 
-        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : Globals.DEFAULT_LIVES);
+        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : conf.DEFAULT_LIVES);
 
         if (p.controller instanceof IGameEventListener)
         {
@@ -1055,7 +1045,7 @@ public final class Game implements IGameEventListenerHolder
         final int playerIndex = playerInfos.size();
         final ISprite.Type spriteType = getSpriteType(p, playerIndex);
 
-        final PlayerInfo pi = new PlayerInfo(p, initialLives, spriteType, currentFrame);
+        final PlayerInfo pi = new PlayerInfo(conf, p, initialLives, spriteType, currentFrame);
         pi.makeImmortal(immortalityCount);
         pi.location.setLocation(getDefaultLocation(playerIndex));
         playerInfos.add(pi);

@@ -4,13 +4,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jdyna.Globals;
 import org.jdyna.IPlayerSprite;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.jdyna.players.tyson.emulator.gamestate.ExtendedCell.TypeChangedEvent;
 import org.jdyna.players.tyson.emulator.gamestate.bombs.AllSimulatedBombs;
 import org.jdyna.players.tyson.emulator.gamestate.bombs.OpponentsSimulatedBombs;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * <p>
@@ -29,18 +30,20 @@ final class Players
     private final List<IPlayersInformationListener> rangesListeners = Lists
         .newArrayList();
     private GridCoord playerGrid;
+    private Globals conf;
 
     /**
      * @param playersSrc Source of information about players.
      * @param currentPlayer Name of current player.
      */
-    public Players(final List<? extends IPlayerSprite> playersSrc,
+    public Players(Globals conf, final List<? extends IPlayerSprite> playersSrc,
         final String currentPlayer)
     {
         this.currentPlayer = currentPlayer;
+        this.conf = conf;
         for (IPlayerSprite p : playersSrc)
         {
-            final ExtendedPlayer exPl = new ExtendedPlayer(p);
+            final ExtendedPlayer exPl = new ExtendedPlayer(conf, p);
             players.put(p.getName(), exPl);
             final GridCoord grid = exPl.getCell();
             if (!exPl.getName().equals(currentPlayer))
@@ -119,7 +122,7 @@ final class Players
                 ExtendedPlayer pl = players.get(playerSprite.getName());
                 if (pl == null)
                 {
-                    pl = new ExtendedPlayer(playerSprite);
+                    pl = new ExtendedPlayer(conf, playerSprite);
                     players.put(playerSprite.getName(), pl);
                 }
                 // update players information

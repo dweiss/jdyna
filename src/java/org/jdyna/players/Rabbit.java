@@ -20,7 +20,7 @@ public final class Rabbit implements IPlayerController, IPlayerController2,
     /**
      * Distance measurement fuzziness.
      */
-    private static final int FUZZINESS = Globals.DEFAULT_CELL_SIZE / 3;
+    private static final int FUZZINESS = Constants.DEFAULT_CELL_SIZE / 3;
 
     /** This player's name. */
     private String name;

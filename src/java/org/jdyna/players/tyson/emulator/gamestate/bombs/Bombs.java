@@ -27,17 +27,22 @@ import org.jdyna.players.tyson.emulator.gamestate.bombs.BombState.BombStatus;
  */
 public class Bombs implements IPlayersInformationListener
 {
+    // TODO: We rely on the default game setup here (Dyna Classic). 
     public final static int EXPLOSION_FRAMES = 14;
-    public final static int BOMB_LIFETIME = Globals.DEFAULT_FUSE_FRAMES
-        + EXPLOSION_FRAMES;
+    public final static int BOMB_LIFETIME = Globals._DEFAULT_FUSE_FRAMES + EXPLOSION_FRAMES;
+
     protected final Map<GridCoord, BombState> bombs = new HashMap<GridCoord, BombState>();
     private final ZoneSafetyUpdater zoneSafetyUpdater;
+
+    protected final Globals conf;
 
     /**
      * @param board Source of information about board.
      */
-    public Bombs(final Board board)
+    public Bombs(final Board board, Globals conf)
     {
+        this.conf = conf;
+
         for (int i = 0; i < board.getWidth(); i++)
         {
             for (int j = 0; j < board.getHeight(); j++)
@@ -45,13 +50,13 @@ public class Bombs implements IPlayersInformationListener
                 final CellType type = board.cellAt(i, j).getType();
                 if (type == CellType.CELL_BOMB)
                 {
-                    bombs.put(new GridCoord(i, j), new BombState(
-                        Globals.DEFAULT_FUSE_FRAMES, BombStatus.READY));
+                    bombs.put(new GridCoord(i, j), new BombState(conf,
+                        conf.DEFAULT_FUSE_FRAMES, BombStatus.READY));
                 }
                 else if (type == CellType.CELL_BOOM_XY)
                 {
-                    bombs.put(new GridCoord(i, j), new BombState(EXPLOSION_FRAMES,
-                        BombStatus.EXPLODED));
+                    bombs.put(new GridCoord(i, j), 
+                        new BombState(conf, EXPLOSION_FRAMES, BombStatus.EXPLODED));
                 }
             }
         }
@@ -260,7 +265,7 @@ public class Bombs implements IPlayersInformationListener
         BombState bomb = bombs.get(grid);
         if (bomb == null || bomb.getStatus() != BombStatus.READY)
         {
-            bomb = new BombState(Globals.DEFAULT_FUSE_FRAMES, BombStatus.READY);
+            bomb = new BombState(conf, conf.DEFAULT_FUSE_FRAMES, BombStatus.READY);
             bombs.put(grid, bomb);
         }
         else
@@ -274,7 +279,7 @@ public class Bombs implements IPlayersInformationListener
         BombState bomb = bombs.get(grid);
         if (bomb == null)
         {
-            bombs.put(grid, new BombState(EXPLOSION_FRAMES, BombStatus.READY));
+            bombs.put(grid, new BombState(conf, EXPLOSION_FRAMES, BombStatus.READY));
         }
         else if (bomb.getStatus() == BombStatus.READY)
         {
