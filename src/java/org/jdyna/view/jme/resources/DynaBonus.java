@@ -9,9 +9,9 @@ import com.jme.scene.Spatial;
 @SuppressWarnings("serial")
 public class DynaBonus extends DynaObject
 {
-    private Spatial mesh;
-    private BonusController controller;
-    private DestroyableController destroyable;
+    private final Spatial mesh;
+    private final BonusController controller;
+    private final DestroyableController destroyable;
 
     public DynaBonus(int i, int j, CellType type)
     {

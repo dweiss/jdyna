@@ -1,6 +1,7 @@
 package org.jdyna.view.jme.adapter;
 
 import java.awt.Point;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,13 @@ import org.jdyna.GameStartEvent;
 import org.jdyna.GameStateEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IPlayerSprite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JDynaGameAdapter implements IGameEventListener
 {
+    private final static Logger logger = LoggerFactory.getLogger(JDynaGameAdapter.class);
+
     private boolean gameStarted;
     private final BlockingQueue<GameStateEvent> eventQueue = new LinkedBlockingQueue<GameStateEvent>(3);
     private int boardWidth;
@@ -26,9 +31,31 @@ public class JDynaGameAdapter implements IGameEventListener
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
 
-    public JDynaGameAdapter()
-    {
-    }
+    /**
+     * Supported bonuses in this view.
+     */
+    private final EnumSet<CellType> supportedBonuses = EnumSet.of(
+        CellType.CELL_BONUS_BOMB, 
+        CellType.CELL_BONUS_RANGE
+    );
+    
+    /**
+     * Not supported bonuses in this view (i.e. they doesn't have models/textures) 
+     */
+    private final EnumSet<CellType> otherBonuses = EnumSet.of(
+        CellType.CELL_BONUS_MAXRANGE, 
+        CellType.CELL_BONUS_SPEED_UP, 
+        CellType.CELL_BONUS_CRATE_WALKING, 
+        CellType.CELL_BONUS_AHMED,
+        CellType.CELL_BONUS_DIARRHEA, 
+        CellType.CELL_BONUS_NO_BOMBS,
+        CellType.CELL_BONUS_IMMORTALITY,
+        CellType.CELL_BONUS_SLOW_DOWN,
+        CellType.CELL_BONUS_BOMB_WALKING,
+        CellType.CELL_BONUS_CONTROLLER_REVERSE,
+        CellType.CELL_BONUS_SURPRISE
+    );
+
 
     @Override
     public void onFrame(int frame, List<? extends GameEvent> events)
@@ -95,7 +122,7 @@ public class JDynaGameAdapter implements IGameEventListener
             l.gameStarted(adapted, boardWidth, boardHeight);
             gameStarted = true;
             playersAlive = new HashMap<String, Boolean>();
-            System.out.println("game started");
+            logger.debug("Game started");
         }
     }
 
@@ -129,7 +156,7 @@ public class JDynaGameAdapter implements IGameEventListener
                         cell = cells[i][j].type;
                         break;
                     default:
-                    	System.err.println("Unknown cell type: "+cells[i][j].type);
+                    	logger.error("Unknown cell type: " + cells[i][j].type);
                     	cell = null;
                         //throw new RuntimeException("Unknown cell type: "+cells[i][j].type);
                 }
@@ -139,6 +166,106 @@ public class JDynaGameAdapter implements IGameEventListener
         return adapted;
     }
 
+    /**
+     * Determine if supported bonus has been spawned on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns type of spawned supported bonus, otherwise <code>null</code>.
+     */
+    private CellType bonusSpawned(Cell current, Cell previous)
+    {
+        if (supportedBonuses.contains(current.type) && previous.type != current.type) 
+            return current.type;
+        return null;
+    }
+
+    /**
+     * Determine if bonus has been taken from the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Type of taken bonus or <code>null</code> if not taken.
+     */
+    private CellType bonusTaken(Cell current, Cell previous)
+    {
+        if ((supportedBonuses.contains(previous.type) || otherBonuses
+            .contains(previous.type)) && current.type != previous.type) 
+            return previous.type;
+        return null;
+    }
+
+    /**
+     * Determine if crate has been destroyed on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns <code>true</code> if crate has been destroyed.
+     */
+    private boolean isCrateDestroyedEvent(Cell current, Cell previous)
+    {
+        if ((current.type != CellType.CELL_CRATE && previous.type == CellType.CELL_CRATE)
+            || (current.type != CellType.CELL_CRATE_OUT && previous.type == CellType.CELL_CRATE_OUT)) 
+            return true;
+        return false;
+    }
+
+    /**
+     * Determine if bomb has been planted on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns <code>true</code> if bomb has been planted.
+     */
+    private boolean isBombPlantedEvent(Cell current, Cell previous)
+    {
+        if (current.type == CellType.CELL_BOMB && previous.type != CellType.CELL_BOMB) 
+            return true;
+        return false;
+    }
+
+    /**
+     * Determine if bomb has exploded on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns <code>true</code> if bomb has exploded.
+     */
+    private boolean isBombExplodedEvent(Cell current, Cell previous)
+    {
+        if (current.type != CellType.CELL_BOMB && previous.type == CellType.CELL_BOMB) 
+            return true;
+        return false;
+    }
+
+    /**
+     * Determine if other bonus has been spawned on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns type of spawned other bonus, otherwise <code>null</code>.
+     */
+    private CellType otherBonusSpawned(Cell current, Cell previous)
+    {
+        if (otherBonuses.contains(current.type) && previous.type != current.type) 
+            return current.type;
+        return null;
+    }
+
+    /**
+     * Determine if crate has appeared on the specified cell.
+     * 
+     * @param current Current state of the cell
+     * @param previous Previous state of the cell
+     * @return Returns <code>true</code> if crate has appeared.
+     */
+    private boolean isCrateCreatedEvent(Cell current, Cell previous)
+    {
+        if (current.type == CellType.CELL_CRATE && previous.type != CellType.CELL_CRATE) 
+            return true;
+        return false;
+    }
+    
     private void generateEvents(GameStateEvent state, GameListener l)
     {
         Cell [][] newCells = new Cell[boardWidth][];
@@ -155,87 +282,42 @@ public class JDynaGameAdapter implements IGameEventListener
                 Cell cur = newCells[i][j];
                 pos.setLocation(i, j);
 
-                if (cur.type == CellType.CELL_BONUS_RANGE
-                    && prev.type != CellType.CELL_BONUS_RANGE)
+                CellType bonusCell;
+                if ((bonusCell = bonusSpawned(cur, prev)) != null)
                 {
-                    l.bonusSpawned(i, j, CellType.CELL_BONUS_RANGE);
-                    System.out.println("bonus spawned (extra range)");
-                } 
-                else if (cur.type == CellType.CELL_BONUS_BOMB
-                    && prev.type != CellType.CELL_BONUS_BOMB)
-                {
-                    l.bonusSpawned(i, j, CellType.CELL_BONUS_BOMB);
-                    System.out.println("bonus spawned (extra bomb)");
+                    l.bonusSpawned(i, j, bonusCell);
+                    logger.debug("Bonus spawned: " + bonusCell.toString());
                 }
-                else if (cur.type != prev.type
-                    && (prev.type == CellType.CELL_BONUS_RANGE
-                    		|| prev.type == CellType.CELL_BONUS_BOMB
-                    		|| prev.type == CellType.CELL_BONUS_BOMB_WALKING
-                    		|| prev.type == CellType.CELL_BONUS_CONTROLLER_REVERSE
-                    		|| prev.type == CellType.CELL_BONUS_CRATE_WALKING
-                    		|| prev.type == CellType.CELL_BONUS_DIARRHEA
-                    		|| prev.type == CellType.CELL_BONUS_IMMORTALITY
-                    		|| prev.type == CellType.CELL_BONUS_MAXRANGE
-                    		|| prev.type == CellType.CELL_BONUS_NO_BOMBS
-                    		|| prev.type == CellType.CELL_BONUS_RANGE
-                    		|| prev.type == CellType.CELL_BONUS_SLOW_DOWN
-                    		|| prev.type == CellType.CELL_BONUS_SPEED_UP
-                    	)
-                )
+                else if ((bonusCell = bonusTaken(cur, prev)) != null)
                 {
                     l.bonusTaken(i, j);
-                    System.out.println("bonus taken");
+                    logger.debug("Bonus taken: " + bonusCell.toString());
                 }
-                else if ((cur.type != CellType.CELL_CRATE
-                		&& prev.type == CellType.CELL_CRATE)
-                    || (cur.type != CellType.CELL_CRATE_OUT
-                    		&& prev.type == CellType.CELL_CRATE_OUT))
+                else if (isCrateDestroyedEvent(cur, prev))
                 {
-                    System.out.println("create destroyed "+pos);
+                    logger.debug("Crate destroyed " + pos);
                     l.crateDestroyed(i, j);
                 }
-                else if (cur.type == CellType.CELL_BOMB && prev.type != CellType.CELL_BOMB)
+                else if (isBombPlantedEvent(cur, prev))
                 {
                     l.bombPlanted(i, j);
-                    System.out.println("bomb added");
+                    logger.debug("Bomb added");
                 }
-                else if (cur.type != CellType.CELL_BOMB
-                    && prev.type == CellType.CELL_BOMB)
+                else if (isBombExplodedEvent(cur, prev))
                 {
-                    int range[] = explosionRange(newCells,i,j);
-                    l.bombExploded(i, j, range[0],range[1],range[2],range[3]);
-                    debug("bomb exploded");
+                    int range[] = explosionRange(newCells, i, j);
+                    l.bombExploded(i, j, range[0], range[1], range[2], range[3]);
+                    logger.debug("Bomb exploded");
                 }
-                else if ((cur.type == CellType.CELL_BONUS_BOMB_WALKING
-                			&& prev.type != CellType.CELL_BONUS_BOMB_WALKING)
-                		|| (cur.type == CellType.CELL_BONUS_CONTROLLER_REVERSE
-                        	&& prev.type != CellType.CELL_BONUS_CONTROLLER_REVERSE)
-                        || (cur.type == CellType.CELL_BONUS_CRATE_WALKING
-                        	&& prev.type != CellType.CELL_BONUS_CRATE_WALKING)
-                        || (cur.type == CellType.CELL_BONUS_DIARRHEA
-                        	&& prev.type != CellType.CELL_BONUS_DIARRHEA)
-                        || (cur.type == CellType.CELL_BONUS_IMMORTALITY
-                        	&& prev.type != CellType.CELL_BONUS_IMMORTALITY)
-                        || (cur.type == CellType.CELL_BONUS_MAXRANGE
-                        	&& prev.type != CellType.CELL_BONUS_MAXRANGE)
-                        || (cur.type == CellType.CELL_BONUS_NO_BOMBS
-                        	&& prev.type != CellType.CELL_BONUS_NO_BOMBS)
-                        || (cur.type == CellType.CELL_BONUS_SLOW_DOWN
-                        	&& prev.type != CellType.CELL_BONUS_SLOW_DOWN)
-                        || (cur.type == CellType.CELL_BONUS_SPEED_UP
-                        	&& prev.type != CellType.CELL_BONUS_SPEED_UP)
-                        || (cur.type == CellType.CELL_BONUS_AHMED
-                        	&& prev.type != CellType.CELL_BONUS_AHMED)
-                )
+                else if ((bonusCell = otherBonusSpawned(cur, prev)) != null)
                 {
-                	l.bonusSpawned(i, j, null);
-                    System.out.println("other bonus spawned");
+                    l.bonusSpawned(i, j, null);
+                    logger.debug("Other bonus spawned: " + bonusCell.toString());
                 }
-                else if (cur.type == CellType.CELL_CRATE
-                        && prev.type != CellType.CELL_CRATE)
+                else if (isCrateCreatedEvent(cur, prev))
                 {
-                	l.crateCreated(i, j);
-                 	System.out.println("create create "+pos);
+                    l.crateCreated(i, j);
+                    logger.debug("Crate created " + pos);
                 }
             }
         }
@@ -260,14 +342,14 @@ public class JDynaGameAdapter implements IGameEventListener
                 else
                 {
                     l.playerSpawned(name, p.x, p.y, wasAlive == null);
-                    debug("player spawned");
+                    logger.debug("player spawned");
                 }
             }
             else
             {
                 if (Boolean.TRUE.equals(wasAlive)) {
                     l.playerDied(name);
-                    debug("player died");
+                    logger.debug("Player died");
                 }
             }
 
@@ -275,11 +357,6 @@ public class JDynaGameAdapter implements IGameEventListener
         }
 
         cells = newCells;
-    }
-
-    private static void debug(String string)
-    {
-    	System.out.println(string);
     }
 
     private static int[] explosionRange(Cell [][] cells, int i, int j)

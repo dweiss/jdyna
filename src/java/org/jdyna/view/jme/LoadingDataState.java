@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import org.jdyna.view.jme.resources.MeshFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jme.scene.Text;
 import com.jme.util.GameTaskQueueManager;
@@ -12,6 +14,8 @@ import com.jmex.font2d.Text2D;
 
 public class LoadingDataState extends GameState
 {
+    private final static Logger logger = LoggerFactory.getLogger(LoadingDataState.class);
+
     private Collection<Listener> listeners = new LinkedList<Listener>();
 
     public LoadingDataState(Listener l)
@@ -77,7 +81,7 @@ public class LoadingDataState extends GameState
                 }
                 catch (RuntimeException e)
                 {
-                    e.printStackTrace();
+                    logger.error("Failed pre-loading meshes: " + e.getMessage());
                     GameTaskQueueManager.getManager().update(failureCallback);
                 }
 
@@ -85,6 +89,11 @@ public class LoadingDataState extends GameState
         }).start();
     }
 
+    /*
+     * LoadingDataState is extending GameState, it has to implement update method.
+     * But, in fact, we don't actually need anything to update in this class.
+     * @see org.jdyna.view.jme.GameState#update(float, float)
+     */
     public void update(float tpf, float time)
     {
 

@@ -10,9 +10,9 @@ import com.jme.scene.Spatial;
 @SuppressWarnings("serial")
 public class DynaBomb extends DynaObject
 {
-    private Spatial mesh;
-    private BombController controller;
-    private DestroyableController destroyable;
+    private final Spatial mesh;
+    private final BombController controller;
+    private final DestroyableController destroyable;
 
     public DynaBomb(int i, int j)
     {

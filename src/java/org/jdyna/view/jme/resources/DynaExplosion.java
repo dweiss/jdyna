@@ -1,5 +1,8 @@
 package org.jdyna.view.jme.resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.TransformMatrix;
@@ -52,9 +55,7 @@ public class DynaExplosion extends DynaObject
 
     public class ExplosionController extends Controller
     {
-        public ExplosionController()
-        {
-        }
+        private final Logger logger = LoggerFactory.getLogger(ExplosionController.class);
 
         @Override
         public void update(float time)
@@ -62,7 +63,7 @@ public class DynaExplosion extends DynaObject
             if (!hExplosion.isActive())
             {
                 removeFromParent();
-                System.out.println("explosion removed");
+                logger.debug("Explosion removed");
             }
         }
     }

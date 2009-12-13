@@ -10,7 +10,7 @@ public class DynaCrate extends DynaObject
      * what is it for? 
      * private BlendState state;
      */
-    private DestroyableController destroyable;
+    private final DestroyableController destroyable;
 
     public DynaCrate(int i, int j)
     {

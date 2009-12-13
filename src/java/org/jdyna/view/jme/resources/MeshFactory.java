@@ -35,6 +35,9 @@ public class MeshFactory
     private static CullState cull = DisplaySystem.getDisplaySystem().getRenderer()
         .createCullState();
 
+    public static final short PLAYER_MESHES = 1;
+    public static final short PLAYER_DYING_MESHES = 2;
+    
     static
     {
         cull.setCullFace(Face.Back);
@@ -175,25 +178,19 @@ public class MeshFactory
         return copySpatial(mesh);
     }
 
-    public Spatial [] createPlayer()
+    public Spatial [] createPlayer(short meshesType)
     {
-        Spatial [] models = new Spatial [playerMeshes.length];
-        for (int i = 0; i < playerMeshes.length; i++)
-        {
-            Spatial model = copySpatial(playerMeshes[i]);
-            model.setModelBound(new BoundingBox());
-            model.updateModelBound();
-            models[i] = model;
-        }
-        return models;
-    }
+        Spatial [] meshes;
 
-    public Spatial [] createDyingPlayer()
-    {
-        Spatial [] models = new Spatial [playerDyingMeshes.length];
-        for (int i = 0; i < playerDyingMeshes.length; i++)
+        if (meshesType == PLAYER_MESHES) meshes = playerMeshes;
+        else if (meshesType == PLAYER_DYING_MESHES) meshes = playerDyingMeshes;
+        else return null;
+
+        Spatial [] models = new Spatial [meshes.length];
+
+        for (int i = 0; i < meshes.length; i++)
         {
-            Spatial model = copySpatial(playerDyingMeshes[i]);
+            Spatial model = copySpatial(meshes[i]);
             model.setModelBound(new BoundingBox());
             model.updateModelBound();
             models[i] = model;

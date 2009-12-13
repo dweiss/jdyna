@@ -37,14 +37,12 @@ public class DynaUtils
                         obj = new DynaFloor(i, j);
                         break;
                     case CELL_CRATE:
-                        DynaCrate crate = new DynaCrate(i, j);
-                        data.crates.put(pos, crate);
-                        obj = crate;
+                        obj = new DynaCrate(i, j);
+                        data.crates.put(pos, (DynaCrate) obj);
                         break;
                     case CELL_BOMB:
-                        DynaBomb bomb = new DynaBomb(i, j);
-                        data.bombs.put(pos, bomb);
-                        obj = bomb;
+                        obj = new DynaBomb(i, j);
+                        data.bombs.put(pos, (DynaBomb) obj);
                         break;
                     case CELL_BONUS_BOMB:
                     case CELL_BONUS_RANGE:

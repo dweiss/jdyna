@@ -18,15 +18,15 @@ public class DynaPlayer extends DynaObject
 {
     public Spatial meshes[];
     public Spatial dyingMeshes[];
-    private PlayerController controller;
-    private DestroyableController destroyableController;
-    private ImmortalityController immortalityController;
+    private final PlayerController controller;
+    private final DestroyableController destroyableController;
+    private final ImmortalityController immortalityController;
 
     public DynaPlayer(int i, int j)
     {
         super(i, j);
-        meshes = mf.createPlayer();
-        dyingMeshes = mf.createDyingPlayer();
+        meshes = mf.createPlayer(MeshFactory.PLAYER_MESHES);
+        dyingMeshes = mf.createPlayer(MeshFactory.PLAYER_DYING_MESHES);
         attachChild(meshes[0]);
 
         controller = new PlayerController(this);
