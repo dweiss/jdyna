@@ -48,8 +48,19 @@ public class MeshFactory
         modelPaths.put(CellType.CELL_WALL, "wall");
         modelPaths.put(CellType.CELL_CRATE, "crate");
         modelPaths.put(CellType.CELL_BOMB, "bomb");
-        modelPaths.put(CellType.CELL_BONUS_RANGE, "bonus_range");
         modelPaths.put(CellType.CELL_BONUS_BOMB, "bonus_bomb");
+        modelPaths.put(CellType.CELL_BONUS_RANGE, "bonus_range");
+        modelPaths.put(CellType.CELL_BONUS_NO_BOMBS, "bonus_no_bombs");
+        modelPaths.put(CellType.CELL_BONUS_IMMORTALITY, "bonus_immortality");
+        modelPaths.put(CellType.CELL_BONUS_CRATE_WALKING, "bonus_crate_walking");
+        modelPaths.put(CellType.CELL_BONUS_CONTROLLER_REVERSE, "bonus_controller_reverse");
+        modelPaths.put(CellType.CELL_BONUS_AHMED, "bonus_ahmed");
+        modelPaths.put(CellType.CELL_BONUS_MAXRANGE, "bonus_maxrange");
+        modelPaths.put(CellType.CELL_BONUS_SPEED_UP, "bonus_speed_up");
+        modelPaths.put(CellType.CELL_BONUS_DIARRHEA, "bonus_diarrhea");
+        modelPaths.put(CellType.CELL_BONUS_SLOW_DOWN, "bonus_slow_down");
+        modelPaths.put(CellType.CELL_BONUS_BOMB_WALKING, "bonus_bomb_walking");
+        modelPaths.put(CellType.CELL_BONUS_SURPRISE, "bonus_surprise");
     }
 
     static MeshFactory inst;
@@ -116,7 +127,7 @@ public class MeshFactory
         }
         catch (IOException e)
         {
-            throw new RuntimeException("Loading model failed", e);
+            throw new RuntimeException("Loading model " + name + " failed", e);
         }
     }
 

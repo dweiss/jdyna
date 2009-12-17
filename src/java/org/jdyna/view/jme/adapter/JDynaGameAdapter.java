@@ -36,25 +36,24 @@ public class JDynaGameAdapter implements IGameEventListener
      */
     private final EnumSet<CellType> supportedBonuses = EnumSet.of(
         CellType.CELL_BONUS_BOMB, 
-        CellType.CELL_BONUS_RANGE
+        CellType.CELL_BONUS_RANGE,
+        CellType.CELL_BONUS_NO_BOMBS,
+        CellType.CELL_BONUS_IMMORTALITY,
+        CellType.CELL_BONUS_CRATE_WALKING,
+        CellType.CELL_BONUS_CONTROLLER_REVERSE,
+        CellType.CELL_BONUS_AHMED,
+        CellType.CELL_BONUS_MAXRANGE, 
+        CellType.CELL_BONUS_SPEED_UP, 
+        CellType.CELL_BONUS_DIARRHEA,
+        CellType.CELL_BONUS_SLOW_DOWN,
+        CellType.CELL_BONUS_BOMB_WALKING,
+        CellType.CELL_BONUS_SURPRISE
     );
     
     /**
      * Not supported bonuses in this view (i.e. they doesn't have models/textures) 
      */
-    private final EnumSet<CellType> otherBonuses = EnumSet.of(
-        CellType.CELL_BONUS_MAXRANGE, 
-        CellType.CELL_BONUS_SPEED_UP, 
-        CellType.CELL_BONUS_CRATE_WALKING, 
-        CellType.CELL_BONUS_AHMED,
-        CellType.CELL_BONUS_DIARRHEA, 
-        CellType.CELL_BONUS_NO_BOMBS,
-        CellType.CELL_BONUS_IMMORTALITY,
-        CellType.CELL_BONUS_SLOW_DOWN,
-        CellType.CELL_BONUS_BOMB_WALKING,
-        CellType.CELL_BONUS_CONTROLLER_REVERSE,
-        CellType.CELL_BONUS_SURPRISE
-    );
+    //private final EnumSet<CellType> otherBonuses = EnumSet<CellType>();
 
 
     @Override
@@ -139,20 +138,26 @@ public class JDynaGameAdapter implements IGameEventListener
             {
                 CellType cell;
                 switch (cells[i][j].type) {
-                    case CELL_EMPTY:
-                        cell = CellType.CELL_EMPTY;
-                        break;
-                    case CELL_BOMB:
-                        cell = CellType.CELL_BOMB;
-                        break;
                     case CELL_CRATE:
                     case CELL_CRATE_OUT:
                         cell = CellType.CELL_CRATE;
                         break;
                     case CELL_WALL:
-                        cell = CellType.CELL_WALL;
-                        break;
+                    case CELL_EMPTY:
+                    case CELL_BOMB:
                     case CELL_BONUS_BOMB:
+                    case CELL_BONUS_RANGE:
+                    case CELL_BONUS_NO_BOMBS:
+                    case CELL_BONUS_IMMORTALITY:
+                    case CELL_BONUS_CRATE_WALKING:
+                    case CELL_BONUS_CONTROLLER_REVERSE:
+                    case CELL_BONUS_AHMED:
+                    case CELL_BONUS_MAXRANGE: 
+                    case CELL_BONUS_SPEED_UP: 
+                    case CELL_BONUS_DIARRHEA:
+                    case CELL_BONUS_SLOW_DOWN:
+                    case CELL_BONUS_BOMB_WALKING:
+                    case CELL_BONUS_SURPRISE:
                         cell = cells[i][j].type;
                         break;
                     default:
@@ -189,8 +194,8 @@ public class JDynaGameAdapter implements IGameEventListener
      */
     private CellType bonusTaken(Cell current, Cell previous)
     {
-        if ((supportedBonuses.contains(previous.type) || otherBonuses
-            .contains(previous.type)) && current.type != previous.type) 
+        if ((supportedBonuses.contains(previous.type) /*|| otherBonuses
+            .contains(previous.type)*/) && current.type != previous.type) 
             return previous.type;
         return null;
     }
@@ -245,12 +250,12 @@ public class JDynaGameAdapter implements IGameEventListener
      * @param previous Previous state of the cell
      * @return Returns type of spawned other bonus, otherwise <code>null</code>.
      */
-    private CellType otherBonusSpawned(Cell current, Cell previous)
+    /*private CellType otherBonusSpawned(Cell current, Cell previous)
     {
         if (otherBonuses.contains(current.type) && previous.type != current.type) 
             return current.type;
         return null;
-    }
+    }*/
 
     /**
      * Determine if crate has appeared on the specified cell.
@@ -309,11 +314,11 @@ public class JDynaGameAdapter implements IGameEventListener
                     l.bombExploded(i, j, range[0], range[1], range[2], range[3]);
                     logger.debug("Bomb exploded");
                 }
-                else if ((bonusCell = otherBonusSpawned(cur, prev)) != null)
-                {
-                    l.bonusSpawned(i, j, null);
-                    logger.debug("Other bonus spawned: " + bonusCell.toString());
-                }
+                /*
+                 * else if ((bonusCell = otherBonusSpawned(cur, prev)) != null) {
+                 * l.bonusSpawned(i, j, null); logger.debug("Other bonus spawned: " +
+                 * bonusCell.toString()); }
+                 */
                 else if (isCrateCreatedEvent(cur, prev))
                 {
                     l.crateCreated(i, j);

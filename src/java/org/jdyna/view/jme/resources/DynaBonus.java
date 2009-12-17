@@ -19,6 +19,7 @@ public class DynaBonus extends DynaObject
 
         if (type != null) mesh = mf.createMesh(type);
         else mesh = mf.getUnknownBonus();
+        
 
         attachChild(mesh);
 

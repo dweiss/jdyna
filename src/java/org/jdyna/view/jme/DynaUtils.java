@@ -46,6 +46,17 @@ public class DynaUtils
                         break;
                     case CELL_BONUS_BOMB:
                     case CELL_BONUS_RANGE:
+                    case CELL_BONUS_NO_BOMBS:
+                    case CELL_BONUS_IMMORTALITY:
+                    case CELL_BONUS_CRATE_WALKING:
+                    case CELL_BONUS_CONTROLLER_REVERSE:
+                    case CELL_BONUS_AHMED:
+                    case CELL_BONUS_MAXRANGE: 
+                    case CELL_BONUS_SPEED_UP: 
+                    case CELL_BONUS_DIARRHEA:
+                    case CELL_BONUS_SLOW_DOWN:
+                    case CELL_BONUS_BOMB_WALKING:
+                    case CELL_BONUS_SURPRISE:
                         obj = new DynaBonus(i, j, cell);
                         break;
                     default:
