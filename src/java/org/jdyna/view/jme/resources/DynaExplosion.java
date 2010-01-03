@@ -15,8 +15,13 @@ public class DynaExplosion extends DynaObject
 {
     private ParticleMesh hExplosion;
     private ParticleMesh vExplosion;
+    private ParticleMesh smoke;
     private ExplosionController controller;
 
+    /*
+     * Object created when a bomb explodes, attaches the particleMeshes to
+     * a node created at the place of explosion
+     */
     public DynaExplosion(int i, int j, int left, int right, int up, int down)
     {
         super(i, j);
@@ -27,6 +32,7 @@ public class DynaExplosion extends DynaObject
         TransformMatrix t1 = new TransformMatrix();
         t1.setTranslation(i, 0, j);
         hExplosion.setEmitterTransform(t1);
+
         hExplosion.setLocalTranslation(i, 0, j);
 
         Node node = new Node();
@@ -49,10 +55,24 @@ public class DynaExplosion extends DynaObject
         attachChild(vExplosion);
         vExplosion.forceRespawn();
 
+        // Smoke
+        smoke = ExplosionFactory.createSmoke();
+
+        TransformMatrix t3 = new TransformMatrix();
+        t3.setTranslation(i, 0, j);
+        smoke.setEmitterTransform(t3);
+
+        smoke.setLocalTranslation(i, 0, j);
+        attachChild(smoke);
+        smoke.forceRespawn();
+        
         controller = new ExplosionController();
         addController(controller);
     }
 
+    /*
+     * Removes the particles from the scene when the effect drawing ends.
+     */
     public class ExplosionController extends Controller
     {
         private final Logger logger = LoggerFactory.getLogger(ExplosionController.class);
@@ -60,10 +80,10 @@ public class DynaExplosion extends DynaObject
         @Override
         public void update(float time)
         {
-            if (!hExplosion.isActive())
+            if (!hExplosion.isActive() && !smoke.isActive())
             {
                 removeFromParent();
-                logger.debug("Explosion removed");
+                //logger.debug("Explosion removed");
             }
         }
     }
