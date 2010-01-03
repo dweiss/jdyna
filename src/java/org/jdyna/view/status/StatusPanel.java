@@ -150,7 +150,9 @@ public class StatusPanel extends JPanel implements IGameEventListener
             final IPlayerSprite player = players.get(0);
             statuses[0].updateCounter(player.getLifeCount(), 1);
             statuses[1].updateCounter(player.getBombCount(), 1);
-            statuses[2].updateCounter(player.getBombRange(), 1);
+            statuses[2].updateCounter(((player.getMaxRangeEndsAtFrame() < 0) || (player
+                .getMaxRangeEndsAtFrame()
+                - frame < 0)) ? player.getBombRange() : -1, 1);
 
             statuses[3].updateCounter((player.getMaxRangeEndsAtFrame() < 0) ? player
                 .getMaxRangeEndsAtFrame() : player.getMaxRangeEndsAtFrame() - frame
