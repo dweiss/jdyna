@@ -303,11 +303,6 @@ public class JDynaGameAdapter implements IGameEventListener
                     logger.debug("Crate destroyed " + pos);
                     l.crateDestroyed(i, j);
                 }
-                else if (isBombPlantedEvent(cur, prev))
-                {
-                    l.bombPlanted(i, j);
-                    logger.debug("Bomb added");
-                }
                 else if (isBombExplodedEvent(cur, prev))
                 {
                     int range[] = explosionRange(newCells, i, j);
@@ -323,6 +318,11 @@ public class JDynaGameAdapter implements IGameEventListener
                 {
                     l.crateCreated(i, j);
                     logger.debug("Crate created " + pos);
+                }
+                if (isBombPlantedEvent(cur, prev))
+                {
+                    l.bombPlanted(i, j);
+                    logger.debug("Bomb added");
                 }
             }
         }

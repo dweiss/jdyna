@@ -123,4 +123,10 @@ public final class GameConfiguration implements Serializable
      * {@link #DEFAULT_CRATE_PERIOD}.
      */
     public boolean ADD_RANDOM_CRATES = false;
+    
+    /**
+     * If enabled, highlights detector is enabled and sending highlights data.
+     * {@link IHighlightDetector} 
+     */
+    public boolean ENABLE_HIGHLIGHTS_DATA = true;
 }

@@ -133,6 +133,11 @@ public final class Game implements IGameEventListenerHolder
      * Interrupted flag.
      */
     private volatile boolean interrupted;
+    
+    /**
+     * Highlight Detector definition
+     */
+    private final IHighlightDetector highlightDetector = new HighlightDetector2();
 
     /**
      * Creates a single game.
@@ -203,6 +208,13 @@ public final class Game implements IGameEventListenerHolder
 
         int frame = 0;
         GameResult result = null;
+
+        /*
+         * Check if highlights detector should be running.
+         */
+        if (conf.ENABLE_HIGHLIGHTS_DATA)
+            addListener(highlightDetector);
+
         events.add(new GameStartEvent(conf, boardData));
         do
         {
@@ -239,6 +251,13 @@ public final class Game implements IGameEventListenerHolder
 
                 events.add(new GameStateEvent(board.cells, playerInfos));
                 
+                /*
+                 * New highlight is detected, add this event to events stream.
+                 */
+                if (conf.ENABLE_HIGHLIGHTS_DATA && highlightDetector.isHighlightDetected()) {
+                    events.add(new HighlightEvent(highlightDetector.getHighlightFrameRange())); 
+                }
+
                 /*
                  * Check if player status should be dispatched. Dispatch
                  * every 50 frames or so anyway, so that clients that have

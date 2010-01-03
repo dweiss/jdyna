@@ -71,6 +71,11 @@ public abstract class GameEvent implements Serializable
          * Explosions metadata (for rendering even more spectacular wipeouts).   
          */
         EXPLOSION_METADATA,
+        
+        /**
+         * Highlight data (detected during the game).
+         */
+        HIGHLIGHT_DATA,
     }
 
     /**

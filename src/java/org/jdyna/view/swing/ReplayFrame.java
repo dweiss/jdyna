@@ -25,6 +25,7 @@ public final class ReplayFrame extends JFrame
     private final GraphicsConfiguration graphicsConf;
     private BoardPanel gamePanel;
     private List<FrameData> frameData;
+    private List<IHighlightDetector.FrameRange> highlightData;
 
     private boolean playing;
     private int frame;
@@ -32,6 +33,7 @@ public final class ReplayFrame extends JFrame
     private final GameTimer timer;
     private final GameConfiguration conf;
 
+    private int currentHighlight;
     private JSlider slider; 
 
     /*
@@ -118,6 +120,9 @@ public final class ReplayFrame extends JFrame
     private JButton play;
     private JButton stop;
 
+    private JButton nextHighlight;
+    private JButton previousHighlight;
+
     /*
      * 
      */
@@ -183,6 +188,32 @@ public final class ReplayFrame extends JFrame
     /*
      * 
      */
+    public ReplayFrame(GameConfiguration c, BoardInfo boardInfo,
+        List<FrameData> frameData, List<IHighlightDetector.FrameRange> highlightData)
+    {
+        this(c, boardInfo, frameData);
+
+        if (highlightData != null && highlightData.size() > 0)
+        {
+            currentHighlight = 0;
+            this.highlightData = highlightData;
+
+            Dictionary<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
+            for (IHighlightDetector.FrameRange frameRange : highlightData)
+            {
+                labels.put(frameRange.beginFrame, new JLabel("^"));
+            }
+            slider.setLabelTable(labels);
+            slider.setPaintLabels(true);
+
+            nextHighlight.setEnabled(true);
+            previousHighlight.setEnabled(true);
+        }
+    }
+
+    /*
+     * 
+     */
     private JPanel createMainPanel()
     {
         final JPanel panel = new JPanel(new BorderLayout());
@@ -216,6 +247,16 @@ public final class ReplayFrame extends JFrame
         gridbag.setConstraints(stop, cc);
         panel.add(stop);
         stop.setEnabled(false);
+
+        previousHighlight = new JButton("<--");
+        gridbag.setConstraints(previousHighlight, cc);
+        panel.add(previousHighlight);
+        previousHighlight.setEnabled(false);
+
+        nextHighlight = new JButton("-->");
+        gridbag.setConstraints(nextHighlight, cc);
+        panel.add(nextHighlight);
+        nextHighlight.setEnabled(false);
 
         slider = new JSlider(0, frameData.size() - 1);
         cc.fill = GridBagConstraints.HORIZONTAL;
@@ -259,7 +300,58 @@ public final class ReplayFrame extends JFrame
             }
         });
 
+        nextHighlight.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (setNextHighlight())
+                {
+                    slider.setValue(highlightData.get(currentHighlight).beginFrame);
+                }
+            }
+        });
+
+        previousHighlight.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (setPreviousHighlight())
+                {
+                    slider.setValue(highlightData.get(currentHighlight).beginFrame);
+                }
+            }
+        });
+
         return panel;
+    }
+
+    private boolean setNextHighlight() {
+        try
+        {
+            while (highlightData.get(currentHighlight).beginFrame <= frame)
+                currentHighlight++;
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            currentHighlight--;
+            return false;
+        }
+        return true;
+    }
+
+    private boolean setPreviousHighlight() {
+        try
+        {
+            while (highlightData.get(currentHighlight).beginFrame
+                + conf.DEFAULT_FRAME_RATE >= frame)
+                currentHighlight--;
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            currentHighlight++;
+            return false;
+        }
+        return true;
     }
 
     /**

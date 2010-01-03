@@ -18,6 +18,7 @@ import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 
 /**
  * Start a game using local Swing view:
@@ -29,7 +30,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class MainSwing
 {
-    private final static Logger logger = LoggerFactory.getLogger(Main3D.class);
+    private final static Logger logger = LoggerFactory.getLogger(MainSwing.class);
+
+    final static List<IHighlightDetector.FrameRange> highlights = Lists.newArrayList();
 
     /* Command-line entry point. */
     public static void main(String [] args) throws IOException
@@ -57,22 +60,9 @@ public final class MainSwing
 
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        new Thread() {
-            public void run()
-            {
-                try
-                {
-                    Thread.sleep(2000);
-                }
-                catch (InterruptedException e) 
-                {
-                    // Ignore.
-                }
 
-                game.addPlayer(p1);
-                game.addPlayer(p2);
-            }
-        }.start();
+        game.addPlayer(p1);
+        game.addPlayer(p2);
 
         /*
          * Attach sounds view to the game.
@@ -85,7 +75,7 @@ public final class MainSwing
         game.addListener(new GameWriter(new FileOutputStream("game.log")));
 
         /*
-         * Attach exlosion location logger.
+         * Attach explosion location logger.
          */
         game.addListener(new IGameEventListener()
         {
@@ -103,6 +93,9 @@ public final class MainSwing
                                 + m.getRange());
                         }
                     }
+                    if (e instanceof HighlightEvent) {
+                        highlights.add(((HighlightEvent) e).getFrameRange());
+                    }
                 }
             }
         });
@@ -115,8 +108,9 @@ public final class MainSwing
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
+        final GameResult result = game.run(Game.Mode.DEATHMATCH);
         logger.info(result.toString());
+        ReplaySavedGame.ReplayGame("game.log", highlights);
 
         SwingUtilities.invokeLater(new Runnable()
         {
