@@ -10,10 +10,12 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.GameEvent;
 import org.jdyna.IGameEventListener;
+import org.jdyna.IViewListener;
 import org.jdyna.view.jme.MatchGameState.Listener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 
 import com.jme.input.MouseInput;
+import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.editors.swing.settings.GameSettingsPanel;
 import com.jmex.game.StandardGame;
@@ -23,15 +25,18 @@ import com.jmex.game.StandardGame;
  */
 public class JMEBoardWindow implements IGameEventListener, Listener, LoadingDataState.Listener
 {
-    private final StandardGame game = new StandardGame("JDyna3D");
+    private StandardGame game = new StandardGame("JDyna3D");
     private JDynaGameAdapter gameAdapter;
+    private IViewListener viewListener;
 
-    public JMEBoardWindow()
-    {
+    static {
         System.setProperty("jme.stats", "set");
         Logger.getLogger("com.jme").setLevel(Level.WARNING);
         MouseInput.setProvider(MouseInput.INPUT_AWT);
-
+    }
+    
+    public JMEBoardWindow()
+    {
         gameAdapter = new JDynaGameAdapter();
 
         try
@@ -40,14 +45,26 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
         }
         catch (InterruptedException e)
         {
-            game.shutdown();
+            gameShutdown("Game initialization failed.");
         }
+    }
+
+    public JMEBoardWindow(IViewListener listener)
+    {
+       this();
+       viewListener = listener;
     }
 
     private void init() throws InterruptedException
     {
+        if (game.isStarted()) {
+            game.reinit();
+            game.recreateGraphicalContext();
+        }
         game.getSettings().setSFX(true);
-        if (GameSettingsPanel.prompt(game.getSettings()))
+        
+        // TODO: get the settings from configuration menu
+        if (true || GameSettingsPanel.prompt(game.getSettings()))
         {
             game.getSettings().setSFX(false);
             game.getSettings().setMusic(false);
@@ -68,13 +85,13 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
     @Override
     public void onMatchFinished()
     {
-        game.shutdown();
+        gameShutdown(null);
     }
 
     @Override
     public void onMatchInterrupted()
     {
-        game.shutdown();
+        gameShutdown(null);
     }
 
     @Override
@@ -86,17 +103,35 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
     @Override
     public void onDataLoadFailed()
     {
-        game.shutdown();
+        gameShutdown("Failed to load resources.");
+    }
+
+
+    /**
+     * Shutdown the game and display error message if exists.
+     * @param message - text that will be displayed.
+     */
+    private void gameShutdown(String message)
+    {
+        final String errorMessage = message;
 
         SwingUtilities.invokeLater(new Runnable()
         {
             @Override
             public void run()
             {
-                JOptionPane.showMessageDialog(null, "Failed to load resources.",
-                    "JDyna3D - Error", JOptionPane.ERROR_MESSAGE);
+                if (errorMessage != null) JOptionPane.showMessageDialog(null,
+                    errorMessage, "JDyna3D - Error", JOptionPane.ERROR_MESSAGE);
+                viewListener.viewClosed();
             }
         });
+
+        
+        game.finish();
+        game.shutdown();
+        MouseInput.destroyIfInitalized();
+        DisplaySystem.getDisplaySystem().close();
+        DisplaySystem.resetSystemProvider();
     }
 
     @Override

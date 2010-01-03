@@ -25,6 +25,7 @@ import org.jdyna.players.RabbitFactory;
 import org.jdyna.players.n00b.NoobFactory;
 import org.jdyna.players.stalker.StalkerFactory;
 import org.jdyna.players.tyson.TysonFactory;
+import org.jdyna.view.jme.JMEBoardWindow;
 import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.swing.BoardFrame;
 import org.jdyna.view.swing.SwingUtils;
@@ -353,8 +354,8 @@ public final class JDyna
         runLocalGame(
             board,
             null,
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0), "Player 1"),
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(1), "Player 2"));
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), "Player 1"),
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(1, config.viewType), "Player 2"));
     }
 
     /**
@@ -378,7 +379,7 @@ public final class JDyna
         runLocalGame(
             board,
             playerName,
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0), playerName),
+            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), playerName),
             getBot(bot));        
     }
     
@@ -494,7 +495,7 @@ public final class JDyna
              * Join the given game.
              */
             final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                HumanPlayerFactory.getDefaultKeyboardController(0), fullName.playerName);
+                HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), fullName.playerName);
 
             final GameServerClient client = new GameServerClient(gameEntry.server);
             client.connect();
@@ -586,7 +587,7 @@ public final class JDyna
         try
         {
             final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                HumanPlayerFactory.getDefaultKeyboardController(0), fullName.playerName);
+                HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), fullName.playerName);
 
             /*
              * Start the server. 
@@ -786,10 +787,20 @@ public final class JDyna
         }
     }
 
+    private IGameEventListener createView(String playerName, final IViewListener listener) {
+        switch (config.viewType) {
+            case SWING_VIEW:
+                return createSwingView(playerName, listener);
+            case JME_VIEW:
+                return createJmeView(playerName, listener);
+        }
+        throw new RuntimeException("Unknown view: " + config.viewType);
+    }
+    
     /**
      * Create a game view for the given player.
      */
-    private IGameEventListener createView(String playerName, final IViewListener listener)
+    private IGameEventListener createSwingView(String playerName, final IViewListener listener)
     {
         final BoardFrame boardFrame = new BoardFrame();
         boardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -811,6 +822,15 @@ public final class JDyna
         return boardFrame;
     }
 
+    private IGameEventListener createJmeView(String playerName, final IViewListener listener)
+    {
+        JMEBoardWindow window = new JMEBoardWindow(listener);
+        
+        // TODO: adding on game close event
+        
+        return window;
+    }
+    
     /**
      * Get bot for a given name.
      */

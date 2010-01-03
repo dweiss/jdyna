@@ -35,6 +35,25 @@ public class Configuration
     }
 
     /**
+     * Board view type.
+     */
+    public static enum ViewType 
+    {
+        SWING_VIEW,
+        JME_VIEW;
+
+        public String toString()
+        {
+            switch (this)
+            {
+                case SWING_VIEW: return "2D - Swing";
+                case JME_VIEW: return "3D - JME";
+            }
+            throw new RuntimeException("Unreachable.");
+        }
+    }
+    
+    /**
      * Enable sounds effects?
      */
     @Element(name = "sound-engine", required = true)
@@ -45,6 +64,12 @@ public class Configuration
      */
     @Element(name = "recent-board-name", required = false)
     public String mostRecentBoard = "classic";
+
+    /**
+     * Board view type.
+     */
+    @Element(name = "view-type", required = true)
+    public ViewType viewType = ViewType.SWING_VIEW;
     
     /**
      * Save the state of this object to an XML.

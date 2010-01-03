@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
+import org.jdyna.frontend.swing.Configuration.ViewType;
 import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.serialization.GameWriter;
 import org.jdyna.view.swing.BoardFrame;
@@ -45,8 +46,8 @@ public final class MainSwing
          */
         final Board board = boards.get("classic-random");
 
-        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0);
-        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1);
+        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0, ViewType.SWING_VIEW);
+        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1, ViewType.SWING_VIEW);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);

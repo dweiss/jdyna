@@ -5,15 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
+import org.jdyna.frontend.swing.Configuration.ViewType;
 import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.serialization.GameWriter;
 import org.jdyna.view.jme.JMEBoardWindow;
-import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +44,8 @@ public final class Main3D
          */
         final Board board = boards.get("classic-random");
 
-        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0);
-        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1);
+        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0, ViewType.JME_VIEW);
+        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1, ViewType.JME_VIEW);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
@@ -88,23 +85,11 @@ public final class Main3D
         /*
          * Attach a display view to the game.
          */
-        final BoardFrame frame = new BoardFrame();
         final JMEBoardWindow window = new JMEBoardWindow();
-                
-        game.addListener(frame);
+
         game.addListener(window);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
         logger.info(result.toString());
-
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                frame.dispose();
-            }
-        });
     }
 }

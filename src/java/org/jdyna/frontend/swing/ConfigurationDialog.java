@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.*;
 
 import org.jdyna.frontend.swing.Configuration.SoundEngine;
+import org.jdyna.frontend.swing.Configuration.ViewType;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -76,6 +77,19 @@ final class ConfigurationDialog
             }
         });
         builder.append("Engine:", engineCombo);
+        builder.nextLine();
+        
+        builder.appendSeparator("View type");
+
+        final JComboBox viewCombo = new JComboBox(ViewType.values());
+        viewCombo.setSelectedItem(configClone.viewType);
+        viewCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.viewType = (ViewType) viewCombo.getSelectedItem();
+            }
+        });
+        builder.append("View type:", viewCombo);
         builder.nextLine();
 
         return builder.getPanel();        
