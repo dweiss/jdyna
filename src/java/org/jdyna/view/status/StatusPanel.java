@@ -90,31 +90,26 @@ public class StatusPanel extends JPanel implements IGameEventListener
 
         statuses[0] = new Status("Lives", lifeCountIcon, 3);
         statuses[1] = new Status("Bombs", getCellImage(CellType.CELL_BONUS_BOMB, 0), 2);
-        statuses[2] = new Status("Bomb range",
-            getCellImage(CellType.CELL_BONUS_RANGE, 0), 3);
-        statuses[3] = new Status("Diarrhea",
-            getCellImage(CellType.CELL_BONUS_DIARRHEA, 0), -1);
-        statuses[4] = new Status("Immortality", getCellImage(
-            CellType.CELL_BONUS_IMMORTALITY, 0), -1);
-        statuses[5] = new Status("Max range", getCellImage(CellType.CELL_BONUS_MAXRANGE,
-            0), -1);
-        statuses[6] = new Status("No bombs",
-            getCellImage(CellType.CELL_BONUS_NO_BOMBS, 0), -1);
-        statuses[7] = new Status("Speed up",
-            getCellImage(CellType.CELL_BONUS_SPEED_UP, 0), -1);
-        statuses[8] = new Status("Slow down", getCellImage(CellType.CELL_BONUS_SLOW_DOWN,
-            0), -1);
-        statuses[9] = new Status("Crate walking", getCellImage(
-            CellType.CELL_BONUS_CRATE_WALKING, 0), -1);
-        statuses[10] = new Status("Bomb walking", getCellImage(
-            CellType.CELL_BONUS_BOMB_WALKING, 0), -1);
-        statuses[11] = new Status("Controller reverse", getCellImage(
-            CellType.CELL_BONUS_CONTROLLER_REVERSE, 0), -1);
-        statuses[12] = new Status("Ahmed", getCellImage(CellType.CELL_BONUS_AHMED, 0), -1);
+        statuses[2] = new Status("Bomb range",getCellImage(CellType.CELL_BONUS_RANGE, 0), 3);
+        
+        statuses[3] = new Status("Max range", getCellImage(CellType.CELL_BONUS_MAXRANGE, 0), -1);
+        statuses[4] = new Status("Ahmed", getCellImage(CellType.CELL_BONUS_AHMED, 0), -1);
+        statuses[5] = new Status("Speed up",getCellImage(CellType.CELL_BONUS_SPEED_UP, 0), -1);
+        statuses[6] = new Status("Crate walking", getCellImage(CellType.CELL_BONUS_CRATE_WALKING, 0), -1);
+        statuses[7] = new Status("Bomb walking", getCellImage(CellType.CELL_BONUS_BOMB_WALKING, 0), -1);
+        statuses[8] = new Status("Immortality", getCellImage(CellType.CELL_BONUS_IMMORTALITY, 0), -1);
+        
+        statuses[9] = new Status("Diarrhea",getCellImage(CellType.CELL_BONUS_DIARRHEA, 0), -1);
+        statuses[10] = new Status("No bombs", getCellImage(CellType.CELL_BONUS_NO_BOMBS, 0), -1);
+        statuses[11] = new Status("Slow down", getCellImage(CellType.CELL_BONUS_SLOW_DOWN,0), -1);
+        statuses[12] = new Status("Controller reverse", getCellImage(CellType.CELL_BONUS_CONTROLLER_REVERSE, 0), -1);
 
         for (int i = 0; i < statuses.length; i++)
         {
+            if (statuses[i].getName() == "Max range" || statuses[i].getName() == "Diarrhea")
+                gbc.insets = new Insets(1,5,1,1);
             add(statuses[i], gbc);
+            gbc.insets = new Insets(1,1,1,1);
             gbc.gridx++;
         }
     }
@@ -145,36 +140,18 @@ public class StatusPanel extends JPanel implements IGameEventListener
             statuses[0].updateCounter(player.getLifeCount(), 1);
             statuses[1].updateCounter(player.getBombCount(), 1);
             statuses[2].updateCounter(player.getBombRange(), 1);
-            statuses[3].updateCounter((player.getDiarrheaEndsAtFrame() < 0) ? player
-                .getDiarrheaEndsAtFrame() : player.getDiarrheaEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[4].updateCounter((player.getImmortalityEndsAtFrame() < 0) ? player
-                .getImmortalityEndsAtFrame() : player.getImmortalityEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[5].updateCounter((player.getMaxRangeEndsAtFrame() < 0) ? player
-                .getMaxRangeEndsAtFrame() : player.getMaxRangeEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[6].updateCounter((player.getNoBombsEndsAtFrame() < 0) ? player
-                .getNoBombsEndsAtFrame() : player.getNoBombsEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[7].updateCounter((player.getSpeedUpEndsAtFrame() < 0) ? player
-                .getSpeedUpEndsAtFrame() : player.getSpeedUpEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[8].updateCounter((player.getSlowDownEndsAtFrame() < 0) ? player
-                .getSlowDownEndsAtFrame() : player.getSlowDownEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[9].updateCounter((player.getCrateWalkingEndsAtFrame() < 0) ? player
-                .getCrateWalkingEndsAtFrame() : player.getCrateWalkingEndsAtFrame()
-                - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[10].updateCounter((player.getBombWalkingEndsAtFrame() < 0) ? player
-                .getBombWalkingEndsAtFrame() : player.getBombWalkingEndsAtFrame() - frame
-                + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[11].updateCounter(
-                (player.getControllerReverseEndsAtFrame() < 0) ? player
-                    .getControllerReverseEndsAtFrame() : player
-                    .getControllerReverseEndsAtFrame()
-                    - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
-            statuses[12].updateCounter(player.isAhmed() ? 1 : -1, 1);
+            
+            statuses[3].updateCounter((player.getMaxRangeEndsAtFrame() < 0) ? player.getMaxRangeEndsAtFrame() : player.getMaxRangeEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[4].updateCounter(player.isAhmed() ? 1 : -1, 1);
+            statuses[5].updateCounter((player.getSpeedUpEndsAtFrame() < 0) ? player.getSpeedUpEndsAtFrame() : player.getSpeedUpEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[6].updateCounter((player.getCrateWalkingEndsAtFrame() < 0) ? player.getCrateWalkingEndsAtFrame() : player.getCrateWalkingEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[7].updateCounter((player.getBombWalkingEndsAtFrame() < 0) ? player.getBombWalkingEndsAtFrame() : player.getBombWalkingEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[8].updateCounter((player.getImmortalityEndsAtFrame() < 0) ? player.getImmortalityEndsAtFrame() : player.getImmortalityEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            
+            statuses[9].updateCounter((player.getDiarrheaEndsAtFrame() < 0) ? player.getDiarrheaEndsAtFrame() : player.getDiarrheaEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[10].updateCounter((player.getNoBombsEndsAtFrame() < 0) ? player.getNoBombsEndsAtFrame() : player.getNoBombsEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[11].updateCounter((player.getSlowDownEndsAtFrame() < 0) ? player.getSlowDownEndsAtFrame() : player.getSlowDownEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);
+            statuses[12].updateCounter((player.getControllerReverseEndsAtFrame() < 0) ? player.getControllerReverseEndsAtFrame() : player.getControllerReverseEndsAtFrame() - frame + conf.DEFAULT_FRAME_RATE, conf.DEFAULT_FRAME_RATE);            
         }
     }
 

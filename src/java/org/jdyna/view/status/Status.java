@@ -44,7 +44,10 @@ public class Status extends JPanel
         if (counter >= 0)
         {
             g.setColor(Color.BLACK);
-            g.drawString(Integer.toString(counter), 0, icon.getHeight() + 11);
+            if (counter >= 10)
+                g.drawString(Integer.toString(counter), 0, icon.getHeight() + 11);
+            else 
+                g.drawString(Integer.toString(counter), 4, icon.getHeight() + 11);
         }
     }
 
