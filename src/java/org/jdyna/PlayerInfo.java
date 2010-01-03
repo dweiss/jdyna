@@ -378,4 +378,80 @@ final class PlayerInfo implements IPlayerSprite
     {
         return bombCount;
     }
+
+	@Override
+	public int getLifeCount() 
+	{
+		return livesLeft;
+	}
+
+	@Override
+	public int getBombRange() 
+	{
+		return bombRange;
+	}
+
+	@Override
+	public int getBombWalkingEndsAtFrame() 
+	{
+		return bombWalkingEndsAtFrame;
+	}
+
+	@Override
+	public int getControllerReverseEndsAtFrame() 
+	{
+		return controllerReverseEndsAtFrame;
+	}
+
+	@Override
+	public int getCrateWalkingEndsAtFrame() 
+	{
+		return crateWalkingEndsAtFrame;
+	}
+
+	@Override
+	public int getDiarrheaEndsAtFrame() 
+	{
+		return diarrheaEndsAtFrame;
+	}
+
+	@Override
+	public int getImmortalityEndsAtFrame() 
+	{
+		return immortalityEndsAtFrame;
+	}
+
+	@Override
+	public int getMaxRangeEndsAtFrame() 
+	{
+		return maxRangeEndsAtFrame;
+	}
+
+	@Override
+	public int getNoBombsEndsAtFrame() 
+	{
+		return noBombsEndsAtFrame;
+	}
+
+	@Override
+	public int getSlowDownEndsAtFrame() 
+	{
+		if (speedMultiplier < 1.0f)
+			return speedEndsAtFrame;
+		else return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public int getSpeedUpEndsAtFrame() 
+	{
+		if (speedMultiplier > 1.0f)
+			return speedEndsAtFrame;
+		else return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public boolean isAhmed() 
+	{
+		return isAhmed;
+	}
 }

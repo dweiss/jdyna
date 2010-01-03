@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import org.jdyna.*;
 import org.jdyna.view.resources.*;
+import org.jdyna.view.status.StatusFrame;
 
 
 /**
@@ -24,6 +25,11 @@ public final class BoardFrame extends JFrame implements IGameEventListener
      * Attached score frame, if any.
      */
     private ScoreFrame scoreFrame;
+    
+    /**
+     * Attached status frame.
+     */
+    private StatusFrame statusFrame;
 
     /*
      * 
@@ -60,6 +66,11 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         scoreFrame.setSize(new Dimension(300, 500));
         scoreFrame.setFocusable(false);
+        
+        this.statusFrame = new StatusFrame();
+        statusFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        statusFrame.setSize(new Dimension(300, 80));
+        statusFrame.setFocusable(false);        
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -87,15 +98,19 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         addWindowListener(new WindowAdapter()
         {
             public void windowOpened(WindowEvent e)
-            {
-                scoreFrame.setVisible(true);
-                SwingUtils.glueTo(BoardFrame.this, scoreFrame, SwingUtils.SnapSide.RIGHT);
-                SwingUtils.snapFrame(BoardFrame.this, scoreFrame);
+            {                
+            	statusFrame.setVisible(true);
+                SwingUtils.glueTo(BoardFrame.this, statusFrame, SwingUtils.SnapSide.RIGHT);
+                SwingUtils.snapFrame(BoardFrame.this, statusFrame);
+            	scoreFrame.setVisible(true);
+                SwingUtils.glueTo(BoardFrame.this.statusFrame, scoreFrame, SwingUtils.SnapSide.BOTTOM);
+                SwingUtils.snapFrame(BoardFrame.this.statusFrame, scoreFrame);                
             }
             
             public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
+                statusFrame.dispose();
             }
         });
 
@@ -109,6 +124,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     {
         this.gamePanel.onFrame(frame, events);
         this.scoreFrame.onFrame(frame, events);
+        this.statusFrame.onFrame(frame, events);
     }
 
     /**
