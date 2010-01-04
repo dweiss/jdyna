@@ -139,12 +139,18 @@ public final class GameStateEvent extends GameEvent
                 player.isDead(), 
                 player.isImmortal(),
                 player.getBombCount(),
-                player.getLifeCount(), player.getBombRange(),
-                player.getDiarrheaEndsAtFrame(), player.getImmortalityEndsAtFrame(),
-                player.getMaxRangeEndsAtFrame(), player.getNoBombsEndsAtFrame(),
-                player.getSpeedUpEndsAtFrame(), player.getSlowDownEndsAtFrame(),
-                player.getCrateWalkingEndsAtFrame(), player.getBombWalkingEndsAtFrame(),
-                player.getControllerReverseEndsAtFrame(), player.isAhmed());
+                player.getLifeCount(), 
+                player.getBombRange(),
+                player.getDiarrheaEndsAtFrame(), 
+                player.getImmortalityEndsAtFrame(),
+                player.getMaxRangeEndsAtFrame(), 
+                player.getNoBombsEndsAtFrame(),
+                player.getSpeedUpEndsAtFrame(), 
+                player.getSlowDownEndsAtFrame(),
+                player.getCrateWalkingEndsAtFrame(), 
+                player.getBombWalkingEndsAtFrame(),
+                player.getControllerReverseEndsAtFrame(), 
+                player.isAhmed());
             p.position.setLocation(player.getPosition());
             p.animationFrame = player.getAnimationFrame();
             p.animationState = player.getAnimationState();
