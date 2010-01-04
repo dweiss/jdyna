@@ -64,7 +64,7 @@ public final class MainSwing
         /*
          * Attach sounds view to the game.
          */
-        game.addListener(new JavaSoundSFX());
+        // game.addListener(new JavaSoundSFX());
 
         /*
          * Attach game progress saver.

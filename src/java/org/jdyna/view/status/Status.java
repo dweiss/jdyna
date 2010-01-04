@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
+import static org.jdyna.view.status.StatusField.*;
 
 @SuppressWarnings("serial")
 public class Status extends JPanel
@@ -13,7 +14,7 @@ public class Status extends JPanel
     /**
      * Name of this statistic.
      */
-    private String name;
+    public final StatusField field;
 
     /**
      * Icon of this statistic.
@@ -28,9 +29,9 @@ public class Status extends JPanel
     /**
      *
      */
-    public Status(String name, BufferedImage icon, int counter)
+    public Status(StatusField field, BufferedImage icon, int counter)
     {
-        this.name = name;
+        this.field = field;
         this.icon = icon;
         this.counter = counter;
         setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight() + 11));
@@ -57,22 +58,12 @@ public class Status extends JPanel
          * If this is bomb range statistic and the counter equals -1, it means that the
          * max range bonus is collected - draw infinity.
          */
-        else if (name == "Bomb range") g.drawString("\u221E", 2, icon.getHeight() + 11);
+        else if (field == BOMB_RANGE) g.drawString("\u221E", 2, icon.getHeight() + 11);
     }
 
-    public void updateCounter(int counter, int frameRate)
+    public void updateValue(int value)
     {
-        this.counter = (int) (counter / frameRate);
+        this.counter = value;
         repaint();
-    }
-
-    public int getCounter()
-    {
-        return counter;
-    }
-
-    public String getName()
-    {
-        return name;
     }
 }
