@@ -50,9 +50,7 @@ public final class ImageUtilities
      */
     public static BufferedImage loadResourceImage(String resourcePath) throws IOException
     {
-        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        final InputStream is = cl.getResourceAsStream(resourcePath);
-        if (is == null) throw new IOException("Resource not found: " + resourcePath);
+        final InputStream is = ResourceUtilities.open(resourcePath);
         try
         {
             return ImageIO.read(is);
