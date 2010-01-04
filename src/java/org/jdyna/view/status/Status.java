@@ -34,6 +34,8 @@ public class Status extends JPanel
         this.field = field;
         this.icon = icon;
         this.counter = counter;
+        // TODO: One more thing -- look at FontMetrics class and determine
+        // these paddings appropriately, hardcoded values are a dirty hack.
         setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight() + 11));
     }
 
