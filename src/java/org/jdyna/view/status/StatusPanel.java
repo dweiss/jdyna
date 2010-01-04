@@ -1,24 +1,14 @@
 package org.jdyna.view.status;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import org.jdyna.CellType;
-import org.jdyna.GameConfiguration;
-import org.jdyna.GameEvent;
-import org.jdyna.GameStartEvent;
-import org.jdyna.GameStateEvent;
-import org.jdyna.IGameEventListener;
-import org.jdyna.IPlayerSprite;
+import org.jdyna.*;
+import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.resources.Images;
 
 @SuppressWarnings("serial")
@@ -37,10 +27,11 @@ public class StatusPanel extends JPanel implements IGameEventListener
     /**
      * Life count icon.
      */
-    private BufferedImage lifeCountIcon;
+    private final BufferedImage lifeCountIcon;
 
     /**
      * Default icon in case some required image is missing.
+     * TODO: this should not be the case (we assume all images are present).
      */
     private BufferedImage defaultIcon = new BufferedImage(16, 16,
         BufferedImage.TYPE_INT_RGB);
@@ -63,12 +54,13 @@ public class StatusPanel extends JPanel implements IGameEventListener
         this.images = images.createCompatible(conf);
         try
         {
-            lifeCountIcon = loadImage("src/graphics/icons/life.png");
+            this.lifeCountIcon = ImageUtilities.loadResourceImage("icons/life.png");
         }
-        catch (IOException e)
+        catch (IOException e)   
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
         initializeComponents();
     }
 
@@ -203,15 +195,5 @@ public class StatusPanel extends JPanel implements IGameEventListener
 
         final int frame = cellCounter / advanceRate;
         return cellImages[frame % cellImages.length];
-    }
-
-    /**
-     * Load an image.
-     */
-    private BufferedImage loadImage(String filename) throws IOException
-    {
-        File imageFile = new File(filename);
-        if (imageFile.canRead()) return ImageIO.read(imageFile);
-        return defaultIcon;
     }
 }
