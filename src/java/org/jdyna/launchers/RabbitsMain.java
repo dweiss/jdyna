@@ -10,10 +10,9 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
-import org.jdyna.frontend.swing.Configuration.ViewType;
-import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.players.Rabbit;
 import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.swing.AWTKeyboardController;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public final class RabbitsMain
 
         final Board board = boards.get("classic-empty");
 
-        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0, ViewType.SWING_VIEW);
+        final IPlayerController c1 = AWTKeyboardController.getDefaultKeyboardController(0);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);

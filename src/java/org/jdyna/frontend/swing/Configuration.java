@@ -16,7 +16,7 @@ public class Configuration
     /**
      * Sound engine to use. 
      */
-    public static enum SoundEngine 
+    static enum SoundEngine 
     {
         NONE,
         JAVA_AUDIO,
@@ -37,7 +37,7 @@ public class Configuration
     /**
      * Board view type.
      */
-    public static enum ViewType 
+    static enum ViewType 
     {
         SWING_VIEW,
         JME_VIEW;

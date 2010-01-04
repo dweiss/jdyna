@@ -1,9 +1,7 @@
 package org.jdyna.launchers;
 
 import java.awt.Dimension;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -11,9 +9,8 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
-import org.jdyna.frontend.swing.Configuration.ViewType;
-import org.jdyna.players.HumanPlayerFactory;
 import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.swing.AWTKeyboardController;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +46,8 @@ public final class MainSwing
          */
         final Board board = boards.get("classic-random");
 
-        final IPlayerController c1 = HumanPlayerFactory.getDefaultKeyboardController(0, ViewType.SWING_VIEW);
-        final IPlayerController c2 = HumanPlayerFactory.getDefaultKeyboardController(1, ViewType.SWING_VIEW);
+        final IPlayerController c1 = AWTKeyboardController.getDefaultKeyboardController(0);
+        final IPlayerController c2 = AWTKeyboardController.getDefaultKeyboardController(1);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);

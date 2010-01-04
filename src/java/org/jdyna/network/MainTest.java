@@ -1,8 +1,7 @@
 package org.jdyna.network;
 
-import org.jdyna.network.sockets.GameServer;
 import org.jdyna.network.sockets.BotClient;
-import org.jdyna.players.HumanPlayerFactory;
+import org.jdyna.network.sockets.GameServer;
 import org.jdyna.players.RabbitFactory;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public class MainTest
                     "--player-name", "player1",
                     "--board", "bigclassic",
                     "--no-sound",
-                    HumanPlayerFactory.class.getName()
+                    TestPlayerFactory.class.getName()
                 });
             };
         }.start();
@@ -55,7 +54,7 @@ public class MainTest
                     "--game", "testgame",
                     "--player-name", "player2",
                     "--no-sound", "--no-view",
-                    HumanPlayerFactory.class.getName()
+                    TestPlayerFactory.class.getName()
                 });
             };
         }.start();

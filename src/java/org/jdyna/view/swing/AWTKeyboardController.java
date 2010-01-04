@@ -1,4 +1,4 @@
-package org.jdyna.input;
+package org.jdyna.view.swing;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 /**
  * Player controller ({@link IPlayerController}) based on keyboard events.
  */
-public final class KeyboardController implements IPlayerController, IPlayerController2
+public final class AWTKeyboardController implements IPlayerController, IPlayerController2
 {
     /**
      * Global lock for accessing static data structures.
@@ -54,7 +54,7 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
     /**
      * Creates a new keyboard controller bound to the set of virtual key codes.
      */
-    public KeyboardController(int vk_up, int vk_down, int vk_left, int vk_right,
+    public AWTKeyboardController(int vk_up, int vk_down, int vk_left, int vk_right,
         int vk_bomb)
     {
         this.vk_left = vk_left;
@@ -114,6 +114,24 @@ public final class KeyboardController implements IPlayerController, IPlayerContr
             final int validFrames = 0;
             return new ControllerState(direction, dropsBomb, validFrames);
         }
+    }
+
+    /**
+     * Returns "default" keyboard layout for a player numbered <code>num</code>.
+     */
+    public static IPlayerController getDefaultKeyboardController(int num)
+    {
+        switch (num)
+        {
+            case 0:
+                return new AWTKeyboardController(KeyEvent.VK_UP, KeyEvent.VK_DOWN,
+                    KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_CONTROL);
+            case 1:
+                return new AWTKeyboardController(KeyEvent.VK_R, KeyEvent.VK_F,
+                    KeyEvent.VK_D, KeyEvent.VK_G, KeyEvent.VK_Z);
+        }
+    
+        throw new RuntimeException("No default keyboard mapping for player: " + num);
     }
 
     /*

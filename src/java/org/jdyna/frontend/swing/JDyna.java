@@ -17,18 +17,18 @@ import org.apache.commons.lang.SystemUtils;
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.audio.openal.OpenALSFX;
+import org.jdyna.frontend.swing.Configuration.ViewType;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
-import org.jdyna.players.HumanPlayerFactory;
-import org.jdyna.players.RabbitFactory;
+import org.jdyna.players.*;
 import org.jdyna.players.n00b.NoobFactory;
 import org.jdyna.players.stalker.StalkerFactory;
 import org.jdyna.players.tyson.TysonFactory;
 import org.jdyna.view.jme.JMEBoardWindow;
+import org.jdyna.view.jme.JMEKeyboardController;
 import org.jdyna.view.resources.ImageUtilities;
-import org.jdyna.view.swing.BoardFrame;
-import org.jdyna.view.swing.SwingUtils;
+import org.jdyna.view.swing.*;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -354,10 +354,29 @@ public final class JDyna
         runLocalGame(
             board,
             null,
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), "Player 1"),
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(1, config.viewType), "Player 2"));
+            getKeyboardController(0, config.viewType, "Player 1"),
+            getKeyboardController(1, config.viewType, "Player 2"));
     }
 
+    /**
+     * Return the keyboard controller adequate to the attached view. 
+     */
+    private static IPlayerFactory getKeyboardController(int playerNum, 
+        ViewType viewType, String playerName)
+    {
+        switch (viewType)
+        {
+            case JME_VIEW:
+                return new CustomControllerPlayerFactory(
+                    JMEKeyboardController.getDefaultKeyboardController(playerNum), playerName);
+            case SWING_VIEW:
+                return new CustomControllerPlayerFactory(
+                    AWTKeyboardController.getDefaultKeyboardController(playerNum), playerName);
+            default:
+                throw new RuntimeException("Unreachable code.");
+        }
+    }
+    
     /**
      * Run one player game (vs. bot(s)). 
      */
@@ -379,7 +398,7 @@ public final class JDyna
         runLocalGame(
             board,
             playerName,
-            new HumanPlayerFactory(HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), playerName),
+            getKeyboardController(0, config.viewType, playerName),
             getBot(bot));        
     }
     
@@ -494,8 +513,8 @@ public final class JDyna
             /*
              * Join the given game.
              */
-            final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), fullName.playerName);
+            final IPlayerFactory playerFactory = 
+                getKeyboardController(0, config.viewType, fullName.playerName);
 
             final GameServerClient client = new GameServerClient(gameEntry.server);
             client.connect();
@@ -586,8 +605,8 @@ public final class JDyna
 
         try
         {
-            final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                HumanPlayerFactory.getDefaultKeyboardController(0, config.viewType), fullName.playerName);
+            final IPlayerFactory playerFactory = 
+                getKeyboardController(0, config.viewType, fullName.playerName);
 
             /*
              * Start the server. 
