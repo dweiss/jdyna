@@ -2,11 +2,11 @@ package org.jdyna.view.status;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
-import static org.jdyna.view.status.StatusField.*;
 
 @SuppressWarnings("serial")
 public class Status extends JPanel
@@ -24,19 +24,23 @@ public class Status extends JPanel
     /**
      * Counter of this statistic.
      */
-    private int counter;
+    private String counter;
+
+    /**
+     * Vertical offset between the icon and the bottom of the text.
+     */
+    private final static int VERTICAL_OFFSET = 11;
 
     /**
      *
      */
-    public Status(StatusField field, BufferedImage icon, int counter)
+    public Status(StatusField field, BufferedImage icon, String counter)
     {
         this.field = field;
         this.icon = icon;
         this.counter = counter;
-        // TODO: One more thing -- look at FontMetrics class and determine
-        // these paddings appropriately, hardcoded values are a dirty hack.
-        setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight() + 11));
+        setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight()
+            + VERTICAL_OFFSET));
     }
 
     public void paint(Graphics g)
@@ -45,25 +49,12 @@ public class Status extends JPanel
         g.fillRect(0, 0, getSize().width, getSize().height);
         g.drawImage(icon, 0, 0, this);
         g.setColor(Color.BLACK);
-
-        /*
-         * Do not display counter if it is less than zero.
-         */
-        if (counter >= 0)
-        {
-            if (counter >= 10) g.drawString(Integer.toString(counter), 0, icon
-                .getHeight() + 11);
-            else g.drawString(Integer.toString(counter), 4, icon.getHeight() + 11);
-        }
-
-        /*
-         * If this is bomb range statistic and the counter equals -1, it means that the
-         * max range bonus is collected - draw infinity.
-         */
-        else if (field == BOMB_RANGE) g.drawString("\u221E", 2, icon.getHeight() + 11);
+        FontMetrics fontMetrics = getFontMetrics(g.getFont());
+        g.drawString(counter, (icon.getWidth() - fontMetrics.stringWidth(counter)) / 2,
+            icon.getHeight() + VERTICAL_OFFSET);
     }
 
-    public void updateValue(int value)
+    public void updateValue(String value)
     {
         this.counter = value;
         repaint();
