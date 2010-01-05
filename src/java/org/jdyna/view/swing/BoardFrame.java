@@ -3,6 +3,7 @@ package org.jdyna.view.swing;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -10,7 +11,6 @@ import javax.swing.*;
 import org.jdyna.*;
 import org.jdyna.view.resources.*;
 import org.jdyna.view.status.StatusFrame;
-
 
 /**
  * Swing board view.
@@ -27,9 +27,9 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     private ScoreFrame scoreFrame;
     
     /**
-     * Attached status frame.
+     * List of attached status frames.
      */
-    private StatusFrame statusFrame;
+    private ArrayList<StatusFrame> statusFrames;
 
     /*
      * 
@@ -65,12 +65,13 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         this.scoreFrame = new ScoreFrame();
         scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         scoreFrame.setSize(new Dimension(300, 500));
-        scoreFrame.setFocusable(false);
+        scoreFrame.setFocusable(false);      
         
-        this.statusFrame = new StatusFrame();
-        statusFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        statusFrame.setSize(new Dimension(300, 80));
-        statusFrame.setFocusable(false);        
+        /*
+         * Initialize the list of status frames with capacity 1, because that is most
+         * often.
+         */
+        statusFrames = new ArrayList<StatusFrame>(1);
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -99,18 +100,32 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         {
             public void windowOpened(WindowEvent e)
             {                
-            	statusFrame.setVisible(true);
-                SwingUtils.glueTo(BoardFrame.this, statusFrame, SwingUtils.SnapSide.RIGHT);
-                SwingUtils.snapFrame(BoardFrame.this, statusFrame);
+            	for (int statusIndex = 0; statusIndex<statusFrames.size(); statusIndex++)
+            	{
+            	    statusFrames.get(statusIndex).setVisible(true);
+            	    if (statusIndex == 0)
+            	    {
+            	        SwingUtils.glueTo(BoardFrame.this, statusFrames.get(statusIndex), SwingUtils.SnapSide.RIGHT);
+            	        SwingUtils.snapFrame(BoardFrame.this, statusFrames.get(statusIndex));
+            	    }
+            	    else
+            	    {
+            	        SwingUtils.glueTo(statusFrames.get(statusIndex - 1), statusFrames.get(statusIndex), SwingUtils.SnapSide.BOTTOM);
+                        SwingUtils.snapFrame(statusFrames.get(statusIndex - 1), statusFrames.get(statusIndex));
+            	    }
+            	}
             	scoreFrame.setVisible(true);
-                SwingUtils.glueTo(BoardFrame.this.statusFrame, scoreFrame, SwingUtils.SnapSide.BOTTOM);
-                SwingUtils.snapFrame(BoardFrame.this.statusFrame, scoreFrame);                
+                SwingUtils.glueTo(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame, SwingUtils.SnapSide.BOTTOM);
+                SwingUtils.snapFrame(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame);                
             }
             
             public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
-                statusFrame.dispose();
+                for (int statusIndex = 0; statusIndex<statusFrames.size(); statusIndex++)
+                {
+                    statusFrames.get(statusIndex).dispose();
+                }
             }
         });
 
@@ -124,7 +139,10 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     {
         this.gamePanel.onFrame(frame, events);
         this.scoreFrame.onFrame(frame, events);
-        this.statusFrame.onFrame(frame, events);
+        for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
+        {
+            this.statusFrames.get(statusIndex).onFrame(frame, events);
+        }
     }
 
     /**
@@ -133,5 +151,18 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     public BoardPanel getGamePanel()
     {
         return gamePanel;
+    }
+    
+    /**
+     * Creates frames with statistics about player(s).
+     */
+    public void createStatusFrames(String... players)
+    {
+        StatusFrame statusFrame;
+        for (int i=0; i<players.length; i++)
+        {
+            statusFrame = new StatusFrame(players[i]);
+            statusFrames.add(statusFrame);
+        }
     }
 }

@@ -10,7 +10,9 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdyna.*;
 import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.resources.Images;
@@ -36,11 +38,15 @@ public class StatusPanel extends JPanel implements IGameEventListener
     private Map<StatusField, Status> statuses;
 
     /**
+     * Name of the player tracked by this panel.
+     */
+    private String trackedPlayer;
+
+    /**
      * 
      */
     public StatusPanel(Images images, GraphicsConfiguration conf)
     {
-        // TODO: determine player.
         this.images = images.createCompatible(conf);
         initializeComponents();
     }
@@ -60,7 +66,7 @@ public class StatusPanel extends JPanel implements IGameEventListener
         gbc.weightx = 0;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(1, 1, 1, 1);
+        gbc.insets = new Insets(0, 1, 0, 0);
 
         // Load an icon for the life counter.
         final BufferedImage lifeCountIcon;
@@ -75,36 +81,36 @@ public class StatusPanel extends JPanel implements IGameEventListener
 
         // Linked hash map of statuses initialization.
         statuses = Maps.newLinkedHashMap();
-        for (Status s : Arrays.asList(
-            new Status(LIVES, lifeCountIcon, "?"), 
-            new Status(BOMBS, getCellImage(CELL_BONUS_BOMB), "?"), 
-            new Status(BOMB_RANGE, getCellImage(CELL_BONUS_RANGE), "?"), 
-            new Status(MAX_RANGE, getCellImage(CELL_BONUS_MAXRANGE), "?"), 
-            new Status(AHMED, getCellImage(CELL_BONUS_AHMED), "?"), 
-            new Status(SPEED_UP, getCellImage(CELL_BONUS_SPEED_UP), "?"), 
-            new Status(CRATE_WALKING, getCellImage(CELL_BONUS_CRATE_WALKING), "?"), 
-            new Status(BOMB_WALKING, getCellImage(CELL_BONUS_BOMB_WALKING), "?"), 
-            new Status(IMMORTALITY, getCellImage(CELL_BONUS_IMMORTALITY), "?"), 
-            new Status(DIARRHOEA, getCellImage(CELL_BONUS_DIARRHEA), "?"), 
-            new Status(NO_BOMBS, getCellImage(CELL_BONUS_NO_BOMBS), "?"), 
-            new Status(SLOW_DOWN, getCellImage(CELL_BONUS_SLOW_DOWN), "?"), 
-            new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), "?")))
+        for (Status s : Arrays.asList(new Status(LIVES, lifeCountIcon, "?", false),
+            new Status(BOMBS, getCellImage(CELL_BONUS_BOMB), "?", false), new Status(
+                BOMB_RANGE, getCellImage(CELL_BONUS_RANGE), "?", false), new Status(
+                MAX_RANGE, getCellImage(CELL_BONUS_MAXRANGE), "?", true), new Status(
+                AHMED, getCellImage(CELL_BONUS_AHMED), "?", false), new Status(SPEED_UP,
+                getCellImage(CELL_BONUS_SPEED_UP), "?", true), new Status(CRATE_WALKING,
+                getCellImage(CELL_BONUS_CRATE_WALKING), "?", true), new Status(
+                BOMB_WALKING, getCellImage(CELL_BONUS_BOMB_WALKING), "?", true),
+            new Status(IMMORTALITY, getCellImage(CELL_BONUS_IMMORTALITY), "?", true),
+            new Status(DIARRHOEA, getCellImage(CELL_BONUS_DIARRHEA), "?", true),
+            new Status(NO_BOMBS, getCellImage(CELL_BONUS_NO_BOMBS), "?", true),
+            new Status(SLOW_DOWN, getCellImage(CELL_BONUS_SLOW_DOWN), "?", true),
+            new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), "?",
+                true)))
         {
             statuses.put(s.field, s);
         }
 
-        // Set insets.
+        // Set insets and add all statuses panels.
         for (Map.Entry<StatusField, Status> e : statuses.entrySet())
         {
             switch (e.getKey())
             {
                 case MAX_RANGE:
                 case DIARRHOEA:
-                    gbc.insets = new Insets(1, 5, 1, 1);
+                    add(new JSeparator(), gbc);
+                    gbc.gridx++;
                     break;
 
                 default:
-                    gbc.insets = new Insets(1, 1, 1, 1);
                     break;
             }
 
@@ -135,52 +141,57 @@ public class StatusPanel extends JPanel implements IGameEventListener
         final List<? extends IPlayerSprite> players = gameState.getPlayers();
         if (players.size() <= 0) return;
 
-        final IPlayerSprite player = players.get(0);
+        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++)
+        {
+            final IPlayerSprite player = players.get(playerIndex);
 
-        statuses.get(LIVES).updateValue(Integer.toString(player.getLifeCount()));
-        statuses.get(BOMBS).updateValue(Integer.toString(player.getBombCount()));
-        statuses.get(BOMB_RANGE).updateValue(
-            (player.getBombRange() == Integer.MAX_VALUE) ? "\u221E" : Integer
-                .toString(player.getBombRange()));
+            if (trackedPlayer != null
+                && StringUtils.equals(trackedPlayer, player.getName()))
+            {
+                statuses.get(LIVES).updateValue(player.getLifeCount());
+                statuses.get(BOMBS).updateValue(player.getBombCount());
+                statuses.get(BOMB_RANGE).updateValue(player.getBombRange());
 
-        statuses.get(MAX_RANGE).updateValue(
-            ifActiveCounter(player.getMaxRangeEndsAtFrame(), frame));
-        statuses.get(AHMED).updateValue(player.isAhmed() ? "1" : "");
-        statuses.get(SPEED_UP).updateValue(
-            ifActiveCounter(player.getSpeedUpEndsAtFrame(), frame));
-        statuses.get(CRATE_WALKING).updateValue(
-            ifActiveCounter(player.getCrateWalkingEndsAtFrame(), frame));
-        statuses.get(BOMB_WALKING).updateValue(
-            ifActiveCounter(player.getBombWalkingEndsAtFrame(), frame));
-        statuses.get(IMMORTALITY).updateValue(
-            ifActiveCounter(player.getImmortalityEndsAtFrame(), frame));
+                statuses.get(MAX_RANGE).updateValue(
+                    ifActiveCounter(player.getMaxRangeEndsAtFrame(), frame));
+                statuses.get(AHMED).updateValue(player.isAhmed() ? 1 : -1);
+                statuses.get(SPEED_UP).updateValue(
+                    ifActiveCounter(player.getSpeedUpEndsAtFrame(), frame));
+                statuses.get(CRATE_WALKING).updateValue(
+                    ifActiveCounter(player.getCrateWalkingEndsAtFrame(), frame));
+                statuses.get(BOMB_WALKING).updateValue(
+                    ifActiveCounter(player.getBombWalkingEndsAtFrame(), frame));
+                statuses.get(IMMORTALITY).updateValue(
+                    ifActiveCounter(player.getImmortalityEndsAtFrame(), frame));
 
-        statuses.get(DIARRHOEA).updateValue(
-            ifActiveCounter(player.getDiarrheaEndsAtFrame(), frame));
-        statuses.get(NO_BOMBS).updateValue(
-            ifActiveCounter(player.getNoBombsEndsAtFrame(), frame));
-        statuses.get(SLOW_DOWN).updateValue(
-            ifActiveCounter(player.getSlowDownEndsAtFrame(), frame));
-        statuses.get(CTRL_REVERSE).updateValue(
-            ifActiveCounter(player.getControllerReverseEndsAtFrame(), frame));
+                statuses.get(DIARRHOEA).updateValue(
+                    ifActiveCounter(player.getDiarrheaEndsAtFrame(), frame));
+                statuses.get(NO_BOMBS).updateValue(
+                    ifActiveCounter(player.getNoBombsEndsAtFrame(), frame));
+                statuses.get(SLOW_DOWN).updateValue(
+                    ifActiveCounter(player.getSlowDownEndsAtFrame(), frame));
+                statuses.get(CTRL_REVERSE).updateValue(
+                    ifActiveCounter(player.getControllerReverseEndsAtFrame(), frame));
+            }
+        }
     }
 
     /**
-     * Checks if <code>counterMaxFrame</code> is active and if so, returns <code>
+     * Checks if specific counter is active and if so, returns seconds left, otherwise
+     * returns -1.
      */
-    private String ifActiveCounter(int counterMaxFrame, int frame)
+    private int ifActiveCounter(int counterMaxFrame, int frame)
     {
-        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return "";
+        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return -1;
         else return secondsLeft(counterMaxFrame, frame);
     }
 
     /**
-     * Calculates the remaining seconds of the collected bonus/disease and returns it as a
-     * text.
+     * Calculates the remaining seconds of the collected bonus/disease.
      */
-    private String secondsLeft(int counterMaxFrame, int frame)
+    private int secondsLeft(int counterMaxFrame, int frame)
     {
-        return Integer.toString((counterMaxFrame - frame) / conf.DEFAULT_FRAME_RATE + 1);
+        return (counterMaxFrame - frame) / conf.DEFAULT_FRAME_RATE + 1;
     }
 
     /**
@@ -194,5 +205,14 @@ public class StatusPanel extends JPanel implements IGameEventListener
             return null;
         }
         return cellImages[0];
+    }
+
+    /**
+     * Enable player position tracker (in immutable state) for player named
+     * <code>name</code>.
+     */
+    public void trackPlayer(String playerName)
+    {
+        this.trackedPlayer = playerName;
     }
 }

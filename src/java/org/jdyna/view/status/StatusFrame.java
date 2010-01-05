@@ -19,13 +19,19 @@ public class StatusFrame extends JFrame implements IGameEventListener
     private StatusPanel statusPanel;
     private final GraphicsConfiguration conf;
 
-    public StatusFrame()
+    public StatusFrame(String trackedPlayer)
     {
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setSize(new Dimension(200, 70));
+        setTitle(trackedPlayer);
+        setFocusable(false);
+
         conf = ImageUtilities.getGraphicsConfiguration();
         final Images images = ImagesFactory.DYNA_CLASSIC;
 
         statusPanel = new StatusPanel(images, conf);
         add(statusPanel);
+        statusPanel.trackPlayer(trackedPlayer);
 
         try
         {
@@ -35,11 +41,6 @@ public class StatusFrame extends JFrame implements IGameEventListener
         {
             // Ignore.
         }
-        setTitle("Status.");
-
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(new Dimension(400, 70));
-        setFocusable(false);
     }
 
     @Override

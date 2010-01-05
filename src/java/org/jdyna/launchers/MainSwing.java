@@ -101,10 +101,11 @@ public final class MainSwing
          * Attach a display view to the game.
          */
         final BoardFrame frame = new BoardFrame();
+        frame.createStatusFrames(p1.name, p2.name);
         game.addListener(frame);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
         final GameResult result = game.run(Game.Mode.DEATHMATCH);
         logger.info(result.toString());
         ReplaySavedGame.ReplayGame("game.log", highlights);
