@@ -144,44 +144,34 @@ public class StatusPanel extends JPanel implements IGameEventListener
                 .toString(player.getBombRange()));
 
         statuses.get(MAX_RANGE).updateValue(
-            ifActiveCounter(player.getMaxRangeEndsAtFrame(), frame, "", secondsLeft(
-                player.getMaxRangeEndsAtFrame(), frame)));
+            ifActiveCounter(player.getMaxRangeEndsAtFrame(), frame));
         statuses.get(AHMED).updateValue(player.isAhmed() ? "1" : "");
         statuses.get(SPEED_UP).updateValue(
-            ifActiveCounter(player.getSpeedUpEndsAtFrame(), frame, "", secondsLeft(player
-                .getSpeedUpEndsAtFrame(), frame)));
+            ifActiveCounter(player.getSpeedUpEndsAtFrame(), frame));
         statuses.get(CRATE_WALKING).updateValue(
-            ifActiveCounter(player.getCrateWalkingEndsAtFrame(), frame, "", secondsLeft(
-                player.getCrateWalkingEndsAtFrame(), frame)));
+            ifActiveCounter(player.getCrateWalkingEndsAtFrame(), frame));
         statuses.get(BOMB_WALKING).updateValue(
-            ifActiveCounter(player.getBombWalkingEndsAtFrame(), frame, "", secondsLeft(
-                player.getBombWalkingEndsAtFrame(), frame)));
+            ifActiveCounter(player.getBombWalkingEndsAtFrame(), frame));
         statuses.get(IMMORTALITY).updateValue(
-            ifActiveCounter(player.getImmortalityEndsAtFrame(), frame, "", secondsLeft(
-                player.getImmortalityEndsAtFrame(), frame)));
+            ifActiveCounter(player.getImmortalityEndsAtFrame(), frame));
 
         statuses.get(DIARRHOEA).updateValue(
-            ifActiveCounter(player.getDiarrheaEndsAtFrame(), frame, "", secondsLeft(
-                player.getDiarrheaEndsAtFrame(), frame)));
+            ifActiveCounter(player.getDiarrheaEndsAtFrame(), frame));
         statuses.get(NO_BOMBS).updateValue(
-            ifActiveCounter(player.getNoBombsEndsAtFrame(), frame, "", secondsLeft(player
-                .getNoBombsEndsAtFrame(), frame)));
+            ifActiveCounter(player.getNoBombsEndsAtFrame(), frame));
         statuses.get(SLOW_DOWN).updateValue(
-            ifActiveCounter(player.getSlowDownEndsAtFrame(), frame, "", secondsLeft(
-                player.getSlowDownEndsAtFrame(), frame)));
+            ifActiveCounter(player.getSlowDownEndsAtFrame(), frame));
         statuses.get(CTRL_REVERSE).updateValue(
-            ifActiveCounter(player.getControllerReverseEndsAtFrame(), frame, "",
-                secondsLeft(player.getControllerReverseEndsAtFrame(), frame)));
+            ifActiveCounter(player.getControllerReverseEndsAtFrame(), frame));
     }
 
     /**
      * Checks if <code>counterMaxFrame</code> is active and if so, returns <code>
      */
-    private String ifActiveCounter(int counterMaxFrame, int frame, String inactiveValue,
-        String activeValue)
+    private String ifActiveCounter(int counterMaxFrame, int frame)
     {
-        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return inactiveValue;
-        else return activeValue;
+        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return "";
+        else return secondsLeft(counterMaxFrame, frame);
     }
 
     /**
