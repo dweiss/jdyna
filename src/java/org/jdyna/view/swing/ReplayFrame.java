@@ -325,33 +325,30 @@ public final class ReplayFrame extends JFrame
         return panel;
     }
 
-    private boolean setNextHighlight() {
-        try
+    private boolean setNextHighlight()
+    {
+        for (int i = 0; i < highlightData.size(); i++)
         {
-            while (highlightData.get(currentHighlight).beginFrame <= frame)
-                currentHighlight++;
+            if (highlightData.get(i).beginFrame > frame)
+            {
+                currentHighlight = i;
+                return true;
+            }
         }
-        catch (IndexOutOfBoundsException e)
-        {
-            currentHighlight--;
-            return false;
-        }
-        return true;
+        return false;
     }
 
-    private boolean setPreviousHighlight() {
-        try
+    private boolean setPreviousHighlight() 
+    {
+        for (int i = highlightData.size() - 1; i >= 0; i--)
         {
-            while (highlightData.get(currentHighlight).beginFrame
-                + conf.DEFAULT_FRAME_RATE >= frame)
-                currentHighlight--;
+            if (highlightData.get(i).beginFrame + conf.DEFAULT_FRAME_RATE < frame)
+            {
+                currentHighlight = i;
+                return true;
+            }
         }
-        catch (IndexOutOfBoundsException e)
-        {
-            currentHighlight++;
-            return false;
-        }
-        return true;
+        return false;
     }
 
     /**

@@ -1,13 +1,14 @@
 package org.jdyna.view.jme.resources;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.jdyna.CellType;
+import org.jdyna.view.resources.ResourceUtilities;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.Node;
@@ -24,7 +25,7 @@ import com.jme.util.resource.SimpleResourceLocator;
 
 public class MeshFactory
 {
-    private static final String BASE_DIR = "src/graphics/jme";
+    private static final String BASE_DIR = "jme";
     private EnumMap<CellType, String> modelPaths = new EnumMap<CellType, String>(
         CellType.class);
     private EnumMap<CellType, Spatial> meshes = new EnumMap<CellType, Spatial>(
@@ -87,14 +88,14 @@ public class MeshFactory
 
         unknownBonus = loadModel("unknown_bonus");
 
-        String [] names = getAnimatedModelFiles("player/player");
+        String [] names = getAnimatedModelNames("player/player");
         playerMeshes = new Spatial [names.length]; // a separate cloner for each frame
         for (int j = 0; j < names.length; j++)
         {
             playerMeshes[j] = loadModel(names[j]);
         }
 
-        names = getAnimatedModelFiles("player/player-dying");
+        names = getAnimatedModelNames("player/player-dying");
         playerDyingMeshes = new Spatial [names.length]; // a separate cloner for each
         // frame
         for (int j = 0; j < names.length; j++)
@@ -103,27 +104,34 @@ public class MeshFactory
         }
     }
 
-    private static String [] getAnimatedModelFiles(String name)
+    private static String [] getAnimatedModelNames(String name)
     {
-        List<String> filenames = new ArrayList<String>(100);
+        List<String> names = new ArrayList<String>(100);
         for (int i = 1;; i++)
         {
-            String nameWithFrameNum = String.format("%s_%06d", name, i);
-            File file = new File(BASE_DIR, nameWithFrameNum + ".jme");
-            if (!file.exists()) break;
-            filenames.add(nameWithFrameNum);
+            try
+            {
+                String nameWithFrameNum = String.format("%s_%06d", name, i);
+                ResourceUtilities.getResourceURL(BASE_DIR + "/" + nameWithFrameNum
+                    + ".jme");
+                names.add(nameWithFrameNum);
+            }
+            catch (IOException e)
+            {
+                break;
+            }
         }
-        if (filenames.size() == 0) throw new RuntimeException(
+        if (names.size() == 0) throw new RuntimeException(
             "No frames found for model: " + name);
-        System.out.println("Loaded " + filenames.size() + " frames for model: " + name);
-        return filenames.toArray(new String [filenames.size()]);
+        System.out.println("Loaded " + names.size() + " frames for model: " + name);
+        return names.toArray(new String [names.size()]);
     }
 
     public static Spatial loadModel(String name)
     {
         try
         {
-            return loadModelImpl(new File(BASE_DIR, name + ".jme"));
+            return loadModelImpl(BASE_DIR+"/"+name+".jme");
         }
         catch (IOException e)
         {
@@ -131,20 +139,28 @@ public class MeshFactory
         }
     }
 
-    private static Spatial loadModelImpl(File f) throws IOException
+    private static Spatial loadModelImpl(String path) throws IOException
     {
-        if (!f.getName().endsWith(".jme")) throw new IllegalArgumentException(
+        if (!path.endsWith(".jme")) throw new IllegalArgumentException(
             "Model formats other than JME are not supported");
-
-        f = f.getAbsoluteFile();
-
-        SimpleResourceLocator locator = new SimpleResourceLocator(f.getParentFile()
-            .toURI());
-        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
-        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+        
+        try
+        {
+            SimpleResourceLocator locator;
+            locator = new SimpleResourceLocator(ResourceUtilities.getResourceURL(path));
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
+                locator);
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL,
+                locator);
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IllegalArgumentException("Bad pathname to model resource.");
+        }
 
         BinaryImporter importer = BinaryImporter.getInstance();
-        Savable savable = importer.load(f);
+        Savable savable = importer.load(ResourceUtilities.getResourceURL(path));
+
         Spatial mesh = (Spatial) savable;
 
         mesh.setModelBound(new BoundingBox());

@@ -69,7 +69,8 @@ public final class MainSwing
         /*
          * Attach game progress saver.
          */
-        game.addListener(new GameWriter(new FileOutputStream("game.log")));
+        File temporaryLogFile = File.createTempFile("game", ".log");
+        game.addListener(new GameWriter(new FileOutputStream(temporaryLogFile)));
 
         /*
          * Attach explosion location logger.
@@ -108,7 +109,7 @@ public final class MainSwing
         
         final GameResult result = game.run(Game.Mode.DEATHMATCH);
         logger.info(result.toString());
-        ReplaySavedGame.ReplayGame("game.log", highlights);
+        ReplaySavedGame.ReplayGame(temporaryLogFile.getAbsolutePath(), highlights);
 
         SwingUtilities.invokeLater(new Runnable()
         {
