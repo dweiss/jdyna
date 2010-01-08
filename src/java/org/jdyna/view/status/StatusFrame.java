@@ -22,7 +22,7 @@ public class StatusFrame extends JFrame implements IGameEventListener
     public StatusFrame(String trackedPlayer)
     {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(new Dimension(200, 70));
+        setSize(new Dimension(240, 70));
         setTitle(trackedPlayer);
         setFocusable(false);
 

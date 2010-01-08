@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
-public class Status extends JPanel implements ActionListener
+public class Status extends JPanel
 {
     /**
      * Name of this statistic.
@@ -32,7 +32,7 @@ public class Status extends JPanel implements ActionListener
     /**
      * Vertical offset between the icon and the bottom of the text.
      */
-    private final int VERTICAL_OFFSET = 11;
+    private final static int VERTICAL_OFFSET = 11;
 
     /**
      * Indicates whether this statistic counts down or not.
@@ -40,9 +40,14 @@ public class Status extends JPanel implements ActionListener
     private final boolean isCountingDown;
 
     /**
-     * Indicates whether status should be displayed or not during blinking.
+     * Indicates whether icon should be displayed or not during blinking.
      */
-    private boolean isToBeDrawed;
+    private boolean showIcon;
+
+    /**
+     * Maximum value causing the icon to blink.
+     */
+    private final int blinkMaxValue = 3;
 
     /**
      * Timer responsible for toggling the isToBeDrawed variable.
@@ -61,19 +66,49 @@ public class Status extends JPanel implements ActionListener
         this.isCountingDown = isCountingDown;
         setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight()
             + VERTICAL_OFFSET));
-        this.isToBeDrawed = true;
+        this.showIcon = true;
 
         /*
-         * Initializing the timer to period 0.3s.
+         * Timer initialization, only if it is counting down statistic.
          */
-        timer = new Timer(300, this);
+        if (isCountingDown)
+        {
+            /*
+             * Action Listener to perform timer task.
+             */
+            ActionListener taskPerformer = new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0)
+                {
+                    showIcon = !showIcon;
+                    if (shouldBlink())
+                    {
+                        timer.restart();
+                        repaint();
+                    }
+                    else showIcon = true;
+                }
+            };
+
+            /*
+             * Delay for timer (in milliseconds).
+             */
+            int delay = 300;
+
+            /*
+             * Initializing the timer.
+             */
+            timer = new Timer(delay, taskPerformer);
+            timer.setRepeats(false);
+        }
     }
 
     public void paint(Graphics g)
     {
         g.setColor(getBackground());
         g.fillRect(0, 0, getSize().width, getSize().height);
-        if (isToBeDrawed)
+        if (showIcon)
         {
             g.drawImage(icon, 0, 0, this);
         }
@@ -85,32 +120,46 @@ public class Status extends JPanel implements ActionListener
 
     public void updateValue(int value)
     {
-        if (isCountingDown)
+        /*
+         * Start the timer, if the icon should blink.
+         */
+        if (isCountingDown && shouldBlink() && !timer.isRunning())
         {
-            if (value < 0)
-            {
-                timer.stop();
-                isToBeDrawed = true;
-            }
-            else if (value < 4)
-            {
-                timer.start();
-            }
+            timer.start();
         }
 
+        /*
+         * Show or hide statistic.
+         */
         if (value < 0) setVisible(false);
         else setVisible(true);
 
+        /*
+         * Update counter.
+         */
         if (value == Integer.MAX_VALUE) counter = "\u221E";
         else this.counter = Integer.toString(value);
 
         repaint();
-
     }
 
-    @Override
-    public void actionPerformed(ActionEvent arg0)
+    /**
+     * Indicates whether the icon should blink or not.
+     */
+    private boolean shouldBlink()
     {
-        isToBeDrawed = !isToBeDrawed;
+        if (!isCountingDown) return false;
+        else
+        {
+            try
+            {
+                int intCounter = Integer.parseInt(counter);
+                return (intCounter > 0 && intCounter <= blinkMaxValue) ? true : false;
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
+            }
+        }
     }
 }
