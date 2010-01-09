@@ -2,9 +2,9 @@ package org.jdyna.view.swing;
 
 
 /**
- * A single status field.
+ * A single icon on the {@link PlayerStatusPanel}.
  */
-enum StatusField
+enum StatusType
 {
     LIVES("Lives"),
     BOMBS("Bombs"),
@@ -24,7 +24,7 @@ enum StatusField
     private final String label;
     
     /* */
-    private StatusField(String label)
+    private StatusType(String label)
     {
         this.label = label;
     }

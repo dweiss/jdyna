@@ -141,7 +141,6 @@ public final class ReplayFrame extends JFrame
         this(c, ImageUtilities.getGraphicsConfiguration());
 
         final Images images = ImagesFactory.DYNA_CLASSIC;
-
         gamePanel = new BoardPanel(images, graphicsConf);
         gamePanel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e)

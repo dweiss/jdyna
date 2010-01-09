@@ -30,7 +30,12 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     /**
      * List of attached status frames.
      */
-    private ArrayList<StatusFrame> statusFrames;
+    private ArrayList<PlayerStatusFrame> statusFrames;
+    
+    /**
+     * Images used by this frame.
+     */
+    private final Images images;
 
     /*
      * 
@@ -38,6 +43,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     private BoardFrame(GraphicsConfiguration conf)
     {
         this.conf = conf;
+        this.images = ImagesFactory.DYNA_CLASSIC;
     }
 
     /*
@@ -46,7 +52,6 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     public BoardFrame()
     {
         this(ImageUtilities.getGraphicsConfiguration());
-        final Images images = ImagesFactory.DYNA_CLASSIC;
 
         gamePanel = new BoardPanel(images, conf);
         gamePanel.addComponentListener(new ComponentAdapter() {
@@ -142,7 +147,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     {
         this.gamePanel.onFrame(frame, events);
         this.scoreFrame.onFrame(frame, events);
-        for (StatusFrame f : statusFrames)
+        for (PlayerStatusFrame f : statusFrames)
         {
             f.onFrame(frame, events);
         }
@@ -166,7 +171,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
 
         for (String playerName : players)
         {
-            statusFrames.add(new StatusFrame(playerName));
+            statusFrames.add(new PlayerStatusFrame(images, playerName));
         }
     }
 }

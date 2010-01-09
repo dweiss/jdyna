@@ -1,7 +1,7 @@
 package org.jdyna.view.swing;
 
 import static org.jdyna.CellType.*;
-import static org.jdyna.view.swing.StatusField.*;
+import static org.jdyna.view.swing.StatusType.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,8 +19,12 @@ import org.jdyna.view.resources.Images;
 
 import com.google.common.collect.Maps;
 
+/**
+ * {@link JPanel} displaying the status information (current bonuses,
+ * lives, etc.) for a single player in the game.
+ */
 @SuppressWarnings("serial")
-public class StatusPanel extends JPanel implements IGameEventListener
+public class PlayerStatusPanel extends JPanel implements IGameEventListener
 {
     /**
      * Game configuration.
@@ -30,24 +34,25 @@ public class StatusPanel extends JPanel implements IGameEventListener
     /**
      * Images.
      */
-    private Images images;
+    private final Images images;
 
     /**
      * List of statistics to display.
      */
-    private Map<StatusField, Status> statuses;
+    private Map<StatusType, Status> statuses;
 
     /**
      * Name of the player tracked by this panel.
      */
-    private String trackedPlayer;
+    private final String playerName;
 
     /**
      * 
      */
-    public StatusPanel(Images images, GraphicsConfiguration conf)
+    public PlayerStatusPanel(Images images, String playerName)
     {
-        this.images = images.createCompatible(conf);
+        this.images = images;
+        this.playerName = playerName;
         initializeComponents();
     }
 
@@ -81,26 +86,25 @@ public class StatusPanel extends JPanel implements IGameEventListener
 
         // Linked hash map of statuses initialization.
         statuses = Maps.newLinkedHashMap();
-        for (Status s : Arrays.asList(new Status(LIVES, lifeCountIcon, "?", false),
-            new Status(BOMBS, getCellImage(CELL_BONUS_BOMB), "?", false), new Status(
-                BOMB_RANGE, getCellImage(CELL_BONUS_RANGE), "?", false), new Status(
-                MAX_RANGE, getCellImage(CELL_BONUS_MAXRANGE), "?", true), new Status(
-                AHMED, getCellImage(CELL_BONUS_AHMED), "?", false), new Status(SPEED_UP,
-                getCellImage(CELL_BONUS_SPEED_UP), "?", true), new Status(CRATE_WALKING,
-                getCellImage(CELL_BONUS_CRATE_WALKING), "?", true), new Status(
-                BOMB_WALKING, getCellImage(CELL_BONUS_BOMB_WALKING), "?", true),
-            new Status(IMMORTALITY, getCellImage(CELL_BONUS_IMMORTALITY), "?", true),
-            new Status(DIARRHOEA, getCellImage(CELL_BONUS_DIARRHEA), "?", true),
-            new Status(NO_BOMBS, getCellImage(CELL_BONUS_NO_BOMBS), "?", true),
-            new Status(SLOW_DOWN, getCellImage(CELL_BONUS_SLOW_DOWN), "?", true),
-            new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), "?",
-                true)))
+        for (Status s : Arrays.asList(new Status(LIVES, lifeCountIcon, false),
+            new Status(BOMBS, getCellImage(CELL_BONUS_BOMB), false), 
+            new Status(BOMB_RANGE, getCellImage(CELL_BONUS_RANGE), false), 
+            new Status(MAX_RANGE, getCellImage(CELL_BONUS_MAXRANGE), true), 
+            new Status(AHMED, getCellImage(CELL_BONUS_AHMED), false), 
+            new Status(SPEED_UP, getCellImage(CELL_BONUS_SPEED_UP), true), 
+            new Status(CRATE_WALKING, getCellImage(CELL_BONUS_CRATE_WALKING), true), 
+            new Status(BOMB_WALKING, getCellImage(CELL_BONUS_BOMB_WALKING), true),
+            new Status(IMMORTALITY, getCellImage(CELL_BONUS_IMMORTALITY), true),
+            new Status(DIARRHOEA, getCellImage(CELL_BONUS_DIARRHEA), true),
+            new Status(NO_BOMBS, getCellImage(CELL_BONUS_NO_BOMBS), true),
+            new Status(SLOW_DOWN, getCellImage(CELL_BONUS_SLOW_DOWN), true),
+            new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), true)))
         {
             statuses.put(s.field, s);
         }
 
         // Set insets and add all statuses panels.
-        for (Map.Entry<StatusField, Status> e : statuses.entrySet())
+        for (Map.Entry<StatusType, Status> e : statuses.entrySet())
         {
             switch (e.getKey())
             {
@@ -145,8 +149,7 @@ public class StatusPanel extends JPanel implements IGameEventListener
         {
             final IPlayerSprite player = players.get(playerIndex);
 
-            if (trackedPlayer != null
-                && StringUtils.equals(trackedPlayer, player.getName()))
+            if (StringUtils.equals(playerName, player.getName()))
             {
                 statuses.get(LIVES).updateValue(player.getLifeCount());
                 statuses.get(BOMBS).updateValue(player.getBombCount());
@@ -182,8 +185,10 @@ public class StatusPanel extends JPanel implements IGameEventListener
      */
     private int ifActiveCounter(int counterMaxFrame, int frame)
     {
-        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return -1;
-        else return secondsLeft(counterMaxFrame, frame);
+        if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) 
+            return -1;
+        else 
+            return secondsLeft(counterMaxFrame, frame);
     }
 
     /**
@@ -191,7 +196,7 @@ public class StatusPanel extends JPanel implements IGameEventListener
      */
     private int secondsLeft(int counterMaxFrame, int frame)
     {
-        return (counterMaxFrame - frame) / conf.DEFAULT_FRAME_RATE + 1;
+        return 1 + ((counterMaxFrame - frame) / conf.DEFAULT_FRAME_RATE);
     }
 
     /**
@@ -201,18 +206,7 @@ public class StatusPanel extends JPanel implements IGameEventListener
     {
         BufferedImage [] cellImages = images.getCellImage(cell);
         if (cellImages == null || cellImages.length == 0)
-        {
-            return null;
-        }
+            throw new RuntimeException("Missing image for cell: " + cell);
         return cellImages[0];
-    }
-
-    /**
-     * Enable player position tracker (in immutable state) for player named
-     * <code>name</code>.
-     */
-    public void trackPlayer(String playerName)
-    {
-        this.trackedPlayer = playerName;
     }
 }

@@ -18,7 +18,7 @@ import org.jdyna.view.resources.ImageUtilities;
 @SuppressWarnings("serial")
 public final class ScoreFrame extends JFrame implements IGameEventListener
 {
-    private PlayerScorePanel playerScorePanel;
+    private PlayersScorePanel playerScorePanel;
     private TeamScorePanel teamScorePanel;
 
     /*
@@ -26,7 +26,7 @@ public final class ScoreFrame extends JFrame implements IGameEventListener
      */
     public ScoreFrame()
     {
-        playerScorePanel = new PlayerScorePanel();
+        playerScorePanel = new PlayersScorePanel();
         teamScorePanel = new TeamScorePanel();
 
         // Set preferred sizes only to have proportional divider in place.

@@ -10,10 +10,11 @@ import org.jdyna.*;
 
 
 /**
- * Swing component displaying player status information.
+ * Swing component displaying aggregate status information 
+ * for all players in the game.
  */
 @SuppressWarnings("serial")
-public final class PlayerScorePanel extends JPanel implements IGameEventListener
+public final class PlayersScorePanel extends JPanel implements IGameEventListener
 {
     /**
      * Player stats model.
@@ -110,7 +111,7 @@ public final class PlayerScorePanel extends JPanel implements IGameEventListener
     /**
      * 
      */
-    public PlayerScorePanel()
+    public PlayersScorePanel()
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
