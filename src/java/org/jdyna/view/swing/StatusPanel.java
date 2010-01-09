@@ -1,7 +1,7 @@
-package org.jdyna.view.status;
+package org.jdyna.view.swing;
 
 import static org.jdyna.CellType.*;
-import static org.jdyna.view.status.StatusField.*;
+import static org.jdyna.view.swing.StatusField.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

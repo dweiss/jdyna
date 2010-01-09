@@ -10,7 +10,8 @@ import javax.swing.*;
 
 import org.jdyna.*;
 import org.jdyna.view.resources.*;
-import org.jdyna.view.status.StatusFrame;
+
+import com.google.common.collect.Lists;
 
 /**
  * Swing board view.
@@ -67,11 +68,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         scoreFrame.setSize(new Dimension(300, 500));
         scoreFrame.setFocusable(false);      
         
-        /*
-         * Initialize the list of status frames with capacity 1, because that is most
-         * often.
-         */
-        statusFrames = new ArrayList<StatusFrame>(1);
+        statusFrames = Lists.newArrayList();
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -94,13 +91,18 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         setTitle("Play responsibly.");
 
         /*
-         * Add a dependent frame. Whenever this frame is opened, the dependent frame is also opened.  
+         * Add a dependent frame. Whenever this frame is opened, the dependent frame 
+         * is also opened.
+         * 
+         * TODO: [future] Snapping and gluing in Swing is hacky here and it won't work
+         * with so many open windows. The status should be integrated with the main frame,
+         * perhaps the scoreboard should be as well.
          */
         addWindowListener(new WindowAdapter()
         {
             public void windowOpened(WindowEvent e)
-            {                
-            	for (int statusIndex = 0; statusIndex<statusFrames.size(); statusIndex++)
+            {
+            	for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
             	{
             	    statusFrames.get(statusIndex).setVisible(true);
             	    if (statusIndex == 0)
@@ -114,6 +116,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
                         SwingUtils.snapFrame(statusFrames.get(statusIndex - 1), statusFrames.get(statusIndex));
             	    }
             	}
+
             	scoreFrame.setVisible(true);
                 SwingUtils.glueTo(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame, SwingUtils.SnapSide.BOTTOM);
                 SwingUtils.snapFrame(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame);                
@@ -122,7 +125,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
             public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
-                for (int statusIndex = 0; statusIndex<statusFrames.size(); statusIndex++)
+                for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
                 {
                     statusFrames.get(statusIndex).dispose();
                 }
@@ -133,15 +136,15 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     }
 
     /**
-     * React to on-frame events.
+     * React to on-frame events propagating to sub-views.
      */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
         this.gamePanel.onFrame(frame, events);
         this.scoreFrame.onFrame(frame, events);
-        for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
+        for (StatusFrame f : statusFrames)
         {
-            this.statusFrames.get(statusIndex).onFrame(frame, events);
+            f.onFrame(frame, events);
         }
     }
 
@@ -152,17 +155,18 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     {
         return gamePanel;
     }
-    
+
     /**
-     * Creates frames with statistics about player(s).
+     * Creates frames with statistics about player(s). The main frame must
+     * not be visible at the time of calling.
      */
     public void createStatusFrames(String... players)
     {
-        StatusFrame statusFrame;
-        for (int i=0; i<players.length; i++)
+        assert !isVisible();
+
+        for (String playerName : players)
         {
-            statusFrame = new StatusFrame(players[i]);
-            statusFrames.add(statusFrame);
+            statusFrames.add(new StatusFrame(playerName));
         }
     }
 }

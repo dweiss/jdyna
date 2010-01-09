@@ -97,7 +97,7 @@ public final class MainSwing
                 }
             }
         });
-        
+
         /*
          * Attach a display view to the game.
          */

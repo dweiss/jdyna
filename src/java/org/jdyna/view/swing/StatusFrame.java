@@ -1,4 +1,4 @@
-package org.jdyna.view.status;
+package org.jdyna.view.swing;
 
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
