@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
-import org.jdyna.players.Rabbit;
+import org.jdyna.players.rabbit.Rabbit;
 import org.jdyna.serialization.GameWriter;
 import org.jdyna.view.swing.AWTKeyboardController;
 import org.jdyna.view.swing.BoardFrame;

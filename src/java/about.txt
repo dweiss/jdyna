@@ -74,3 +74,9 @@ This software uses SimpleXML:
 
 This software uses OpenAL and LWJGL:
   http://lwjgl.org
+  
+This software uses JMonkeyEngine:
+  http://www.jmonkeyengine.com/
+  
+This software uses Proguard:
+  http://proguard.sourceforge.net/

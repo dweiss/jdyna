@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 /**
- * Start a game using local Swing view:
+ * Start a game using a Swing view and JavaSFX:
  * <ul>
  *  <li>two players,</li>
  *  <li>one game,</li>
@@ -64,7 +64,7 @@ public final class MainSwing
         /*
          * Attach sounds view to the game.
          */
-        // game.addListener(new JavaSoundSFX());
+        game.addListener(new JavaSoundSFX());
 
         /*
          * Attach game progress saver.

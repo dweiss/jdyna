@@ -2,7 +2,7 @@ package org.jdyna.network;
 
 import org.jdyna.network.sockets.BotClient;
 import org.jdyna.network.sockets.GameServer;
-import org.jdyna.players.RabbitFactory;
+import org.jdyna.players.rabbit.RabbitFactory;
 import org.slf4j.LoggerFactory;
 
 

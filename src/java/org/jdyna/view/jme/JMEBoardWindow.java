@@ -17,7 +17,6 @@ import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 import com.jme.input.MouseInput;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
-import com.jmex.editors.swing.settings.GameSettingsPanel;
 import com.jmex.game.StandardGame;
 
 /* 
@@ -64,22 +63,20 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
         game.getSettings().setSFX(true);
         
         // TODO: get the settings from configuration menu
-        if (true || GameSettingsPanel.prompt(game.getSettings()))
-        {
-            game.getSettings().setSFX(false);
-            game.getSettings().setMusic(false);
-            game.start();
+        // GameSettingsPanel.prompt(game.getSettings());
+        game.getSettings().setSFX(false);
+        game.getSettings().setMusic(false);
+        game.start();
 
-            GameTaskQueueManager.getManager().update(new Callable<Void>()
+        GameTaskQueueManager.getManager().update(new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
             {
-                @Override
-                public Void call() throws Exception
-                {
-                    new LoadingDataState(JMEBoardWindow.this).activate();
-                    return null;
-                }
-            });
-        }
+                new LoadingDataState(JMEBoardWindow.this).activate();
+                return null;
+            }
+        });
     }
 
     @Override

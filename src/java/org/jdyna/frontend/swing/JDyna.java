@@ -23,6 +23,7 @@ import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.jdyna.players.*;
 import org.jdyna.players.n00b.NoobFactory;
+import org.jdyna.players.rabbit.RabbitFactory;
 import org.jdyna.players.stalker.StalkerFactory;
 import org.jdyna.players.tyson.TysonFactory;
 import org.jdyna.view.jme.JMEBoardWindow;

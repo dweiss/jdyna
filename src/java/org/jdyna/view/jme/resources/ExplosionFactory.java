@@ -1,9 +1,5 @@
 package org.jdyna.view.jme.resources;
 
-import org.jdyna.Game;
-
-import com.jme.image.Image;
-import com.jme.image.Texture;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
 import com.jme.math.FastMath;

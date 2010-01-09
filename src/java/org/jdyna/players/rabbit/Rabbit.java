@@ -1,4 +1,4 @@
-package org.jdyna.players;
+package org.jdyna.players.rabbit;
 
 import java.awt.Point;
 import java.util.ArrayList;
