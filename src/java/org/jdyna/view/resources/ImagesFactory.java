@@ -228,7 +228,16 @@ public final class ImagesFactory
             createPlayer(ISprite.Type.PLAYER_4, playerFrameRate, offset, slices4),
         }));
 
-        return new Images(cellSize, cells, sprites);
+        /*
+         * Player icons for statuses.
+         */
+        
+        final ImageSliceBuilder sb3 = new ImageSliceBuilder("tiles/15.png", 8);
+        sb3.h = sb3.w = 24;
+        final BufferedImage [] playerStatuses =
+            load(sb3.tile(new int [][] { {0, 8}, {12, 8}, {6, 8}, {9, 8}, /*  */ }));
+
+        return new Images(cellSize, cells, sprites, playerStatuses);
     }
 
     /*

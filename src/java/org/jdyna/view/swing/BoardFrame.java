@@ -19,32 +19,27 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("serial")
 public final class BoardFrame extends JFrame implements IGameEventListener
 {
-    private final GraphicsConfiguration conf;
     private BoardPanel gamePanel;
 
     /**
      * Attached score frame, if any.
      */
     private ScoreFrame scoreFrame;
-    
+
     /**
-     * List of attached status frames.
+     * Sub-listeners.
      */
-    private ArrayList<PlayerStatusFrame> statusFrames;
-    
+    private final ArrayList<IGameEventListener> sublisteners = Lists.newArrayList();
+
     /**
      * Images used by this frame.
      */
     private final Images images;
 
-    /*
-     * 
+    /**
+     * South panel with player statuses.
      */
-    private BoardFrame(GraphicsConfiguration conf)
-    {
-        this.conf = conf;
-        this.images = ImagesFactory.DYNA_CLASSIC;
-    }
+    private final JPanel statuses;
 
     /*
      * 
@@ -52,6 +47,14 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     public BoardFrame()
     {
         this(ImageUtilities.getGraphicsConfiguration());
+    }
+
+    /*
+     * 
+     */
+    public BoardFrame(GraphicsConfiguration conf)
+    {
+        this.images = ImagesFactory.DYNA_CLASSIC;
 
         gamePanel = new BoardPanel(images, conf);
         gamePanel.addComponentListener(new ComponentAdapter() {
@@ -72,13 +75,14 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         scoreFrame.setSize(new Dimension(300, 500));
         scoreFrame.setFocusable(false);      
-        
-        statusFrames = Lists.newArrayList();
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         getContentPane().add(panel);
         panel.add(gamePanel, BorderLayout.CENTER);
+
+        this.statuses = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panel.add(statuses, BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationByPlatform(true);
@@ -96,46 +100,25 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         setTitle("Play responsibly.");
 
         /*
-         * Add a dependent frame. Whenever this frame is opened, the dependent frame 
-         * is also opened.
-         * 
-         * TODO: [future] Snapping and gluing in Swing is hacky here and it won't work
-         * with so many open windows. The status should be integrated with the main frame,
-         * perhaps the scoreboard should be as well.
+         * Add the scoreboard frame.
          */
         addWindowListener(new WindowAdapter()
         {
             public void windowOpened(WindowEvent e)
             {
-            	for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
-            	{
-            	    statusFrames.get(statusIndex).setVisible(true);
-            	    if (statusIndex == 0)
-            	    {
-            	        SwingUtils.glueTo(BoardFrame.this, statusFrames.get(statusIndex), SwingUtils.SnapSide.RIGHT);
-            	        SwingUtils.snapFrame(BoardFrame.this, statusFrames.get(statusIndex));
-            	    }
-            	    else
-            	    {
-            	        SwingUtils.glueTo(statusFrames.get(statusIndex - 1), statusFrames.get(statusIndex), SwingUtils.SnapSide.BOTTOM);
-                        SwingUtils.snapFrame(statusFrames.get(statusIndex - 1), statusFrames.get(statusIndex));
-            	    }
-            	}
-
-            	scoreFrame.setVisible(true);
-                SwingUtils.glueTo(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame, SwingUtils.SnapSide.BOTTOM);
-                SwingUtils.snapFrame(BoardFrame.this.statusFrames.get(statusFrames.size() - 1), scoreFrame);                
+                scoreFrame.setVisible(true);
+                SwingUtils.glueTo(BoardFrame.this, scoreFrame, SwingUtils.SnapSide.RIGHT);
+                SwingUtils.snapFrame(BoardFrame.this, scoreFrame);
             }
-            
+
             public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
-                for (int statusIndex = 0; statusIndex < statusFrames.size(); statusIndex++)
-                {
-                    statusFrames.get(statusIndex).dispose();
-                }
             }
         });
+
+        sublisteners.add(gamePanel);
+        sublisteners.add(scoreFrame);
 
         pack();
     }
@@ -145,33 +128,33 @@ public final class BoardFrame extends JFrame implements IGameEventListener
      */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        this.gamePanel.onFrame(frame, events);
-        this.scoreFrame.onFrame(frame, events);
-        for (PlayerStatusFrame f : statusFrames)
+        for (IGameEventListener l : sublisteners)
         {
-            f.onFrame(frame, events);
+            l.onFrame(frame, events);
         }
     }
 
     /**
-     * Return the game panel associated with this frame.
+     * Track the given player (only one).
      */
-    public BoardPanel getGamePanel()
+    public void trackPlayer(String playerName)
     {
-        return gamePanel;
+        gamePanel.trackPlayer(playerName);
     }
 
     /**
-     * Creates frames with statistics about player(s). The main frame must
-     * not be visible at the time of calling.
+     * Add status panels for these players. You should call this method
+     * once with all the players that require status information.
      */
-    public void createStatusFrames(String... players)
+    public void showStatusFor(IPlayerSprite... players)
     {
-        assert !isVisible();
-
-        for (String playerName : players)
+        for (IPlayerSprite player : players)
         {
-            statusFrames.add(new PlayerStatusFrame(images, playerName));
+            final PlayerStatusPanel p = new PlayerStatusPanel(
+                images, player.getName(), player.getType());
+
+            sublisteners.add(p);
+            statuses.add(p);
         }
     }
 }

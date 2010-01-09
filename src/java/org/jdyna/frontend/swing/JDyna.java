@@ -827,11 +827,8 @@ public final class JDyna
 
         if (!StringUtils.isEmpty(playerName))
         {
-            boardFrame.getGamePanel().trackPlayer(playerName);
-            boardFrame.createStatusFrames(playerName);
+            boardFrame.trackPlayer(playerName);
         }
-        else
-            boardFrame.createStatusFrames("Player 1", "Player 2");
 
         boardFrame.addWindowListener(new WindowAdapter()
         {

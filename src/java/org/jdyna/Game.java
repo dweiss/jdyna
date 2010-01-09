@@ -164,23 +164,23 @@ public final class Game implements IGameEventListenerHolder
      * Dynamically attach a new player to an existing game. If the player with the
      * given identifier already exists, an exception is thrown.
      */
-    public synchronized void addPlayer(Player p)
+    public synchronized IPlayerSprite addPlayer(Player p)
     {
-        addPlayer(p, conf.DEFAULT_JOINING_IMMORTALITY_FRAMES);
+        return addPlayer(p, conf.DEFAULT_JOINING_IMMORTALITY_FRAMES);
     }
 
     /**
      * Dynamically attach a new player to an existing game. If the player with the
      * given identifier already exists, an exception is thrown.
      */
-    private synchronized void addPlayer(Player p, int immortalityCount)
+    private synchronized IPlayerSprite addPlayer(Player p, int immortalityCount)
     {
         if (hasPlayer(p.name))
         {
             throw new IllegalArgumentException("Player already exists: " + p.name);            
         }
 
-        setupPlayer(p, immortalityCount);
+        return setupPlayer(p, immortalityCount);
     }
 
     /**
@@ -1045,7 +1045,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Add a player to the game.
      */
-    private void setupPlayer(Player p, int immortalityCount)
+    private IPlayerSprite setupPlayer(Player p, int immortalityCount)
     {
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < playerInfos.size())
@@ -1068,6 +1068,8 @@ public final class Game implements IGameEventListenerHolder
         pi.makeImmortal(immortalityCount);
         pi.location.setLocation(getDefaultLocation(playerIndex));
         playerInfos.add(pi);
+
+        return pi;
     }
 
     /**

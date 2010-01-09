@@ -71,8 +71,7 @@ public class GameClient implements IGameEventListenerHolder
         boardFrame = new BoardFrame();
         if (!StringUtils.isEmpty(playerName))
         {
-            boardFrame.getGamePanel().trackPlayer(playerName);
-            boardFrame.createStatusFrames(playerName);
+            boardFrame.trackPlayer(playerName);
         }
         proxy.addListener(boardFrame);
         boardFrame.addWindowListener(new WindowAdapter()

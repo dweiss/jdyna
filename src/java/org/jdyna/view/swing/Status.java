@@ -129,7 +129,9 @@ final class Status extends JPanel
             final Status me = Status.this;
             if (visible)
             {
-                icon.setText(Integer.toString(value));
+                icon.setText(value == Integer.MAX_VALUE 
+                        ? "∞"
+                        : Integer.toString(value));
 
                 if (blinks)
                 {

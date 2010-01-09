@@ -1,19 +1,55 @@
 package org.jdyna.view.swing;
 
-import static org.jdyna.CellType.*;
-import static org.jdyna.view.swing.StatusType.*;
+import static org.jdyna.CellType.CELL_BONUS_AHMED;
+import static org.jdyna.CellType.CELL_BONUS_BOMB;
+import static org.jdyna.CellType.CELL_BONUS_BOMB_WALKING;
+import static org.jdyna.CellType.CELL_BONUS_CONTROLLER_REVERSE;
+import static org.jdyna.CellType.CELL_BONUS_CRATE_WALKING;
+import static org.jdyna.CellType.CELL_BONUS_DIARRHEA;
+import static org.jdyna.CellType.CELL_BONUS_IMMORTALITY;
+import static org.jdyna.CellType.CELL_BONUS_MAXRANGE;
+import static org.jdyna.CellType.CELL_BONUS_NO_BOMBS;
+import static org.jdyna.CellType.CELL_BONUS_RANGE;
+import static org.jdyna.CellType.CELL_BONUS_SLOW_DOWN;
+import static org.jdyna.CellType.CELL_BONUS_SPEED_UP;
+import static org.jdyna.view.swing.StatusType.AHMED;
+import static org.jdyna.view.swing.StatusType.BOMBS;
+import static org.jdyna.view.swing.StatusType.BOMB_RANGE;
+import static org.jdyna.view.swing.StatusType.BOMB_WALKING;
+import static org.jdyna.view.swing.StatusType.CRATE_WALKING;
+import static org.jdyna.view.swing.StatusType.CTRL_REVERSE;
+import static org.jdyna.view.swing.StatusType.DIARRHOEA;
+import static org.jdyna.view.swing.StatusType.IMMORTALITY;
+import static org.jdyna.view.swing.StatusType.LIVES;
+import static org.jdyna.view.swing.StatusType.MAX_RANGE;
+import static org.jdyna.view.swing.StatusType.NO_BOMBS;
+import static org.jdyna.view.swing.StatusType.SLOW_DOWN;
+import static org.jdyna.view.swing.StatusType.SPEED_UP;
 
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
-import org.jdyna.*;
+import org.jdyna.CellType;
+import org.jdyna.GameConfiguration;
+import org.jdyna.GameEvent;
+import org.jdyna.GameStartEvent;
+import org.jdyna.GameStateEvent;
+import org.jdyna.IGameEventListener;
+import org.jdyna.IPlayerSprite;
+import org.jdyna.ISprite;
 import org.jdyna.view.resources.ImageUtilities;
 import org.jdyna.view.resources.Images;
 
@@ -47,12 +83,19 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
     private final String playerName;
 
     /**
+     * Plater type (jersey).
+     */
+    private ISprite.Type playerType;
+
+    /**
      * 
      */
-    public PlayerStatusPanel(Images images, String playerName)
+    public PlayerStatusPanel(Images images, String playerName, ISprite.Type playerType)
     {
         this.images = images;
         this.playerName = playerName;
+        this.playerType = playerType;
+
         initializeComponents();
     }
 
@@ -64,15 +107,22 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
         setLayout(new GridBagLayout());
 
         final GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
+        gbc.gridx = GridBagConstraints.RELATIVE;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 0, 2);
+
+        // Add the player's icon.
+        final JLabel playerIcon = new JLabel();
+        playerIcon.setIcon(new ImageIcon(images.getPlayerStatusImage(playerType)));
+        playerIcon.setHorizontalAlignment(SwingConstants.HORIZONTAL);
+        add(playerIcon, gbc);
+
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(0, 1, 0, 0);
-
+        
         // Load an icon for the life counter.
         final BufferedImage lifeCountIcon;
         try
@@ -122,7 +172,6 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
                 case MAX_RANGE:
                 case DIARRHOEA:
                     add(new JSeparator(), gbc);
-                    gbc.gridx++;
                     break;
 
                 default:
@@ -130,7 +179,6 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
             }
 
             add(e.getValue(), gbc);
-            gbc.gridx++;
         }
     }
 

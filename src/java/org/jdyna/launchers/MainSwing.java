@@ -57,9 +57,15 @@ public final class MainSwing
 
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
+        final Player p3 = new Player("Player 3", c2);
+        final Player p4 = new Player("Player 4", c2);
 
-        game.addPlayer(p1);
-        game.addPlayer(p2);
+        final IPlayerSprite [] infos = new IPlayerSprite [] {
+            game.addPlayer(p1), 
+            game.addPlayer(p2),
+            game.addPlayer(p3),
+            game.addPlayer(p4),
+        };
 
         /*
          * Attach sounds view to the game.
@@ -102,7 +108,7 @@ public final class MainSwing
          * Attach a display view to the game.
          */
         final BoardFrame frame = new BoardFrame();
-        frame.createStatusFrames(p1.name, p2.name);
+        frame.showStatusFor(infos);
         game.addListener(frame);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
