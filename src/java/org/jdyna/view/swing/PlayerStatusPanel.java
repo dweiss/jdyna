@@ -86,7 +86,8 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
 
         // Linked hash map of statuses initialization.
         statuses = Maps.newLinkedHashMap();
-        for (Status s : Arrays.asList(new Status(LIVES, lifeCountIcon, false),
+        for (Status s : Arrays.asList(
+            new Status(LIVES, lifeCountIcon, false),
             new Status(BOMBS, getCellImage(CELL_BONUS_BOMB), false), 
             new Status(BOMB_RANGE, getCellImage(CELL_BONUS_RANGE), false), 
             new Status(MAX_RANGE, getCellImage(CELL_BONUS_MAXRANGE), true), 
@@ -101,6 +102,16 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
             new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), true)))
         {
             statuses.put(s.field, s);
+        }
+        
+        // Configure those status panels that should always be visible.
+        for (StatusType s : Arrays.asList(
+            StatusType.LIVES,
+            StatusType.BOMBS,
+            StatusType.BOMB_RANGE
+            ))
+        {
+            statuses.get(s).hideWhenZero = false;
         }
 
         // Set insets and add all statuses panels.

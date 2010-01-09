@@ -48,6 +48,12 @@ final class Status extends JPanel
     private final boolean blinks;
 
     /**
+     * If <code>true</code> the status indicator is hidden
+     * when {@link #value} is less than or equals zero.
+     */
+    public boolean hideWhenZero = true;
+
+    /**
      * A list of {@link Status} objects which should be blinking.
      */
     private static List<Status> blinking = Lists.newArrayList();
@@ -114,7 +120,7 @@ final class Status extends JPanel
     private final Runnable updater = new Runnable() {
         public void run()
         {
-            final boolean visible = (value > 0); 
+            final boolean visible = !hideWhenZero || (value > 0); 
             if (visible != isVisible())
             {
                 setVisible(visible);
