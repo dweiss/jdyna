@@ -746,8 +746,11 @@ public final class Game implements IGameEventListenerHolder
 
         if (ct == CellType.CELL_BONUS_MAXRANGE)
         {
-        	pi.storedBombRange = pi.bombRange;
-        	pi.bombRange = Integer.MAX_VALUE;
+            if (pi.maxRangeEndsAtFrame < frame)
+            {
+                pi.storedBombRange = pi.bombRange;
+                pi.bombRange = Integer.MAX_VALUE;
+            }
         	pi.maxRangeEndsAtFrame = frame + conf.DEFAULT_MAXRANGE_FRAMES;
         	bonusCollected = true;
         }
