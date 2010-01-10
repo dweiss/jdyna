@@ -151,12 +151,9 @@ final class Status extends JPanel
                         if (onBlinkingList)
                         {
                             blinking.remove(me);
+                            icon.setEnabled(true);
                         }
                     }
-                }
-                else
-                {
-                    icon.setEnabled(true);
                 }
             }
             else

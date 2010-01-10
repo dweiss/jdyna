@@ -151,6 +151,7 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
             new Status(SLOW_DOWN, getCellImage(CELL_BONUS_SLOW_DOWN), true),
             new Status(CTRL_REVERSE, getCellImage(CELL_BONUS_CONTROLLER_REVERSE), true)))
         {
+            s.setVisible(false);
             statuses.put(s.field, s);
         }
         
