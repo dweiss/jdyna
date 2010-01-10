@@ -322,8 +322,6 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             if (e.type == GameEvent.Type.GAME_START)
             {
                 initializeBoard((GameStartEvent) e);
-                fireSizeChanged();
-
                 globalFrameCounter = 0;
             }
 
@@ -348,7 +346,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             /*
              * Create the background image for the board.
              */
-            final Dimension size = getPreferredSize();
+            final Dimension size = getBoardSize();
             background = conf.createCompatibleImage(size.width, size.height);
     
             final Graphics2D g = (Graphics2D) background.getGraphics();
@@ -356,6 +354,8 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             g.fillRect(0, 0, size.width, size.height);
             g.dispose();
         }
+
+        sizeChanged();
     }
 
     /**
@@ -411,8 +411,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /*
      * 
      */
-    @Override
-    public Dimension getPreferredSize()
+    public Dimension getBoardSize()
     {
         synchronized (exclusiveLock)
         {
@@ -448,30 +447,22 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                     AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             }
         }
-        
-        fireSizeChanged();
+
+        sizeChanged();
     }
 
-    /*
-     * Fire size changed event.
+    /**
+     * Set new preferred component size and fire an event.
      */
-    private void fireSizeChanged()
+    private void sizeChanged()
     {
-        final Runnable r = new Runnable() {
-            public void run()
-            {
-                BoardPanel.super.setSize(getPreferredSize());
-            }
-        };
-
-        if (SwingUtilities.isEventDispatchThread())
-        {
-            r.run();
-        }
-        else
-        {
-            SwingUtilities.invokeLater(r);
-        }
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run()
+                {
+                    setPreferredSize(getBoardSize());
+                }
+            });
     }
 
     /**
