@@ -734,7 +734,10 @@ public final class Game implements IGameEventListenerHolder
         	{
         		pi.storedBombRange++;
         	}
-        	else pi.bombRange++;
+        	else
+        	{
+        	    pi.bombRange++;
+        	}
         	bonusCollected = true;
         }
         
