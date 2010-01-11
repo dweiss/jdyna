@@ -158,7 +158,11 @@ final class Status extends JPanel
             }
             else
             {
-                if (blinks) blinking.remove(me);
+                if (blinks)
+                {
+                    blinking.remove(me);
+                    icon.setEnabled(true);
+                }
             }
         };
     };
