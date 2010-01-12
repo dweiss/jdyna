@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Game settings and configuration.
  */
-public final class GameConfiguration implements Serializable
+public final class GameConfiguration implements Serializable, Cloneable
 {
     /**
      * @see GameEvent#serialVersionUID
@@ -16,31 +16,18 @@ public final class GameConfiguration implements Serializable
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone()
     {
-        final GameConfiguration objectClone = new GameConfiguration();
-        objectClone.DEFAULT_FRAME_RATE = DEFAULT_FRAME_RATE;
-        objectClone.DEFAULT_BOMB_RANGE = DEFAULT_BOMB_RANGE;
-        objectClone.DEFAULT_FUSE_FRAMES = DEFAULT_FUSE_FRAMES;
-        objectClone.DEFAULT_BOMB_COUNT = DEFAULT_BOMB_COUNT;
-        objectClone.DEFAULT_BONUS_PERIOD = DEFAULT_BONUS_PERIOD;
-        objectClone.DEFAULT_RESURRECTION_FRAMES = DEFAULT_RESURRECTION_FRAMES;
-        objectClone.DEFAULT_IMMORTALITY_FRAMES = DEFAULT_IMMORTALITY_FRAMES;
-        objectClone.DEFAULT_JOINING_IMMORTALITY_FRAMES = DEFAULT_JOINING_IMMORTALITY_FRAMES;
-        objectClone.DEFAULT_LIVES = DEFAULT_LIVES;
-        objectClone.DEFAULT_DIARRHEA_FRAMES = DEFAULT_DIARRHEA_FRAMES;
-        objectClone.DEFAULT_NO_BOMBS_FRAMES = DEFAULT_NO_BOMBS_FRAMES;
-        objectClone.DEFAULT_MAXRANGE_FRAMES = DEFAULT_MAXRANGE_FRAMES;
-        objectClone.DEFAULT_SPEED_FRAMES = DEFAULT_SPEED_FRAMES;
-        objectClone.SPEED_UP_MULTIPLIER = SPEED_UP_MULTIPLIER;
-        objectClone.SLOW_DOWN_MULTIPLIER = SLOW_DOWN_MULTIPLIER;
-        objectClone.DEFAULT_CRATE_WALKING_FRAMES = DEFAULT_CRATE_WALKING_FRAMES;
-        objectClone.DEFAULT_BOMB_WALKING_FRAMES = DEFAULT_BOMB_WALKING_FRAMES;
-        objectClone.DEFAULT_CONTROLLER_REVERSE_FRAMES = DEFAULT_CONTROLLER_REVERSE_FRAMES;
-        objectClone.DEFAULT_CRATE_PERIOD = DEFAULT_CRATE_PERIOD;
-        objectClone.ADD_RANDOM_CRATES = ADD_RANDOM_CRATES;
-        objectClone.ENABLE_HIGHLIGHTS_DATA = ENABLE_HIGHLIGHTS_DATA;
-        return objectClone;
+        try
+        {
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e)
+        {
+            // intentional fall-through - it is never meant to happen
+            return null;
+        }
     }
 
     /**
