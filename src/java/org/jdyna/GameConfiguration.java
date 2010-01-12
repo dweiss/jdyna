@@ -5,12 +5,46 @@ import java.io.Serializable;
 /**
  * Game settings and configuration.
  */
-public final class GameConfiguration implements Serializable
+public final class GameConfiguration implements Serializable, Cloneable
 {
     /**
      * @see GameEvent#serialVersionUID
      */
     private static final long serialVersionUID = 0x200912130117L;
+    
+    /**
+     * Default constructor added so that it can be accessed.
+     * It has nothing to do itself.
+     */
+    public GameConfiguration() {}
+
+    /**
+     * Creates a configuration as a copy of given <code>instance</code>
+     */
+    public GameConfiguration(final GameConfiguration instance)
+    {
+        DEFAULT_FRAME_RATE = instance.DEFAULT_FRAME_RATE;
+        DEFAULT_BOMB_RANGE = instance.DEFAULT_BOMB_RANGE;
+        DEFAULT_FUSE_FRAMES = instance.DEFAULT_FUSE_FRAMES;
+        DEFAULT_BOMB_COUNT = instance.DEFAULT_BOMB_COUNT;
+        DEFAULT_BONUS_PERIOD = instance.DEFAULT_BONUS_PERIOD;
+        DEFAULT_RESURRECTION_FRAMES = instance.DEFAULT_RESURRECTION_FRAMES;
+        DEFAULT_IMMORTALITY_FRAMES = instance.DEFAULT_IMMORTALITY_FRAMES;
+        DEFAULT_JOINING_IMMORTALITY_FRAMES = instance.DEFAULT_JOINING_IMMORTALITY_FRAMES;
+        DEFAULT_LIVES = instance.DEFAULT_LIVES;
+        DEFAULT_DIARRHEA_FRAMES = instance.DEFAULT_DIARRHEA_FRAMES;
+        DEFAULT_NO_BOMBS_FRAMES = instance.DEFAULT_NO_BOMBS_FRAMES;
+        DEFAULT_MAXRANGE_FRAMES = instance.DEFAULT_MAXRANGE_FRAMES;
+        DEFAULT_SPEED_FRAMES = instance.DEFAULT_SPEED_FRAMES;
+        SPEED_UP_MULTIPLIER = instance.SPEED_UP_MULTIPLIER;
+        SLOW_DOWN_MULTIPLIER = instance.SLOW_DOWN_MULTIPLIER;
+        DEFAULT_CRATE_WALKING_FRAMES = instance.DEFAULT_CRATE_WALKING_FRAMES;
+        DEFAULT_BOMB_WALKING_FRAMES = instance.DEFAULT_BOMB_WALKING_FRAMES;
+        DEFAULT_CONTROLLER_REVERSE_FRAMES = instance.DEFAULT_CONTROLLER_REVERSE_FRAMES;
+        DEFAULT_CRATE_PERIOD = instance.DEFAULT_CRATE_PERIOD;
+        ADD_RANDOM_CRATES = instance.ADD_RANDOM_CRATES;
+        ENABLE_HIGHLIGHTS_DATA = instance.ENABLE_HIGHLIGHTS_DATA;
+    }
 
     /**
      * Default frame rate (frames per second) for the game's controller.
