@@ -67,7 +67,7 @@ public final class GameConfigurationDialog
     public GameConfigurationDialog(GameConfiguration config, GameConfigurationScheme scheme)
     {
         originalConfig = config;
-        this.config = new GameConfiguration(config);
+        this.config = (GameConfiguration) config.clone();
         this.scheme = scheme;
     }
 
