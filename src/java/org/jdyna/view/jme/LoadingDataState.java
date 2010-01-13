@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import org.jdyna.view.jme.resources.MeshFactory;
+import org.jdyna.view.jme.resources.ProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public class LoadingDataState extends GameState
 
     public LoadingDataState()
     {
-        Text label = Text2D.createDefaultTextLabel("StatusLabel", "Loading...");
+        final Text label = Text2D.createDefaultTextLabel("StatusLabel", "Loading...");
         rootNode.attachChild(label);
         label.updateRenderState();
 
@@ -53,12 +54,12 @@ public class LoadingDataState extends GameState
                 return null;
             }
         };
+
         final Callable<Void> failureCallback = new Callable<Void>()
         {
             @Override
             public Void call() throws Exception
             {
-
                 for (Listener l : listeners)
                 {
                     l.onDataLoadFailed();
@@ -67,26 +68,48 @@ public class LoadingDataState extends GameState
             }
         };
 
-        new Thread(new Runnable()
+        class StatusCallback implements Callable<Void>
+        {
+            private final String status;
+            
+            public StatusCallback(String status)
+            {
+                this.status = status;
+            }
+
+            @Override
+            public Void call() throws Exception
+            {
+                label.print(status);
+                return null;
+            }
+        };
+
+        new Thread()
         {
             @Override
             public void run()
             {
-
                 // preload all meshes
                 try
                 {
-                    MeshFactory.inst();
+                    MeshFactory.initializeSingleton(new ProgressListener()
+                    {
+                        public void update(String status)
+                        {
+                            GameTaskQueueManager.getManager().update(
+                                new StatusCallback(status));
+                        }
+                    });
                     GameTaskQueueManager.getManager().update(successCallback);
                 }
-                catch (RuntimeException e)
+                catch (Throwable e)
                 {
                     logger.error("Failed pre-loading meshes: " + e.getMessage());
                     GameTaskQueueManager.getManager().update(failureCallback);
                 }
-
             }
-        }).start();
+        }.start();
     }
 
     /*
@@ -96,7 +119,6 @@ public class LoadingDataState extends GameState
      */
     public void update(float tpf, float time)
     {
-
     }
 
     public interface Listener

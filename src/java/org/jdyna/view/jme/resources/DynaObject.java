@@ -13,6 +13,6 @@ public abstract class DynaObject extends Node
         setLocalTranslation(i, 0, j);
         this.i = i;
         this.j = j;
-        mf = MeshFactory.inst();
+        mf = MeshFactory.getSingleton();
     }
 }

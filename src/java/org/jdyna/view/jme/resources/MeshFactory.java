@@ -5,8 +5,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.jdyna.CellType;
 import org.jdyna.view.resources.ResourceUtilities;
 
@@ -23,10 +25,13 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 
+// TODO: this class needs to be cleaned up and rewritten. It's a mess. Why all this
+// crap with resource loaders from JME if an URL can be given directly?
+
 public class MeshFactory
 {
     private static final String BASE_DIR = "jme";
-    private EnumMap<CellType, String> modelPaths = new EnumMap<CellType, String>(
+    private static EnumMap<CellType, String> modelPaths = new EnumMap<CellType, String>(
         CellType.class);
     private EnumMap<CellType, Spatial> meshes = new EnumMap<CellType, Spatial>(
         CellType.class);
@@ -44,6 +49,7 @@ public class MeshFactory
         cull.setCullFace(Face.Back);
     }
 
+    static
     {
         modelPaths.put(CellType.CELL_EMPTY, "floor");
         modelPaths.put(CellType.CELL_WALL, "wall");
@@ -64,35 +70,47 @@ public class MeshFactory
         modelPaths.put(CellType.CELL_BONUS_SURPRISE, "bonus_surprise");
     }
 
-    static MeshFactory inst;
+    private static MeshFactory singleton;
 
-    public static MeshFactory inst()
+    // TODO: I'm not so sure it needs to be a singleton here...
+    public synchronized static MeshFactory getSingleton()
     {
-        if (inst == null)
+        /*
+         * Important learning lesson: 
+         * You had a broken singleton pattern here (null check outside of the monitor).
+         * This is wrong for a variety of reasons. Don't do it.
+         */
+        if (singleton == null)
         {
-            synchronized (MeshFactory.class)
-            {
-                if (inst == null) inst = new MeshFactory();
-            }
+            throw new IllegalStateException("Initialize first.");
         }
-        return inst;
+
+        return singleton;
+    }
+    
+    public synchronized static void initializeSingleton(ProgressListener progressCallback)
+    {
+        if (singleton != null)
+            throw new IllegalStateException("Already initialized.");
+        
+        singleton = new MeshFactory(progressCallback);
     }
 
-    public MeshFactory()
+    public MeshFactory(ProgressListener progressCallback)
     {
         for (Entry<CellType, String> entry : modelPaths.entrySet())
         {
-            Spatial model = loadModel(entry.getValue());
+            Spatial model = loadModel(entry.getValue(), progressCallback);
             meshes.put(entry.getKey(), model);
         }
 
-        unknownBonus = loadModel("unknown_bonus");
+        unknownBonus = loadModel("unknown_bonus", progressCallback);
 
         String [] names = getAnimatedModelNames("player/player");
         playerMeshes = new Spatial [names.length]; // a separate cloner for each frame
         for (int j = 0; j < names.length; j++)
         {
-            playerMeshes[j] = loadModel(names[j]);
+            playerMeshes[j] = loadModel(names[j], progressCallback);
         }
 
         names = getAnimatedModelNames("player/player-dying");
@@ -100,7 +118,7 @@ public class MeshFactory
         // frame
         for (int j = 0; j < names.length; j++)
         {
-            playerDyingMeshes[j] = loadModel(names[j]);
+            playerDyingMeshes[j] = loadModel(names[j], progressCallback);
         }
     }
 
@@ -123,15 +141,16 @@ public class MeshFactory
         }
         if (names.size() == 0) throw new RuntimeException(
             "No frames found for model: " + name);
-        System.out.println("Loaded " + names.size() + " frames for model: " + name);
+
         return names.toArray(new String [names.size()]);
     }
 
-    public static Spatial loadModel(String name)
+    public static Spatial loadModel(String name, ProgressListener progress)
     {
         try
         {
-            return loadModelImpl(BASE_DIR+"/"+name+".jme");
+            progress.update(name);
+            return loadModelImpl(BASE_DIR + "/" + name + ".jme");
         }
         catch (IOException e)
         {
@@ -143,7 +162,8 @@ public class MeshFactory
     {
         if (!path.endsWith(".jme")) throw new IllegalArgumentException(
             "Model formats other than JME are not supported");
-        
+
+        final long start = System.currentTimeMillis();
         try
         {
             SimpleResourceLocator locator;
@@ -165,6 +185,10 @@ public class MeshFactory
 
         mesh.setModelBound(new BoundingBox());
         mesh.updateModelBound();
+        
+        Logger.getLogger(MeshFactory.class).info(
+            String.format(Locale.ENGLISH, "Loading: " + path + " took: %.2f sec.",
+                (System.currentTimeMillis() - start) / 1000.0));
 
         return mesh;
     }
