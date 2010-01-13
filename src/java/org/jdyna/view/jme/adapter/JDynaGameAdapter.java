@@ -72,8 +72,8 @@ public class JDynaGameAdapter implements IGameEventListener
                 {
                     if (!eventQueue.isEmpty())                    
                     {
-                        logger.info("Dropping events: "
-                            + eventQueue.size());
+                        // Re-enable this if you want information about dropped events.
+                        // logger.info("Dropping events: " + eventQueue.size());
                         eventQueue.clear();
                     }
 
