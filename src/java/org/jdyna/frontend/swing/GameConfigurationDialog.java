@@ -88,10 +88,9 @@ public final class GameConfigurationDialog
             switch (scheme)
             {
                 case CLASSIC:
-                    return new GameConfiguration();
+                    return GameConfiguration.CLASSIC_CONFIGURATION;
                 case EXTENDED:
                     return new GameConfiguration();
-                    // TODO - what's the difference between CLASSIC and EXTENDED?
                 case CUSTOM:
                     return config;
             }
@@ -109,17 +108,12 @@ public final class GameConfigurationDialog
     {        
         final DefaultFormBuilder mainBuilder =
             new DefaultFormBuilder(
-                new FormLayout("40dlu, center:10dlu, right:100dlu, 3dlu, 30dlu, 3dlu", "pref, fill:pref")
+                new FormLayout("40dlu, center:10dlu, right:150dlu, 3dlu, left:30dlu, 3dlu", "pref, fill:pref")
                 );
         mainBuilder.setDefaultDialogBorder();
 
         final JComboBox schemeCombo = new JComboBox(GameConfigurationScheme.values());
         mainBuilder.append(schemeCombo);
-        
-        final DefaultFormBuilder builder =
-            new DefaultFormBuilder(
-                new FormLayout("right:100dlu, 3dlu, 30dlu")
-                );
 
         final JCheckBox replayCheckBox = new JCheckBox();
         replayCheckBox.addActionListener(new ActionListener()
@@ -132,9 +126,48 @@ public final class GameConfigurationDialog
         mainBuilder.append("Save for replay:", replayCheckBox);
         mainBuilder.nextLine();
         
+        // add vertical separator on the left
         final JSeparator separator = new JSeparator(JSeparator.VERTICAL);
         mainBuilder.add(separator, new CellConstraints().rchw(1, 2, 2, 1));
         mainBuilder.nextColumn(2);
+        
+        // create options panel
+        final DefaultFormBuilder builder =
+            new DefaultFormBuilder(
+                new FormLayout("right:150dlu, 3dlu, left:30dlu")
+                );
+        
+        // add options to panel
+        addGameOptions(builder);
+        addBonusOptions(builder);        
+        addSchemesButtons(builder);
+        
+        // put config panel on main panel
+        final JPanel customConfigPanel = getCustomConfigPanel(builder, mainBuilder);
+        
+        // add bottom separator
+        mainBuilder.appendSeparator();
+        
+        // schemeCombo's action listener is set here, because we've got customConfigPanel
+        // reference at last
+        schemeCombo.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                scheme = (GameConfigurationScheme)schemeCombo.getSelectedItem(); 
+                customConfigPanel.setVisible(scheme == GameConfigurationScheme.CUSTOM);
+            }
+        });
+        
+        // set config inputs for the first time
+        setConfigInputs(config);
+        
+        return mainBuilder.getPanel();
+    }
+
+    private void addGameOptions(final DefaultFormBuilder builder)
+    {
+        builder.appendSeparator("Game options");        
 
         startingBombRange = new JTextField(3);
         startingBombRange.addCaretListener(createNumberListener(startingBombRange, 0, 1, 10));
@@ -190,7 +223,10 @@ public final class GameConfigurationDialog
         addingCratesInterval.addCaretListener(createNumberListener(addingCratesInterval, 8, 1, 60, true));
         builder.append("adding crates interval:", addingCratesInterval);
         builder.nextLine();
-        
+    }
+
+    private void addBonusOptions(final DefaultFormBuilder builder)
+    {
         builder.appendSeparator("Bonus options");
 
         diarrheaDuration = new JTextField(3);
@@ -237,7 +273,10 @@ public final class GameConfigurationDialog
         controllerReverseDuration.addCaretListener(createNumberListener(controllerReverseDuration, 17, 1, 60, true));
         builder.append("controller reverse duration:", controllerReverseDuration);
         builder.nextLine();
-        
+    }
+
+    private void addSchemesButtons(final DefaultFormBuilder builder)
+    {
         builder.appendSeparator();
         
         final JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -260,7 +299,13 @@ public final class GameConfigurationDialog
         });
         buttonsPanel.add(defaultsButton);
         builder.append(buttonsPanel, 3);
-        
+    }
+    
+    private JPanel getCustomConfigPanel(final DefaultFormBuilder builder,
+        final DefaultFormBuilder mainBuilder)
+    {
+        // add customConfigPanel to its own panel (which size is set on next lines), so
+        // that whole config panel's size isn't depending on whether it is visible or not
         final JPanel customConfigPanel = builder.getPanel();
         final Dimension size = customConfigPanel.getPreferredSize();
         final JPanel customConfigPanelPanel = new JPanel();
@@ -270,27 +315,11 @@ public final class GameConfigurationDialog
         customConfigPanelPanel.setSize(size);
         mainBuilder.append(customConfigPanelPanel, 3);
         customConfigPanel.setVisible(scheme == GameConfigurationScheme.CUSTOM);
-        
-        mainBuilder.appendSeparator();
-        
-        // schemeCombo's action listener is set here, because we've got customConfigPanel
-        // reference at last
-        schemeCombo.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                scheme = (GameConfigurationScheme)schemeCombo.getSelectedItem(); 
-                customConfigPanel.setVisible(scheme == GameConfigurationScheme.CUSTOM);
-            }
-        });
-        
-        // set config inputs for the first time
-        setConfigInputs(config);
-        
-        return mainBuilder.getPanel();
+        return customConfigPanel;
     }
-
-    private CaretListener createNumberListener(final JTextField field, final int value, final int min, final int max, final boolean relativeToFPS)
+    
+    private CaretListener createNumberListener(final JTextField field, final int value,
+        final int min, final int max, final boolean relativeToFPS)
     {
         field.setBackground(OK_COLOR);
         return new CaretListener()
@@ -428,9 +457,6 @@ public final class GameConfigurationDialog
                 final GameConfigurationDialog configDialog = new GameConfigurationDialog(
                     new GameConfiguration(), GameConfigurationScheme.CLASSIC);
                 configDialog.prompt(null);
-                // final ConfigurationDialog confDialog = new ConfigurationDialog(
-                // new Configuration());
-                // confDialog.prompt(null);
             }
         });
     }

@@ -18,6 +18,7 @@ import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.audio.openal.OpenALSFX;
 import org.jdyna.frontend.swing.Configuration.ViewType;
+import org.jdyna.frontend.swing.GameConfigurationDialog.GameConfigurationScheme;
 import org.jdyna.network.packetio.UDPPacketEmitter;
 import org.jdyna.network.sockets.*;
 import org.jdyna.network.sockets.packets.ServerInfo;
@@ -351,9 +352,16 @@ public final class JDyna
         final Board board = selectBoard();
         if (board == null) return;
 
+        // TODO instead of passing new GameConfiguration and GameConfigurationScheme.CLASSIC, there should be passed last configuration set
+        final GameConfigurationDialog configDialog = new GameConfigurationDialog(
+            new GameConfiguration(), GameConfigurationScheme.CLASSIC);
+        final GameConfiguration conf = configDialog.prompt(null);
+        if (conf == null) return;
+
         hideMainGUI();
         runLocalGame(
             board,
+            conf,
             null,
             getKeyboardController(0, config.viewType, "Player 1"),
             getKeyboardController(1, config.viewType, "Player 2"));
@@ -398,6 +406,7 @@ public final class JDyna
         final String playerName = "Player";
         runLocalGame(
             board,
+            GameConfiguration.CLASSIC_CONFIGURATION,
             playerName,
             getKeyboardController(0, config.viewType, playerName),
             getBot(bot));        
@@ -709,13 +718,11 @@ public final class JDyna
     /**
      * Run a local game.
      */
-    private void runLocalGame(Board board, String highlightPlayer, IPlayerFactory... players)
+    private void runLocalGame(Board board, GameConfiguration conf, String highlightPlayer, IPlayerFactory... players)
     {
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
-        // TODO: this configuration should be modifiable in the settings dialog and passed here.
-        final GameConfiguration conf = new GameConfiguration();
         final Game game = new Game(conf, board, boardInfo);
     
         for (IPlayerFactory pf : players)

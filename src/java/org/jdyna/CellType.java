@@ -236,92 +236,14 @@ public enum CellType
             ANIMATING_CELLS.put(c, explosionFrameCount);
         }
         ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
-    }    
+    }
     
-    /**
-     * Bonus cells and their weights for calculating probability of selection
-     * for random placement of bonuses.
-     */
-    private final static EnumMap<CellType, Integer> BONUS_WEIGHTS;
-    private final static List<CellType> BONUSES_NO_SURPRISE;
-    private final static int sumOfWeights;
-    private final static Random rnd = new Random();
-
+    final static List<CellType> BONUSES_NO_SURPRISE;
+    
     static
     {
-        BONUS_WEIGHTS = Maps.newEnumMap(CellType.class);
-
-        /*
-         * We divide bonus probabilities into three categories for now.
-         * I believe some of the bonuses may be outside of the default three
-         * categories and may be assigned more/ less frequently (e.g., immortality). 
-         */
-
-        for (CellType ct : EnumSet.of(
-            CELL_BONUS_BOMB, 
-            CELL_BONUS_RANGE))
-        {
-            BONUS_WEIGHTS.put(ct, Constants.FREQUENT_BONUS_WEIGHT);
-        }
-
-        for (CellType ct : EnumSet.of(
-            CELL_BONUS_MAXRANGE, 
-            CELL_BONUS_SPEED_UP, 
-            CELL_BONUS_CRATE_WALKING, 
-            CELL_BONUS_AHMED))
-        {
-            BONUS_WEIGHTS.put(ct, Constants.COMMON_BONUS_WEIGHT);
-        }
-
-        for (CellType ct : EnumSet.of(
-            CELL_BONUS_DIARRHEA, 
-            CELL_BONUS_NO_BOMBS,
-            CELL_BONUS_IMMORTALITY,
-            CELL_BONUS_SLOW_DOWN,
-            CELL_BONUS_BOMB_WALKING,
-            CELL_BONUS_CONTROLLER_REVERSE,
-            CELL_BONUS_SURPRISE))
-        {
-            BONUS_WEIGHTS.put(ct, Constants.COMMON_BONUS_WEIGHT);
-        }
-
         // Static, random-access view of all possible bonuses.
-        BONUSES_NO_SURPRISE = Lists.newArrayList(BONUS_WEIGHTS.keySet());
-        BONUSES_NO_SURPRISE.remove(CELL_BONUS_SURPRISE);
-
-        // Sum of all weights for assignment probability distribution.
-        int sum = 0;
-        for (CellType ct : BONUS_WEIGHTS.keySet())
-        {
-            sum += BONUS_WEIGHTS.get(ct);
-        }
-        sumOfWeights = sum;
-    }
-
-    /**
-     * Return a random surprise bonus (random bonus, but not {@link #CELL_BONUS_SURPRISE}). 
-     */
-    public static CellType surpriseBonus()
-    {
-        return BONUSES_NO_SURPRISE.get(rnd.nextInt(BONUSES_NO_SURPRISE.size()));
-    }
-    
-    /**
-     * Return a random bonus, according to probability distribution given by weights
-     * of each cell type. 
-     */
-    public static CellType randomBonus()
-    {
-        final int t = rnd.nextInt(sumOfWeights);
-        int s = 0;
-        for (CellType ct : BONUS_WEIGHTS.keySet())
-        {
-            final int v = BONUS_WEIGHTS.get(ct);
-            if (t >= s && t < s + v)
-                return ct;
-            s += v;
-        }
-        throw new RuntimeException("Unreachable block: "
-            + t + ", " + s);
+        BONUSES_NO_SURPRISE = Lists.newArrayList(CellType.values());
+        BONUSES_NO_SURPRISE.remove(CellType.CELL_BONUS_SURPRISE);
     }
 }

@@ -1,6 +1,7 @@
 package org.jdyna;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 
 /**
  * Game settings and configuration.
@@ -11,17 +12,26 @@ public final class GameConfiguration implements Serializable, Cloneable
      * @see GameEvent#serialVersionUID
      */
     private static final long serialVersionUID = 0x200912130117L;
+    
+    public static final GameConfiguration CLASSIC_CONFIGURATION;
 
+    static
+    {
+        CLASSIC_CONFIGURATION = new GameConfiguration();
+        CLASSIC_CONFIGURATION.setClassicValues();
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     @Override
-    public Object clone()
+    public GameConfiguration clone()
     {
         try
         {
-            return super.clone();
+            final GameConfiguration objectClone = (GameConfiguration)super.clone();
+            objectClone.randomizer = randomizer.clone();
+            return objectClone;
         }
         catch (CloneNotSupportedException e)
         {
@@ -29,7 +39,29 @@ public final class GameConfiguration implements Serializable, Cloneable
             return null;
         }
     }
-
+    
+    /**
+     * Sets all configuration to classic Dyna values.
+     */
+    public void setClassicValues()
+    {
+        for (CellType ct : EnumSet.of(
+            CellType.CELL_BONUS_MAXRANGE, 
+            CellType.CELL_BONUS_SPEED_UP, 
+            CellType.CELL_BONUS_CRATE_WALKING, 
+            CellType.CELL_BONUS_AHMED,
+            CellType.CELL_BONUS_DIARRHEA, 
+            CellType.CELL_BONUS_NO_BOMBS,
+            CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SLOW_DOWN,
+            CellType.CELL_BONUS_BOMB_WALKING,
+            CellType.CELL_BONUS_CONTROLLER_REVERSE,
+            CellType.CELL_BONUS_SURPRISE))
+        {
+            randomizer.setWeightOfBonus(ct, 0);
+        }
+    }
+    
     /**
      * Default frame rate (frames per second) for the game's controller.
      */
@@ -147,4 +179,9 @@ public final class GameConfiguration implements Serializable, Cloneable
      * {@link IHighlightDetector} 
      */
     public boolean ENABLE_HIGHLIGHTS_DATA = true;
+    
+    /**
+     * Bonus randomizer used for customizing bonuses' weights.
+     */
+    public BonusRandomizer randomizer = new BonusRandomizer();
 }

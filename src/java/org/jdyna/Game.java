@@ -331,7 +331,7 @@ public final class Game implements IGameEventListenerHolder
             final Point p = randomEmptyCell(banned);
             if (p != null)
             {
-				final CellType bonus = CellType.randomBonus();
+				final CellType bonus = conf.randomizer.randomBonus();
 				board.cellAt(p, Cell.getInstance(bonus));
             }
         }
@@ -816,7 +816,7 @@ public final class Game implements IGameEventListenerHolder
         	/*
         	 * Random bonus CellType
         	 */
-        	final CellType rct = CellType.surpriseBonus();
+        	final CellType rct = conf.randomizer.surpriseBonus();
         	processCollectedBonus(frame, pi, rct);
         }
 
