@@ -1,8 +1,6 @@
 package org.jdyna.view.jme;
 
 import java.awt.Point;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import org.jdyna.CellType;
 
@@ -15,7 +13,6 @@ import org.jdyna.view.jme.resources.DynaExplosion;
 import org.jdyna.view.jme.resources.DynaPlayer;
 
 import com.jme.input.FirstPersonHandler;
-import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -23,26 +20,14 @@ import com.jme.scene.state.LightState;
 
 public class MatchGameState extends GameState implements GameListener
 {
-    private Collection<Listener> listeners = new LinkedList<Listener>();
     private FirstPersonHandler cameraHandler;
     private JDynaGameAdapter adapter;
     private BoardData boardData;
 
-    public MatchGameState(Listener l, JDynaGameAdapter adapter)
+    public MatchGameState(JDynaGameAdapter adapter)
     {
         this();
-        addListener(l);
         this.adapter = adapter;
-    }
-
-    void addListener(Listener l)
-    {
-        listeners.add(l);
-    }
-
-    boolean removeListener(Listener l)
-    {
-        return listeners.remove(l);
     }
 
     public MatchGameState()
@@ -73,28 +58,8 @@ public class MatchGameState extends GameState implements GameListener
     @Override
     public void update(float tpf, float time)
     {
-        KeyInput kb = KeyInput.get();
-
-        if (kb.isKeyDown(KeyInput.KEY_ESCAPE))
-        {
-
-            for (Listener l : listeners)
-            {
-                l.onMatchInterrupted();
-            }
-            kb.clearKey(KeyInput.KEY_ESCAPE);
-        }
-
-        adapter.dispatchEvents(this, false);
-
+        adapter.dispatchEvents(this);
         cameraHandler.update(tpf);
-    }
-
-    public interface Listener
-    {
-        void onMatchFinished();
-
-        void onMatchInterrupted();
     }
 
     @Override

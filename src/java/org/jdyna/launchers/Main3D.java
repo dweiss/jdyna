@@ -82,8 +82,14 @@ public final class Main3D
         /*
          * Attach a display view to the game.
          */
-        final JMEBoardWindow window = new JMEBoardWindow();
-
+        final IViewListener onWindowClose = new IViewListener()
+        {
+            public void viewClosed()
+            {
+                game.interrupt();
+            }
+        };
+        final JMEBoardWindow window = new JMEBoardWindow(onWindowClose);
         game.addListener(window);
 
         final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
