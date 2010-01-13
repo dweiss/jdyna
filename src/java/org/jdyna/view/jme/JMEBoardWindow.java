@@ -17,7 +17,6 @@ import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 import com.jme.input.MouseInput;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
-import com.jmex.game.StandardGame;
 
 /* 
  * @author Artur Kłopotek

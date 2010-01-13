@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="lib/runtime/jme-editors.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jme-gamestates.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jme-awt.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jme-audio.jar"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>
