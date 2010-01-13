@@ -1,5 +1,6 @@
 package org.jdyna;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Random;
@@ -8,8 +9,13 @@ import com.google.common.collect.Maps;
 
 
 
-public class BonusRandomizer implements Cloneable
+public class BonusRandomizer implements Cloneable, Serializable
 {
+    /**
+     * @see GameEvent#serialVersionUID
+     */
+    private static final long serialVersionUID = 0x201001131529L;
+    
     /**
      * Bonus cells and their weights for calculating probability of selection
      * for random placement of bonuses.

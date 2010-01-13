@@ -355,7 +355,7 @@ public final class JDyna
         // TODO instead of passing new GameConfiguration and GameConfigurationScheme.CLASSIC, there should be passed last configuration set
         final GameConfigurationDialog configDialog = new GameConfigurationDialog(
             new GameConfiguration(), GameConfigurationScheme.CLASSIC);
-        final GameConfiguration conf = configDialog.prompt(null);
+        final GameConfiguration conf = configDialog.prompt(frame);
         if (conf == null) return;
 
         hideMainGUI();
@@ -600,6 +600,10 @@ public final class JDyna
 
         final Board board = selectBoard();
         if (board == null) return;
+        
+        final GameConfigurationDialog configDialog = new GameConfigurationDialog(
+            new GameConfiguration(), GameConfigurationScheme.CLASSIC);
+        final GameConfiguration conf = configDialog.prompt(frame); 
 
         final String name = promptForName();
         if (name == null) return;
@@ -628,7 +632,7 @@ public final class JDyna
             /*
              * Create a new game on the server. 
              */
-            final GameHandle gameHandle = client.createGame("Game: " + board.name, board.name);
+            final GameHandle gameHandle = client.createGame(conf, "Game: " + board.name, board.name);
             final PlayerHandle playerHandle = client.joinGame(gameHandle, fullName.toString());
             client.disconnect();
 

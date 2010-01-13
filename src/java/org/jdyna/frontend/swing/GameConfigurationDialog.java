@@ -30,7 +30,7 @@ public final class GameConfigurationDialog
     /**
      * Configuration scheme to use.
      */
-    static enum GameConfigurationScheme
+    public static enum GameConfigurationScheme
     {
         CLASSIC, EXTENDED, CUSTOM;
 
@@ -50,7 +50,7 @@ public final class GameConfigurationDialog
     }
 
     private GameConfigurationScheme scheme;
-    final private GameConfiguration config;
+    private GameConfiguration config;
     final private GameConfiguration originalConfig;
 
     private final static Color ERROR_COLOR = new Color(255, 192, 192);
@@ -88,9 +88,9 @@ public final class GameConfigurationDialog
             switch (scheme)
             {
                 case CLASSIC:
-                    return GameConfiguration.CLASSIC_CONFIGURATION;
+                    return config = GameConfiguration.CLASSIC_CONFIGURATION;
                 case EXTENDED:
-                    return new GameConfiguration();
+                    return config = new GameConfiguration();
                 case CUSTOM:
                     return config;
             }
@@ -98,7 +98,15 @@ public final class GameConfigurationDialog
                 "If you see this message, it means that author has forseen the opportunity of this error.");
         }
 
-        return null;
+        return config = null;
+    }
+    
+    /**
+     * Returns most recently generated config without showing a dialog.
+     */
+    public GameConfiguration getConfig()
+    {
+        return config;
     }
 
     /**

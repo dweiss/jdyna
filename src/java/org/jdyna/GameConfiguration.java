@@ -11,7 +11,7 @@ public final class GameConfiguration implements Serializable, Cloneable
     /**
      * @see GameEvent#serialVersionUID
      */
-    private static final long serialVersionUID = 0x200912130117L;
+    private static final long serialVersionUID = 0x201001131528L;
     
     public static final GameConfiguration CLASSIC_CONFIGURATION;
 
