@@ -5,6 +5,7 @@ package org.jdyna.view.jme;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,9 @@ final class StandardGame extends AbstractGame implements Runnable
     private Timer timer;
     private Camera camera;
     private ColorRGBA backgroundColor;
+    
+    /** OpenGL initialization thread/ start barrier. */
+    private CountDownLatch startLatch;
 
     /**
      * @see AbstractGame#getNewSettings()
@@ -90,6 +94,8 @@ final class StandardGame extends AbstractGame implements Runnable
             {
                 logger.log(Level.SEVERE, 
                     "Main game loop broken by uncaught exception.", t);
+
+                startLatch.countDown(); // Just in case we crash before entering the main loop.
                 shutdown();
                 cleanup();
                 quit();
@@ -99,6 +105,17 @@ final class StandardGame extends AbstractGame implements Runnable
         // Assign a name to the thread
         gameThread.setName(gameName + " [3D]");
         gameThread.start();
+
+        // Wait for the OpenGL thread's initialization.
+        startLatch = new CountDownLatch(1);
+        try
+        {
+            startLatch.await();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException("Unreachable code.", e);
+        }
     }
 
     public void run()
@@ -124,8 +141,8 @@ final class StandardGame extends AbstractGame implements Runnable
                 / (float) preferredFPS);
         }
 
-        // Main game loop
-        float tpf;
+        // Enter the main game loop
+        startLatch.countDown();
 
         // FIXME: finished is not volatile in AbstractGame...
         while ((!finished) && (!display.isClosing()))
@@ -137,7 +154,7 @@ final class StandardGame extends AbstractGame implements Runnable
             }
 
             timer.update();
-            tpf = timer.getTimePerFrame();
+            final float tpf = timer.getTimePerFrame();
 
             InputSystem.update();
             update(tpf);
