@@ -1,12 +1,11 @@
 package org.jdyna.view.jme.adapter;
 
 import java.awt.Point;
+import java.util.ArrayDeque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.jdyna.BoardInfo;
 import org.jdyna.Cell;
@@ -24,7 +23,7 @@ public class JDynaGameAdapter implements IGameEventListener
     private final static Logger logger = LoggerFactory.getLogger(JDynaGameAdapter.class);
 
     private boolean gameStarted;
-    private final BlockingQueue<GameStateEvent> eventQueue = new LinkedBlockingQueue<GameStateEvent>(3);
+    private final ArrayDeque<GameStateEvent> eventQueue = new ArrayDeque<GameStateEvent>();
     private int boardWidth;
     private int boardHeight;
     private Cell [][] cells;
@@ -69,41 +68,33 @@ public class JDynaGameAdapter implements IGameEventListener
             else if (evt instanceof GameStateEvent)
             {
                 GameStateEvent state = (GameStateEvent) evt;
+                synchronized (eventQueue)
+                {
+                    if (!eventQueue.isEmpty())                    
+                    {
+                        logger.info("Dropping events: "
+                            + eventQueue.size());
+                        eventQueue.clear();
+                    }
 
-                try
-                {
-                    eventQueue.put(state);
+                    // FIXME: storing this reference directly is a bug. Make a shallow
+                    // (static) copy of all the data required for processing and then
+                    // place it on the queue.
+                    eventQueue.add(state);
                 }
-                catch (InterruptedException e)
-                {
-                    throw new RuntimeException(e);
-                }
-                /*
-                 * boolean overflow = !eventQueue.offer(state); if (overflow)
-                 * Logger.getLogger("com.arturklopotek.jdyna") .log(Level.WARNING,
-                 * "Event queue overflow: event dropped");
-                 */
             }
         }
     }
 
-    protected GameStateEvent nextEvent()
+    public void dispatchEvents(GameListener l)
     {
-        try
+        GameStateEvent state;
+        synchronized (eventQueue)
         {
-            return eventQueue.take();
+            if (eventQueue.isEmpty())
+                return;
+            state = eventQueue.pop();
         }
-        catch (InterruptedException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void dispatchEvents(GameListener l,boolean wait)
-    {
-        if (!wait && eventQueue.isEmpty()) return;
-
-        GameStateEvent state = nextEvent();
 
         if (gameStarted)
         {
