@@ -10,9 +10,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/runtime/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/commons-lang-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/h2-1.1.105-compressonly.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runtime/slf4j-api-1.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runtime/log4j-1.2.14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runtime/slf4j-log4j12-1.5.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/runtime/jgoodies-looks-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jgoodies-forms-1.2.1.jar"/>
@@ -28,5 +26,8 @@
 	<classpathentry kind="lib" path="lib/runtime/jme-gamestates.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jme-awt.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jme-audio.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jul-to-slf4j-1.5.10.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/slf4j-api-1.5.10.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/slf4j-log4j12-1.5.10.jar"/>
 	<classpathentry kind="output" path="tmp/eclipse"/>
 </classpath>

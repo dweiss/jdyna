@@ -2,7 +2,9 @@ package org.jdyna.view.jme;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -13,13 +15,14 @@ import org.jdyna.IGameEventListener;
 import org.jdyna.IViewListener;
 import org.jdyna.view.jme.MatchGameState.Listener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.jme.input.MouseInput;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 
 /* 
- * @author Artur Kłopotek
+ * 
  */
 public class JMEBoardWindow implements IGameEventListener, Listener, LoadingDataState.Listener
 {
@@ -28,8 +31,25 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
     private IViewListener viewListener;
 
     static {
+        /*
+         * Replace all default JDK logging handlers with SLF4J bridge.
+         */
+        final LogManager lm = LogManager.getLogManager();
+        final Logger root = lm.getLogger("");
+        for (Handler h : lm.getLogger("").getHandlers())
+            root.removeHandler(h);
+        root.addHandler(new SLF4JBridgeHandler());
+        Logger.getLogger("com.jme.scene.Node").setLevel(Level.WARNING);
+        Logger.getLogger("com.jme.scene.TriMesh").setLevel(Level.WARNING);
+
+        /*
+         * TODO: What does this thing do?
+         */
         System.setProperty("jme.stats", "set");
-        Logger.getLogger("com.jme").setLevel(Level.WARNING);
+
+        /*
+         * TODO: Do we need to do it in a static block? Why not in the game init routine?
+         */
         MouseInput.setProvider(MouseInput.INPUT_AWT);
     }
     
@@ -69,7 +89,6 @@ public class JMEBoardWindow implements IGameEventListener, Listener, LoadingData
 
         GameTaskQueueManager.getManager().update(new Callable<Void>()
         {
-            @Override
             public Void call() throws Exception
             {
                 new LoadingDataState(JMEBoardWindow.this).activate();
