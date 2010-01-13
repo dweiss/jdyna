@@ -1,16 +1,11 @@
-
 // Imported from: JMonkeyEngine SVN; StandardGame.java 4501 2009-07-13 10:42:01Z
 // [with changes]
 
 package org.jdyna.view.jme;
 
-import java.awt.Canvas;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
@@ -27,72 +22,38 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
 import com.jme.system.GameSettings;
 import com.jme.system.PreferencesGameSettings;
-import com.jme.system.dummy.DummySystemProvider;
-import com.jme.system.jogl.JOGLSystemProvider;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
-import com.jme.util.NanoTimer;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jmex.audio.AudioSystem;
-import com.jmex.awt.jogl.JOGLAWTCanvasConstructor;
-import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.game.state.GameStateManager;
 
 /**
- * Initialization, main rendering loop and handling of interaction with the
- * JME library. 
+ * Initialization, main rendering loop and handling of interaction with the JME library.
  */
 final class StandardGame extends AbstractGame implements Runnable
 {
     private static final Logger logger = Logger.getLogger(StandardGame.class.getName());
 
-    public static final int DISPLAY_WINDOW = 1;
-    public static final int DISPLAY_CANVAS = 2;
-
-    public static boolean THREAD_FRIENDLY = true;
-    public static int DISPLAY_MODE = DISPLAY_WINDOW;
-
-    public static enum GameType
-    {
-        GRAPHICAL, HEADLESS
-    }
-
-    private Thread gameThread;
+    /** Game name. */
     private String gameName;
-    private GameType type;
-    private boolean started;
+
+    Thread gameThread;
     private Image [] icons;
 
     private Timer timer;
     private Camera camera;
     private ColorRGBA backgroundColor;
-    private UncaughtExceptionHandler exceptionHandler;
-
-    private Canvas canvas;
-
-    private Lock updateLock;
-
-    public StandardGame(String gameName)
-    {
-        this(gameName, GameType.GRAPHICAL, null);
-    }
-
-    public StandardGame(String gameName, GameType type)
-    {
-        this(gameName, type, null);
-    }
-
-    public StandardGame(String gameName, GameType type, GameSettings settings)
-    {
-        this(gameName, type, settings, null);
-    }
 
     /**
      * @see AbstractGame#getNewSettings()
      */
     protected GameSettings getNewSettings()
     {
+        /*
+         * TODO: we may wish to modify this method
+         */
         boolean newNode = true;
         Preferences userPrefsRoot = Preferences.userRoot();
         try
@@ -105,94 +66,51 @@ final class StandardGame extends AbstractGame implements Runnable
 
         return new PreferencesGameSettings(userPrefsRoot.node(gameName), newNode,
             "game-defaults.properties");
-
-        /*
-         * To persist to a .properties file instead of java.util.prefs, subclass
-         * StandardGame with a getNewSettings method like this:
-         * com.jme.system.PropertiesGameSettings pgs = new
-         * com.jme.system.PropertiesGameSettings("pgs.properties"); pgs.load(); return
-         * pgs;
-         */
     }
 
-    public StandardGame(String gameName, GameType type, GameSettings settings,
-        UncaughtExceptionHandler exceptionHandler)
+    public StandardGame(String gameName, GameSettings settings)
     {
         this.gameName = gameName;
-        this.type = type;
         this.settings = settings;
-        this.exceptionHandler = exceptionHandler;
         backgroundColor = ColorRGBA.black.clone();
 
-        // if (this.settings == null) this.settings = getNewSettings();
-        // To load settings without displaying a Settings widget, enable
-        // the preceding if statement, and comment out the following if block.
         if (this.settings == null)
         {
-            // setConfigShowMode(ConfigShowMode.AlwaysShow); // To override dflt.
-            getAttributes();
+            // TODO: we may wish to enforce passing non-null settings from the outside
+            // here.
+            this.settings = getNewSettings();
         }
-
-        // Create Lock
-        updateLock = new ReentrantLock(true); // Make our lock be fair (first come, first
-                                              // serve)
-    }
-
-    public GameType getGameType()
-    {
-        return type;
     }
 
     public void start()
     {
         gameThread = new Thread(this);
-        if (exceptionHandler == null)
-        {
-            exceptionHandler = new DefaultUncaughtExceptionHandler(this);
-        }
-        gameThread.setUncaughtExceptionHandler(exceptionHandler);
+        gameThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            public void uncaughtException(Thread thread, Throwable t)
+            {
+                logger.log(Level.SEVERE, 
+                    "Main game loop broken by uncaught exception.", t);
+                shutdown();
+                cleanup();
+                quit();
+            }
+        });
 
         // Assign a name to the thread
-        gameThread.setName("OpenGL");
-
+        gameThread.setName(gameName + " [3D]");
         gameThread.start();
-
-        // Wait for main game loop before returning
-        try
-        {
-            while (!isStarted())
-            {
-                Thread.sleep(1);
-            }
-        }
-        catch (InterruptedException exc)
-        {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception",
-                exc);
-        }
     }
 
     public void run()
     {
-        lock();
         initSystem();
-        if (type != GameType.HEADLESS)
-        {
-            assertDisplayCreated();
+        assertDisplayCreated();
 
-            // Default the mouse cursor to off
-            MouseInput.get().setCursorVisible(false);
-        }
+        // Default the mouse cursor to off
+        MouseInput.get().setCursorVisible(false);
 
         initGame();
-        if (type == GameType.GRAPHICAL)
-        {
-            timer = Timer.getTimer();
-        }
-        else if (type == GameType.HEADLESS)
-        {
-            timer = new NanoTimer();
-        }
+        timer = Timer.getTimer();
 
         // Configure frame rate
         int preferredFPS = settings.getFramerate();
@@ -208,7 +126,8 @@ final class StandardGame extends AbstractGame implements Runnable
 
         // Main game loop
         float tpf;
-        started = true;
+
+        // FIXME: finished is not volatile in AbstractGame...
         while ((!finished) && (!display.isClosing()))
         {
             // Fixed framerate Start
@@ -220,10 +139,7 @@ final class StandardGame extends AbstractGame implements Runnable
             timer.update();
             tpf = timer.getTimePerFrame();
 
-            if (type == GameType.GRAPHICAL)
-            {
-                InputSystem.update();
-            }
+            InputSystem.update();
             update(tpf);
             render(tpf);
             display.getRenderer().displayBackBuffer();
@@ -250,83 +166,48 @@ final class StandardGame extends AbstractGame implements Runnable
                 }
                 if (frames == Long.MAX_VALUE) frames = 0;
             }
-
-            if (THREAD_FRIENDLY) Thread.yield();
         }
-        started = false;
         cleanup();
         quit();
     }
 
     protected void initSystem()
     {
-        if (type == GameType.GRAPHICAL)
+        // Configure Joystick
+        if (JoystickInput.getProvider() == null)
         {
-
-            // Configure Joystick
-            if (JoystickInput.getProvider() == null)
-            {
-                JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
-            }
-
-            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
-            displayMins();
-
-            display.setTitle(gameName);
-            if (icons != null)
-            {
-                display.setIcon(icons);
-            }
-
-            if (DISPLAY_MODE == DISPLAY_WINDOW)
-            {
-                display.createWindow(settings.getWidth(), settings.getHeight(), settings
-                    .getDepth(), settings.getFrequency(), settings.isFullscreen());
-            }
-            else if (DISPLAY_MODE == DISPLAY_CANVAS)
-            {
-                // XXX: included to preserve current functionality. Probably
-                // want to move this to prefs or the user of StandardGame.
-                if (JOGLSystemProvider.SYSTEM_IDENTIFIER.equals(settings.getRenderer())) display
-                    .registerCanvasConstructor("AWT", JOGLAWTCanvasConstructor.class);
-                else display.registerCanvasConstructor("AWT",
-                    LWJGLAWTCanvasConstructor.class);
-                canvas = (Canvas) display.createCanvas(settings.getWidth(), settings
-                    .getHeight());
-            }
-            camera = display.getRenderer().createCamera(display.getWidth(),
-                display.getHeight());
-            display.getRenderer().setBackgroundColor(backgroundColor);
-
-            // Setup Vertical Sync if enabled
-            display.setVSyncEnabled(settings.isVerticalSync());
-
-            // Configure Camera
-            cameraPerspective();
-            cameraFrame();
-            camera.update();
-            display.getRenderer().setCamera(camera);
-
-            if ((settings.isMusic()) || (settings.isSFX()))
-            {
-                initSound();
-            }
+            JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         }
-        else
+
+        display = DisplaySystem.getDisplaySystem(settings.getRenderer());
+        displayMins();
+
+        display.setTitle(gameName);
+        if (icons != null)
         {
-            display = DisplaySystem
-                .getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
+            display.setIcon(icons);
         }
-    }
 
-    /**
-     * The java.awt.Canvas if DISPLAY_CANVAS is the DISPLAY_MODE
-     * 
-     * @return Canvas
-     */
-    public Canvas getCanvas()
-    {
-        return canvas;
+        display.createWindow(settings.getWidth(), settings.getHeight(), settings
+            .getDepth(), settings.getFrequency(), settings.isFullscreen());
+
+        camera = display.getRenderer().createCamera(display.getWidth(),
+            display.getHeight());
+        display.getRenderer().setBackgroundColor(backgroundColor);
+
+        // Setup Vertical Sync if enabled
+        display.setVSyncEnabled(settings.isVerticalSync());
+
+        // Configure Camera
+        cameraPerspective();
+        cameraFrame();
+        camera.update();
+        display.getRenderer().setCamera(camera);
+
+        if ((settings.isMusic()) || (settings.isSFX()))
+        {
+            initSound();
+        }
     }
 
     protected void initSound()
@@ -373,24 +254,16 @@ final class StandardGame extends AbstractGame implements Runnable
 
     protected void update(float interpolation)
     {
-        // Open the lock up for just a brief second
-        unlock();
-        lock();
-
         // Execute updateQueue item
         GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
 
         // Update the GameStates
         GameStateManager.getInstance().update(interpolation);
 
-        if (type == GameType.GRAPHICAL)
+        // Update music/sound
+        if ((settings.isMusic()) || (settings.isSFX()))
         {
-
-            // Update music/sound
-            if ((settings.isMusic()) || (settings.isSFX()))
-            {
-                AudioSystem.getSystem().update();
-            }
+            AudioSystem.getSystem().update();
         }
     }
 
@@ -447,6 +320,7 @@ final class StandardGame extends AbstractGame implements Runnable
         reinit();
     }
 
+    @Override
     protected void cleanup()
     {
         GameStateManager.getInstance().cleanup();
@@ -462,6 +336,7 @@ final class StandardGame extends AbstractGame implements Runnable
         }
     }
 
+    @Override
     protected void quit()
     {
         if (display != null)
@@ -530,55 +405,6 @@ final class StandardGame extends AbstractGame implements Runnable
     }
 
     /**
-     * Will return true if within the main game loop. This is particularly useful to
-     * determine if the game has finished the initialization but will also return false if
-     * the game has been terminated.
-     * 
-     * @return boolean
-     */
-    public boolean isStarted()
-    {
-        return started;
-    }
-
-    /**
-     * Specify the UncaughtExceptionHandler for circumstances where an exception in the
-     * OpenGL thread is not captured properly.
-     * 
-     * @param exceptionHandler
-     */
-    public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler)
-    {
-        this.exceptionHandler = exceptionHandler;
-        if (gameThread != null)
-        {
-            gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
-        }
-    }
-
-    /**
-     * Causes the current thread to wait for an update to occur in the OpenGL thread. This
-     * can be beneficial if there is work that has to be done in the OpenGL thread that
-     * needs to be completed before continuing in another thread. You can chain
-     * invocations of this together in order to wait for multiple updates.
-     * 
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    public void delayForUpdate() throws InterruptedException, ExecutionException
-    {
-        Future<Object> f = GameTaskQueueManager.getManager().update(
-            new Callable<Object>()
-            {
-                public Object call() throws Exception
-                {
-                    return null;
-                }
-            });
-        f.get();
-    }
-
-    /**
      * Convenience method to let you know if the thread you're in is the OpenGL thread
      * 
      * @return true if, and only if, the current thread is the OpenGL thread
@@ -613,83 +439,25 @@ final class StandardGame extends AbstractGame implements Runnable
         Future<T> future = GameTaskQueueManager.getManager().update(callable);
         return future.get();
     }
-
-    /**
-     * Will wait for a lock at the beginning of the OpenGL update method. Once this method
-     * returns the OpenGL thread is blocked until the lock is released (via unlock()). If
-     * another thread currently has a lock or it is currently in the process of an update
-     * the calling thread will be blocked until the lock is successfully established.
-     */
-    public void lock()
-    {
-        updateLock.lock();
-    }
-
-    /**
-     * Used in conjunction with lock() in order to release a previously assigned lock on
-     * the OpenGL thread. This <b>MUST</b> be executed within the same thread that called
-     * lock() in the first place or the lock will not be released.
-     */
-    public void unlock()
-    {
-        updateLock.unlock();
-    }
-
-    public void setIcons(Image [] icons)
-    {
-        this.icons = icons;
-    }
-}
-
-class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler
-{
-    private static final Logger logger = Logger
-        .getLogger(DefaultUncaughtExceptionHandler.class.getName());
-
-    private StandardGame game;
-
-    public DefaultUncaughtExceptionHandler(StandardGame game)
-    {
-        this.game = game;
-    }
-
-    public void uncaughtException(Thread t, Throwable e)
-    {
-        logger.log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
-        game.shutdown();
-        game.cleanup();
-        game.quit();
-    }
 }
 
 /*
- * Copyright (c) 2003-2009 jMonkeyEngine
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
- *   without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2003-2009 jMonkeyEngine All rights reserved. Redistribution and use in
+ * source and binary forms, with or without modification, are permitted provided that the
+ * following conditions are met: * Redistributions of source code must retain the above
+ * copyright notice, this list of conditions and the following disclaimer. *
+ * Redistributions in binary form must reproduce the above copyright notice, this list of
+ * conditions and the following disclaimer in the documentation and/or other materials
+ * provided with the distribution. * Neither the name of 'jMonkeyEngine' nor the names of
+ * its contributors may be used to endorse or promote products derived from this software
+ * without specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+ * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
