@@ -455,18 +455,4 @@ public final class GameConfigurationDialog
     {
         return createNumberListener(field, value, min, max, false);
     }
-
-    public static void main(String [] args)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                final GameConfigurationDialog configDialog = new GameConfigurationDialog(
-                    new GameConfiguration(), GameConfigurationScheme.CLASSIC);
-                configDialog.prompt(null);
-            }
-        });
-    }
-
 }
