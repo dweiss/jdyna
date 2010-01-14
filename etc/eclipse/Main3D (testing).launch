@@ -11,5 +11,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.jdyna.launchers.Main3D"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="dyna-core"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${resource_loc:dyna-core/lib/native/win32}"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${resource_loc:dyna-core/lib/native/win32}${system_property:path.separator}${resource_loc:dyna-core/lib/native/linux}${system_property:path.separator}${resource_loc:dyna-core/lib/native/macosx}"/>
 </launchConfiguration>
