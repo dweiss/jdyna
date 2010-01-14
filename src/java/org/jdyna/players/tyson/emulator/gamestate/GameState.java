@@ -23,9 +23,9 @@ import org.jdyna.players.tyson.pathfinder.Utils;
  * <p>
  * Consists of:
  * <ul>
- * <li>{@see Board} - information about cells.</li>
- * <li>{@see Bombs} - information about bombs.</li>
- * <li>{@see Players} - information about players.</li>
+ * <li>{@link Board} - information about cells.</li>
+ * <li>{@link Bombs} - information about bombs.</li>
+ * <li>{@link Players} - information about players.</li>
  * </ul>
  * </p>
  * 

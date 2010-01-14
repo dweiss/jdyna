@@ -82,7 +82,7 @@ public final class BoardUtilities
      * Explode <code>range</code> cells around (x,y), recursively propagating if other
      * bombs are found in the range.
      * 
-     * @param bombs A list of bombs that exploded during this call.
+     * @param explosionMetadata A list of bombs that exploded during this call.
      * @param crates A list of crate positions that should be removed as part of this explosion. 
      */
     static void explode(Board board, List<ExplosionMetadata> explosionMetadata, 

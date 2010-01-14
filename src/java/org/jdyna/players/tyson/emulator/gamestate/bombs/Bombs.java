@@ -1,6 +1,5 @@
 package org.jdyna.players.tyson.emulator.gamestate.bombs;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -119,7 +118,7 @@ public class Bombs implements IPlayersInformationListener
     }
 
     /**
-     * @param point To check its safety.
+     * @param grid To check its safety.
      * @param framesShift Describes future in number of frames.
      * @return
      *         <code>true<code> if cell will be ultimately safe (without any bombs in future), otherwise <code>false</code>
@@ -174,7 +173,7 @@ public class Bombs implements IPlayersInformationListener
     }
 
     /**
-     * @see ZoneSafetyUpdater#someBombZoneWillExploded(Point, int)
+     * @see ZoneSafetyUpdater#someBombZoneWillExploded
      */
     public boolean someBombZoneWillExploded(final GridCoord grid, final int framesShift)
     {

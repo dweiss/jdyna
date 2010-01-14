@@ -11,7 +11,7 @@ import org.jdyna.players.tyson.emulator.gamestate.GameState;
  * To be implemented by players - bots.
  * </p>
  * <p>
- * Subclasses should implement: {@see IGameEventListener} and {@see IPlayerController}
+ * Subclasses should implement: {@link IGameEventListener} and {@link IPlayerController}
  * </p>
  * 
  * @author Michał Kozłowski

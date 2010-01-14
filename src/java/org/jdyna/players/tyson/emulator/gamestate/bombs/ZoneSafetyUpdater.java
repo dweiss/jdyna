@@ -264,7 +264,7 @@ final class ZoneSafetyUpdater
     }
 
     /**
-     * @param pairs: location of bomb, and its timer.
+     * @param unchecked pairs: location of bomb, and its timer.
      * @return Location of bomb that will explode first.
      */
     private GridCoord getNearestExplosion(final Map<GridCoord, Integer> unchecked)

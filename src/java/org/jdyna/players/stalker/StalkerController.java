@@ -678,7 +678,7 @@ class StalkerController implements IGameEventListener, IPlayerController
 
     /**
      * Checks if given cell is a safe place to stay. Somewhat opposite to
-     * {@link isBlocked}.
+     * {@link #isBlocked}.
      * 
      * @param p Board cell position
      * @return <b>true</b> if player can move to that position, <b>false</b> otherwise
@@ -702,7 +702,7 @@ class StalkerController implements IGameEventListener, IPlayerController
 
     /**
      * Checks if given cell is not accessible by the player. Somewhat opposite to
-     * {@link isSafe}.
+     * {@link #isSafe}.
      * 
      * @param p Board cell position
      * @return <b>true</b> if cell is blocked by a bomb, crate or wall <b>false</b>

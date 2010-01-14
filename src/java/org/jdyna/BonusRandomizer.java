@@ -75,7 +75,8 @@ public class BonusRandomizer implements Cloneable, Serializable
     }
 
     /**
-     * Return a random surprise bonus (random bonus, but not {@link #CELL_BONUS_SURPRISE}). 
+     * Return a random surprise bonus (random bonus, but not {@link 
+     * CellType#CELL_BONUS_SURPRISE}). 
      */
     public CellType surpriseBonus()
     {
