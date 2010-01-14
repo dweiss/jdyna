@@ -34,33 +34,21 @@ package com.jme.util;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.PixelGrabber;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.*;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.*;
 import javax.imageio.stream.FileCacheImageInputStream;
 
-import com.jme.image.BitmapHeader;
-import com.jme.image.Image;
-import com.jme.image.Texture;
-import com.jme.image.Texture2D;
-import com.jme.image.TextureCubeMap;
+import org.apache.commons.io.IOUtils;
+
+import com.jme.image.*;
 import com.jme.image.util.DDSLoader;
 import com.jme.image.util.TGALoader;
 import com.jme.renderer.Renderer;
@@ -504,6 +492,8 @@ final public class TextureManager {
 
         com.jme.image.Image imageData = null;
         try {
+            stream = new ByteArrayInputStream(IOUtils.toByteArray(stream));
+
             ImageLoader loader = loaders.get(fileExt.toLowerCase());
             if (loader != null)
                 imageData = loader.load(stream);
