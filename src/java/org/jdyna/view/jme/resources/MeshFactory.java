@@ -1,21 +1,18 @@
 package org.jdyna.view.jme.resources;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.jdyna.CellType;
 import org.jdyna.view.resources.ResourceUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
+import com.jme.scene.*;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.CullState.Face;
 import com.jme.scene.state.RenderState.StateType;
@@ -30,6 +27,8 @@ import com.jme.util.resource.SimpleResourceLocator;
 
 public class MeshFactory
 {
+    private final static Logger logger = LoggerFactory.getLogger(MeshFactory.class);
+
     private static final String BASE_DIR = "jme";
     private static EnumMap<CellType, String> modelPaths = new EnumMap<CellType, String>(
         CellType.class);
@@ -92,8 +91,15 @@ public class MeshFactory
     {
         if (singleton != null)
             throw new IllegalStateException("Already initialized.");
-        
+
+        final long start = System.currentTimeMillis();
         singleton = new MeshFactory(progressCallback);
+        logger.info(
+            String.format(Locale.ENGLISH, "Texture loading (total): %.2f sec.",
+                (System.currentTimeMillis() - start) / 1000.0));
+
+        // Exit immediately after loading textures [benchmarking]
+        // System.exit(0);
     }
 
     public MeshFactory(ProgressListener progressCallback)
@@ -164,33 +170,36 @@ public class MeshFactory
             "Model formats other than JME are not supported");
 
         final long start = System.currentTimeMillis();
+        final SimpleResourceLocator locator;
         try
         {
-            SimpleResourceLocator locator;
+            // JME files are serialized objects. They reference other files (with hardcoded paths).
+            // These locators are required to find the texture and model components.
             locator = new SimpleResourceLocator(ResourceUtilities.getResourceURL(path));
-            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
-                locator);
-            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL,
-                locator);
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+
+            BinaryImporter importer = BinaryImporter.getInstance();
+            Savable savable = importer.load(new BufferedInputStream(ResourceUtilities.open(path)));
+    
+            Spatial mesh = (Spatial) savable;
+    
+            mesh.setModelBound(new BoundingBox());
+            mesh.updateModelBound();
+
+            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+
+            logger.debug(
+                String.format(Locale.ENGLISH, "Loading: " + path + " took: %.2f sec.",
+                    (System.currentTimeMillis() - start) / 1000.0));
+
+            return mesh;
         }
         catch (URISyntaxException e)
         {
             throw new IllegalArgumentException("Bad pathname to model resource.");
         }
-
-        BinaryImporter importer = BinaryImporter.getInstance();
-        Savable savable = importer.load(ResourceUtilities.getResourceURL(path));
-
-        Spatial mesh = (Spatial) savable;
-
-        mesh.setModelBound(new BoundingBox());
-        mesh.updateModelBound();
-        
-        Logger.getLogger(MeshFactory.class).info(
-            String.format(Locale.ENGLISH, "Loading: " + path + " took: %.2f sec.",
-                (System.currentTimeMillis() - start) / 1000.0));
-
-        return mesh;
     }
 
     public static TriMesh copyMesh(TriMesh mesh)
