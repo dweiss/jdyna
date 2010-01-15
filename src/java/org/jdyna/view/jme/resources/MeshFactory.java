@@ -2,13 +2,10 @@ package org.jdyna.view.jme.resources;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.jdyna.CellType;
 import org.jdyna.view.resources.ResourceUtilities;
 import org.slf4j.Logger;
@@ -22,7 +19,8 @@ import com.jme.scene.state.RenderState.StateType;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jme.util.resource.*;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
 
 // TODO: this class needs to be cleaned up and rewritten. It's a mess. Why all this
 // crap with resource loaders from JME if an URL can be given directly?
@@ -186,23 +184,6 @@ public class MeshFactory
                 if ((lastSeparator = path.lastIndexOf('/')) >= 0)
                 {
                     path = path.substring(lastSeparator + 1);
-                }
-                
-                // Now, check the extension. We will attempt to load TGA files first, if possible.
-                final String base = path;
-                for (String replacement : new String [] {".tga"})
-                {
-                    try
-                    {
-                        final String replacementResource = BASE_DIR + "/" + base + replacement;
-                        final URL resource = ResourceUtilities.getResourceURL(replacementResource);
-                        logger.info("Overriding: " + path + " with: " + replacementResource);
-                        return resource;
-                    }
-                    catch (IOException e)
-                    {
-                        // Ignore, not found.
-                    }
                 }
 
                 try
