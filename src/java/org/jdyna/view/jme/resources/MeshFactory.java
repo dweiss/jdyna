@@ -3,9 +3,12 @@ package org.jdyna.view.jme.resources;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jdyna.CellType;
 import org.jdyna.view.resources.ResourceUtilities;
 import org.slf4j.Logger;
@@ -19,8 +22,7 @@ import com.jme.scene.state.RenderState.StateType;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.SimpleResourceLocator;
+import com.jme.util.resource.*;
 
 // TODO: this class needs to be cleaned up and rewritten. It's a mess. Why all this
 // crap with resource loaders from JME if an URL can be given directly?
@@ -170,36 +172,70 @@ public class MeshFactory
             "Model formats other than JME are not supported");
 
         final long start = System.currentTimeMillis();
-        final SimpleResourceLocator locator;
-        try
+
+        // JME files are serialized objects. They reference other files (with hardcoded paths).
+        // These locators are required to find the texture and model components.
+        final ResourceLocator locator = new ResourceLocator()
         {
-            // JME files are serialized objects. They reference other files (with hardcoded paths).
-            // These locators are required to find the texture and model components.
-            locator = new SimpleResourceLocator(ResourceUtilities.getResourceURL(path));
-            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
-            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+            public URL locateResource(String path)
+            {
+                // We don't know what <code>path</code> is going to be 
+                // (windows, linux), so normalize first.
+                path = path.replace('\\', '/');
+                final int lastSeparator;
+                if ((lastSeparator = path.lastIndexOf('/')) >= 0)
+                {
+                    path = path.substring(lastSeparator + 1);
+                }
+                
+                // Now, check the extension. We will attempt to load TGA files first, if possible.
+                final String base = path;
+                for (String replacement : new String [] {".tga"})
+                {
+                    try
+                    {
+                        final String replacementResource = BASE_DIR + "/" + base + replacement;
+                        final URL resource = ResourceUtilities.getResourceURL(replacementResource);
+                        logger.info("Overriding: " + path + " with: " + replacementResource);
+                        return resource;
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore, not found.
+                    }
+                }
 
-            BinaryImporter importer = BinaryImporter.getInstance();
-            Savable savable = importer.load(new BufferedInputStream(ResourceUtilities.open(path)));
-    
-            Spatial mesh = (Spatial) savable;
-    
-            mesh.setModelBound(new BoundingBox());
-            mesh.updateModelBound();
+                try
+                {
+                    return ResourceUtilities.getResourceURL(
+                        BASE_DIR + "/" + path);
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException("Resource not found: " + path);
+                }
+            }
+        };
 
-            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
-            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
 
-            logger.debug(
-                String.format(Locale.ENGLISH, "Loading: " + path + " took: %.2f sec.",
-                    (System.currentTimeMillis() - start) / 1000.0));
+        BinaryImporter importer = BinaryImporter.getInstance();
+        Savable savable = importer.load(new BufferedInputStream(ResourceUtilities.open(path)));
 
-            return mesh;
-        }
-        catch (URISyntaxException e)
-        {
-            throw new IllegalArgumentException("Bad pathname to model resource.");
-        }
+        Spatial mesh = (Spatial) savable;
+
+        mesh.setModelBound(new BoundingBox());
+        mesh.updateModelBound();
+
+        ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+        ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
+
+        logger.debug(
+            String.format(Locale.ENGLISH, "Loading: " + path + " took: %.2f sec.",
+                (System.currentTimeMillis() - start) / 1000.0));
+
+        return mesh;
     }
 
     public static TriMesh copyMesh(TriMesh mesh)
