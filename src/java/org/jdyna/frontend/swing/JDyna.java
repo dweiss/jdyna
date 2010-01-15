@@ -728,11 +728,26 @@ public final class JDyna
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
         final Game game = new Game(conf, board, boardInfo);
+        ArrayList<IPlayerSprite> playerSprites = new ArrayList<IPlayerSprite>(1);
     
         for (IPlayerFactory pf : players)
         {
             final String name = pf.getDefaultPlayerName();
-            game.addPlayer(new Player(name, pf.getController(name)));
+            if (!StringUtils.isEmpty(highlightPlayer))
+            {
+                if (StringUtils.equals(name, highlightPlayer))
+                {
+                    playerSprites.add(game.addPlayer(new Player(name, pf.getController(name))));
+                }
+                else
+                {
+                    game.addPlayer(new Player(name, pf.getController(name)));
+                }
+            }
+            else
+            {
+                playerSprites.add(game.addPlayer(new Player(name, pf.getController(name))));
+            }
         }
 
         /*
@@ -772,7 +787,19 @@ public final class JDyna
                 showMainGUI();
             }
         };
-        game.addListener(createView(highlightPlayer, viewListener));
+        if (!StringUtils.isEmpty(highlightPlayer))
+        {
+            game.addListener(createView(highlightPlayer, viewListener));
+        }
+        else
+        {
+            IPlayerSprite [] playerSpritesArray = new IPlayerSprite [playerSprites.size()];
+            for (int i = 0; i < playerSprites.size(); i++)
+            {
+                playerSpritesArray[i] = playerSprites.get(i);
+            }
+            game.addListener(createView(highlightPlayer, viewListener, playerSpritesArray));
+        }
         gameThread.start();
     }
 
@@ -818,12 +845,12 @@ public final class JDyna
         }
     }
 
-    private IGameEventListener createView(String playerName, final IViewListener listener) {
+    private IGameEventListener createView(String trackedPlayer, final IViewListener listener, IPlayerSprite... players) {
         switch (config.viewType) {
             case SWING_VIEW:
-                return createSwingView(playerName, listener);
+                return createSwingView(trackedPlayer, listener, players);
             case JME_VIEW:
-                return createJmeView(playerName, listener);
+                return createJmeView(trackedPlayer, listener, players);
         }
         throw new RuntimeException("Unknown view: " + config.viewType);
     }
@@ -831,14 +858,20 @@ public final class JDyna
     /**
      * Create a game view for the given player.
      */
-    private IGameEventListener createSwingView(String playerName, final IViewListener listener)
+    private IGameEventListener createSwingView(String trackedPlayer,
+        final IViewListener listener, IPlayerSprite... players)
     {
         final BoardFrame boardFrame = new BoardFrame();
         boardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        if (!StringUtils.isEmpty(playerName))
+        if (!StringUtils.isEmpty(trackedPlayer))
         {
-            boardFrame.trackPlayer(playerName);
+            boardFrame.trackPlayer(trackedPlayer);
+            boardFrame.showStatusFor(trackedPlayer);
+        }
+        else
+        {
+            boardFrame.showStatusFor(players);
         }
 
         boardFrame.addWindowListener(new WindowAdapter()
@@ -848,12 +881,13 @@ public final class JDyna
                 if (listener != null) listener.viewClosed();
             }
         });
-
+        
         boardFrame.setVisible(true);
         return boardFrame;
     }
 
-    private IGameEventListener createJmeView(String playerName, final IViewListener listener)
+    private IGameEventListener createJmeView(String trackedPlayer,
+        final IViewListener listener, IPlayerSprite... players)
     {
         JMEBoardWindow window = new JMEBoardWindow(listener);
         

@@ -157,4 +157,12 @@ public final class BoardFrame extends JFrame implements IGameEventListener
             statuses.add(p);
         }
     }
+    
+    public void showStatusFor(String playerName)
+    {
+        final PlayerStatusPanel p = new PlayerStatusPanel(
+                images, playerName, ISprite.Type.PLAYER_1);
+        sublisteners.add(p);
+        statuses.add(p);
+    }
 }
