@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -116,7 +117,7 @@ public final class GameConfigurationDialog
     {        
         final DefaultFormBuilder mainBuilder =
             new DefaultFormBuilder(
-                new FormLayout("40dlu, center:10dlu, right:150dlu, 3dlu, left:30dlu, 3dlu", "pref, fill:pref")
+                new FormLayout("40dlu, center:10dlu, right:349dlu, 3dlu, left:30dlu, 3dlu", "pref, fill:pref")
                 );
         mainBuilder.setDefaultDialogBorder();
 
@@ -142,7 +143,8 @@ public final class GameConfigurationDialog
         // create options panel
         final DefaultFormBuilder builder =
             new DefaultFormBuilder(
-                new FormLayout("right:150dlu, 3dlu, left:30dlu")
+                new FormLayout("right:130dlu, 3dlu, left:30dlu, 33dlu, right:110dlu, 3dlu, left:30dlu",
+                               "top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref, 3dlu, top:pref")
                 );
         
         // add options to panel
@@ -175,47 +177,49 @@ public final class GameConfigurationDialog
 
     private void addGameOptions(final DefaultFormBuilder builder)
     {
-        builder.appendSeparator("Game options");        
+        final CellConstraints cc = new CellConstraints();
+        
+        builder.addSeparator("Game options", cc.xyw(1, 1, 3));        
 
         startingBombRange = new JTextField(3);
         startingBombRange.addCaretListener(createNumberListener(startingBombRange, 0, 1, 10));
-        builder.append("starting bomb range:", startingBombRange);
-        builder.nextLine();
+        builder.add(new JLabel("starting bomb range:"), cc.xy(1, 3));
+        builder.add(startingBombRange, cc.xy(3, 3));
 
         fuseFrames = new JTextField(3);
         fuseFrames.addCaretListener(createNumberListener(fuseFrames, 1, 1, 10, true));
-        builder.append("fuse frames:", fuseFrames);
-        builder.nextLine();
+        builder.add(new JLabel("fuse frames:"), cc.xy(1, 5));
+        builder.add(fuseFrames, cc.xy(3, 5));
 
         startingBombCount = new JTextField(3);
         startingBombCount.addCaretListener(createNumberListener(startingBombCount, 2, 1, 10));
-        builder.append("starting bomb count:", startingBombCount);
-        builder.nextLine();
+        builder.add(new JLabel("starting bomb count:"), cc.xy(1, 7));
+        builder.add(startingBombCount, cc.xy(3, 7));
 
         bonusInterval = new JTextField(3);
         bonusInterval.addCaretListener(createNumberListener(bonusInterval, 3, 1, 60, true));
-        builder.append("bonus interval:", bonusInterval);
-        builder.nextLine();
+        builder.add(new JLabel("bonus interval:"), cc.xy(1, 9));
+        builder.add(bonusInterval, cc.xy(3, 9));
 
         ressurectionDelay = new JTextField(3);
         ressurectionDelay.addCaretListener(createNumberListener(ressurectionDelay, 4, 1, 60, true));
-        builder.append("resurrection delay:", ressurectionDelay);
-        builder.nextLine();
+        builder.add(new JLabel("resurrection delay:"), cc.xy(1, 11));
+        builder.add(ressurectionDelay, cc.xy(3, 11));
 
         immortalityAfterRessurection = new JTextField(3);
         immortalityAfterRessurection.addCaretListener(createNumberListener(immortalityAfterRessurection, 5, 1, 60, true));
-        builder.append("immortality after resurrection duration:", immortalityAfterRessurection);
-        builder.nextLine();
+        builder.add(new JLabel("immortality after resurrection duration:"), cc.xy(1, 13));
+        builder.add(immortalityAfterRessurection, cc.xy(3, 13));
 
         immortalityAfterJoin = new JTextField(3);
         immortalityAfterJoin.addCaretListener(createNumberListener(immortalityAfterJoin, 6, 1, 60, true));
-        builder.append("immortality after joining game duration:", immortalityAfterJoin);
-        builder.nextLine();
+        builder.add(new JLabel("immortality after joining game duration:"), cc.xy(1, 15));
+        builder.add(immortalityAfterJoin, cc.xy(3, 15));
 
         lives = new JTextField(3);
         lives.addCaretListener(createNumberListener(lives, 7, 1, 10));
-        builder.append("lives:", lives);
-        builder.nextLine();
+        builder.add(new JLabel("lives:"), cc.xy(1, 17));
+        builder.add(lives, cc.xy(3, 17));
 
         addRandomCrates = new JCheckBox();
         addRandomCrates.addActionListener(new ActionListener(){
@@ -224,68 +228,70 @@ public final class GameConfigurationDialog
                 config.ADD_RANDOM_CRATES = addRandomCrates.isSelected();
             }
         });
-        builder.append("add random crates:", addRandomCrates);
-        builder.nextLine();
+        builder.add(new JLabel("add random crates:"), cc.xy(1, 19));
+        builder.add(addRandomCrates, cc.xy(3, 19));
 
         addingCratesInterval = new JTextField(3);
         addingCratesInterval.addCaretListener(createNumberListener(addingCratesInterval, 8, 1, 60, true));
-        builder.append("adding crates interval:", addingCratesInterval);
-        builder.nextLine();
+        builder.add(new JLabel("adding crates interval:"), cc.xy(1, 21));
+        builder.add(addingCratesInterval, cc.xy(3, 21));
     }
 
     private void addBonusOptions(final DefaultFormBuilder builder)
     {
-        builder.appendSeparator("Bonus options");
+        final CellConstraints cc = new CellConstraints();
+        builder.addSeparator("Bonus options", cc.xyw(5, 1, 3));
 
         diarrheaDuration = new JTextField(3);
         diarrheaDuration.addCaretListener(createNumberListener(diarrheaDuration, 9, 1, 60, true));
-        builder.append("diarrhea duration:", diarrheaDuration);
-        builder.nextLine();
+        builder.add(new JLabel("diarrhea duration:"), cc.xy(5, 3));
+        builder.add(diarrheaDuration, cc.xy(7, 3));
 
         noBombsDuration = new JTextField(3);
         noBombsDuration.addCaretListener(createNumberListener(noBombsDuration, 10, 1, 60, true));
-        builder.append("no bombs duration:", noBombsDuration);
-        builder.nextLine();
+        builder.add(new JLabel("no bombs duration:"), cc.xy(5, 5));
+        builder.add(noBombsDuration, cc.xy(7, 5));
 
         maxRangeDuration = new JTextField(3);
         maxRangeDuration.addCaretListener(createNumberListener(maxRangeDuration, 11, 1, 60, true));
-        builder.append("max range duration:", maxRangeDuration);
-        builder.nextLine();
+        builder.add(new JLabel("max range duration:"), cc.xy(5, 7));
+        builder.add(maxRangeDuration, cc.xy(7, 7));
 
         speedChangeDuration = new JTextField(3);
         speedChangeDuration.addCaretListener(createNumberListener(speedChangeDuration, 12, 1, 60, true));
-        builder.append("speed up/slow down duration:", speedChangeDuration);
-        builder.nextLine();
+        builder.add(new JLabel("speed up/slow down duration:"), cc.xy(5, 9));
+        builder.add(speedChangeDuration, cc.xy(7, 9));
 
         speedUpMultiplier = new JTextField(3);
         speedUpMultiplier.addCaretListener(createNumberListener(speedUpMultiplier, 13, 101, 500));
-        builder.append("speed up multiplier (% of normal):", speedUpMultiplier);
-        builder.nextLine();
+        builder.add(new JLabel("speed up multiplier (% of normal):"), cc.xy(5, 11));
+        builder.add(speedUpMultiplier, cc.xy(7, 11));
 
         slowDownMultiplier = new JTextField(3);
         slowDownMultiplier.addCaretListener(createNumberListener(slowDownMultiplier, 14, 1, 99));
-        builder.append("slow down multiplier (% of normal):", slowDownMultiplier);
-        builder.nextLine();
+        builder.add(new JLabel("slow down multiplier (% of normal):"), cc.xy(5, 13));
+        builder.add(slowDownMultiplier, cc.xy(7, 13));
 
         crateWalkingDuration = new JTextField(3);
         crateWalkingDuration.addCaretListener(createNumberListener(crateWalkingDuration, 15, 1, 60, true));
-        builder.append("crate walking duration:", crateWalkingDuration);
-        builder.nextLine();
+        builder.add(new JLabel("crate walking duration:"), cc.xy(5, 15));
+        builder.add(crateWalkingDuration, cc.xy(7, 15));
 
         bombWalkingDuration = new JTextField(3);
         bombWalkingDuration.addCaretListener(createNumberListener(bombWalkingDuration, 16, 1, 60, true));
-        builder.append("bomb walking duration:", bombWalkingDuration);
-        builder.nextLine();
+        builder.add(new JLabel("bomb walking duration:"), cc.xy(5, 17));
+        builder.add(bombWalkingDuration, cc.xy(7, 17));
 
         controllerReverseDuration = new JTextField(3);
         controllerReverseDuration.addCaretListener(createNumberListener(controllerReverseDuration, 17, 1, 60, true));
-        builder.append("controller reverse duration:", controllerReverseDuration);
-        builder.nextLine();
+        builder.add(new JLabel("controller reverse duration:"), cc.xy(5, 19));
+        builder.add(controllerReverseDuration, cc.xy(7, 19));
     }
 
     private void addSchemesButtons(final DefaultFormBuilder builder)
     {
-        builder.appendSeparator();
+        final CellConstraints cc = new CellConstraints();
+        builder.addSeparator("", cc.xyw(1, 23, 7));
         
         final JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         final JButton revertButton = new JButton("Revert");
@@ -306,7 +312,7 @@ public final class GameConfigurationDialog
             }
         });
         buttonsPanel.add(defaultsButton);
-        builder.append(buttonsPanel, 3);
+        builder.add(buttonsPanel, cc.xyw(1, 25, 7));
     }
     
     private JPanel getCustomConfigPanel(final DefaultFormBuilder builder,
