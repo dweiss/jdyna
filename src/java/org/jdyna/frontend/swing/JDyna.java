@@ -733,20 +733,11 @@ public final class JDyna
         for (IPlayerFactory pf : players)
         {
             final String name = pf.getDefaultPlayerName();
-            if (!StringUtils.isEmpty(highlightPlayer))
+            final IPlayerSprite player = game.addPlayer(new Player(name, pf.getController(name)));
+            if (StringUtils.isEmpty(highlightPlayer)
+                || StringUtils.equals(name, highlightPlayer))
             {
-                if (StringUtils.equals(name, highlightPlayer))
-                {
-                    playerSprites.add(game.addPlayer(new Player(name, pf.getController(name))));
-                }
-                else
-                {
-                    game.addPlayer(new Player(name, pf.getController(name)));
-                }
-            }
-            else
-            {
-                playerSprites.add(game.addPlayer(new Player(name, pf.getController(name))));
+                playerSprites.add(player);
             }
         }
 
@@ -890,8 +881,17 @@ public final class JDyna
         final IViewListener listener, IPlayerSprite... players)
     {
         JMEBoardWindow window = new JMEBoardWindow(listener);
-        
         // TODO: adding on game close event
+
+        if (!StringUtils.isEmpty(trackedPlayer))
+        {
+            window.scoreFrame.showStatusFor(trackedPlayer);
+        }
+        else
+        {
+            window.scoreFrame.showStatusFor(players);
+        }
+        window.scoreFrame.setVisible(true);
         
         return window;
     }

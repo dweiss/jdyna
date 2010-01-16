@@ -1,5 +1,6 @@
 package org.jdyna.view.jme;
 
+import java.awt.Dimension;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Handler;
@@ -7,11 +8,14 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
+
 import org.jdyna.Game;
 import org.jdyna.GameEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IViewListener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
+import org.jdyna.view.swing.ScoreFrameFor3d;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.jme.input.MouseInput;
@@ -53,6 +57,7 @@ public class JMEBoardWindow implements IGameEventListener
     private StandardGame game;
     private JDynaGameAdapter gameAdapter;
     private IViewListener viewListener;
+    public ScoreFrameFor3d scoreFrame;
 
     /**
      * Data loading callback.
@@ -104,6 +109,11 @@ public class JMEBoardWindow implements IGameEventListener
                 return null;
             }
         });
+        
+        scoreFrame = new ScoreFrameFor3d();
+        scoreFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        scoreFrame.setSize(new Dimension(300, 500));
+        scoreFrame.setFocusable(false);
     }
 
     /**
@@ -130,6 +140,7 @@ public class JMEBoardWindow implements IGameEventListener
         if (game.gameThread.isAlive())
         {
             gameAdapter.onFrame(frame, events);
+            scoreFrame.onFrame(frame, events);
         }
         else
         {
