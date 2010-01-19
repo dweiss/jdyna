@@ -370,17 +370,17 @@ public final class JDyna
     /**
      * Return the keyboard controller adequate to the attached view. 
      */
-    private static IPlayerFactory getKeyboardController(int playerNum, 
+    private IPlayerFactory getKeyboardController(int playerNum, 
         ViewType viewType, String playerName)
     {
         switch (viewType)
         {
             case JME_VIEW:
                 return new CustomControllerPlayerFactory(
-                    JMEKeyboardController.getDefaultKeyboardController(playerNum), playerName);
+                    JMEKeyboardController.getKeyboardController(playerNum, config), playerName);
             case SWING_VIEW:
                 return new CustomControllerPlayerFactory(
-                    AWTKeyboardController.getDefaultKeyboardController(playerNum), playerName);
+                    AWTKeyboardController.getKeyboardController(playerNum, config), playerName);
             default:
                 throw new RuntimeException("Unreachable code.");
         }

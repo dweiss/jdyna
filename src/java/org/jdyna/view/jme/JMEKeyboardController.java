@@ -1,9 +1,12 @@
 package org.jdyna.view.jme;
 
 import org.jdyna.IPlayerController;
+import org.jdyna.frontend.swing.Configuration;
+import org.jdyna.frontend.swing.Configuration.KeyBinding;
 
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jmex.awt.input.AWTKeyInput;
 
 public class JMEKeyboardController implements IPlayerController
 {
@@ -73,5 +76,25 @@ public class JMEKeyboardController implements IPlayerController
         }
     
         throw new RuntimeException("No default keyboard mapping for player: " + num);
+    }
+
+    /**
+     * Returns configured keyboard layout for a player numbered <code>num</code> as obtained from specified <code>config</code>.
+     */
+    public static IPlayerController getKeyboardController(int num, Configuration config)
+    {
+        final int keyOffset = num * KeyBinding.values().length;
+        try
+        {
+            return new JMEKeyboardController(num,
+                    AWTKeyInput.toInputCode(config.keyBindings[keyOffset]),
+                    AWTKeyInput.toInputCode(config.keyBindings[keyOffset + 1]),
+                    AWTKeyInput.toInputCode(config.keyBindings[keyOffset + 2]),
+                    AWTKeyInput.toInputCode(config.keyBindings[keyOffset + 3]),
+                    AWTKeyInput.toInputCode(config.keyBindings[keyOffset + 4]));
+        } catch (IndexOutOfBoundsException e)
+        {
+            throw new RuntimeException("No keyboard mapping for player: " + num);
+        }
     }
 }

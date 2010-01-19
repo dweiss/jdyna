@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.jdyna.*;
+import org.jdyna.frontend.swing.Configuration;
+import org.jdyna.frontend.swing.Configuration.KeyBinding;
 
 import com.google.common.collect.Maps;
 
@@ -132,6 +134,26 @@ public final class AWTKeyboardController implements IPlayerController, IPlayerCo
         }
     
         throw new RuntimeException("No default keyboard mapping for player: " + num);
+    }
+
+    /**
+     * Returns configured keyboard layout for a player numbered <code>num</code> as obtained from specified <code>config</code>.
+     */
+    public static IPlayerController getKeyboardController(int num, Configuration config)
+    {
+        final int keyOffset = num * KeyBinding.values().length;
+        try
+        {
+            return new AWTKeyboardController(
+                    config.keyBindings[keyOffset],
+                    config.keyBindings[keyOffset + 1],
+                    config.keyBindings[keyOffset + 2],
+                    config.keyBindings[keyOffset + 3],
+                    config.keyBindings[keyOffset + 4]);
+        } catch (IndexOutOfBoundsException e)
+        {
+            throw new RuntimeException("No keyboard mapping for player: " + num);
+        }
     }
 
     /*
