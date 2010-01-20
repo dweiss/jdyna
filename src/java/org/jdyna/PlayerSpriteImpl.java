@@ -152,18 +152,4 @@ public final class PlayerSpriteImpl extends SpriteImpl implements IPlayerSprite
 	{
 		return isAhmed;
 	}
-
-    @Override
-    public IPlayerSprite clone()
-    {
-        try
-        {
-            return (IPlayerSprite) super.clone();
-        }
-        catch (CloneNotSupportedException e)
-        {
-            // since we implement Cloneable, this shouldn't occur.
-            return null;
-        }
-    }
 }
