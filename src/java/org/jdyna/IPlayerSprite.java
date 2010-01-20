@@ -3,7 +3,7 @@ package org.jdyna;
 /**
  * Public view of each player's dynamic data.
  */
-public interface IPlayerSprite extends ISprite
+public interface IPlayerSprite extends ISprite, Cloneable
 {
     /**
      * @return Unique player name.
@@ -84,4 +84,9 @@ public interface IPlayerSprite extends ISprite
      * @return The player has got Ahmed bonus.
      */
     boolean isAhmed();
+    
+    /**
+     * @return New independent copy of current object.
+     */
+    IPlayerSprite clone();
 }

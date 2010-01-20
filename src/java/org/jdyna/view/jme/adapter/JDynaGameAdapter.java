@@ -18,6 +18,8 @@ import org.jdyna.IPlayerSprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 public class JDynaGameAdapter implements IGameEventListener
 {
     private final static Logger logger = LoggerFactory.getLogger(JDynaGameAdapter.class);
@@ -27,6 +29,8 @@ public class JDynaGameAdapter implements IGameEventListener
     private int boardWidth;
     private int boardHeight;
     private Cell [][] cells;
+    private Cell [][] newCells;
+    private final List<IPlayerSprite> statePlayers = Lists.newArrayList();
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
 
@@ -64,6 +68,9 @@ public class JDynaGameAdapter implements IGameEventListener
             {
                 GameStartEvent start = (GameStartEvent) evt;
                 boardInfo = start.getBoardInfo();
+                boardWidth = boardInfo.gridSize.width;
+                boardHeight = boardInfo.gridSize.height;
+                newCells = new Cell [boardWidth][boardHeight];
             }
             else if (evt instanceof GameStateEvent)
             {
@@ -94,6 +101,16 @@ public class JDynaGameAdapter implements IGameEventListener
             if (eventQueue.isEmpty())
                 return;
             state = eventQueue.pop();
+
+            for (int x = 0; x < boardWidth; x++)
+                for (int y = 0; y < boardHeight; y++)
+                    newCells[x][y] = state.getCells()[x][y];
+
+            statePlayers.clear();
+            for (IPlayerSprite player : state.getPlayers())
+            {
+                statePlayers.add(player.clone());
+            }
         }
 
         if (gameStarted)
@@ -105,9 +122,6 @@ public class JDynaGameAdapter implements IGameEventListener
         {
             // dispatch gameStarted event
             cells = state.getCells();
-            
-            boardWidth = cells.length;
-            boardHeight = cells[0].length;
             CellType[][] adapted = adaptCells(cells);
             l.gameStarted(adapted, boardWidth, boardHeight);
             gameStarted = true;
@@ -152,8 +166,8 @@ public class JDynaGameAdapter implements IGameEventListener
                         cell = cells[i][j].type;
                         break;
                     default:
-                    	logger.error("Unknown cell type: " + cells[i][j].type);
-                    	cell = null;
+                        logger.error("Unknown cell type: " + cells[i][j].type);
+                        cell = null;
                         //throw new RuntimeException("Unknown cell type: "+cells[i][j].type);
                 }
                 adapted[i][j] = cell;
@@ -264,10 +278,6 @@ public class JDynaGameAdapter implements IGameEventListener
     
     private void generateEvents(GameStateEvent state, GameListener l)
     {
-        Cell [][] newCells = new Cell[boardWidth][];
-        for (int i = 0; i < boardWidth; i++)
-            	newCells[i] = state.getCells()[i].clone();
-        
         Point pos = new Point();
         
         for (int i = 0; i < boardWidth; i++)
@@ -318,7 +328,7 @@ public class JDynaGameAdapter implements IGameEventListener
             }
         }
 
-        for (IPlayerSprite player : state.getPlayers())
+        for (IPlayerSprite player : statePlayers)
         {
 
             String name = player.getName();
@@ -351,8 +361,9 @@ public class JDynaGameAdapter implements IGameEventListener
 
             playersAlive.put(name, !player.isDead());
         }
-
-        cells = newCells;
+        cells = newCells.clone();        
+        for (int i=0; i<boardWidth;i++)
+            cells[i] = newCells[i].clone();
     }
 
     private static int[] explosionRange(Cell [][] cells, int i, int j)
