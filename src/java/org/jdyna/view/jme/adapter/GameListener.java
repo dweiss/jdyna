@@ -1,6 +1,7 @@
 package org.jdyna.view.jme.adapter;
 
 import org.jdyna.CellType;
+import org.jdyna.GameStateEvent;
 
 public interface GameListener
 {
@@ -23,4 +24,6 @@ public interface GameListener
     void crateCreated(int i, int j);
 
     void crateDestroyed(int i, int j);
+
+    void updateStatus(int frame, GameStateEvent state);
 }

@@ -58,6 +58,7 @@ public class DynaUtils
                     case CELL_BONUS_BOMB_WALKING:
                     case CELL_BONUS_SURPRISE:
                         obj = new DynaBonus(i, j, cell);
+                        data.bonuses.put(pos, (DynaBonus) obj);
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown cell type");

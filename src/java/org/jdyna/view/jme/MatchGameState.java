@@ -3,6 +3,8 @@ package org.jdyna.view.jme;
 import java.awt.Point;
 
 import org.jdyna.CellType;
+import org.jdyna.GameStateEvent;
+import org.jdyna.IPlayerSprite;
 
 import org.jdyna.view.jme.adapter.GameListener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
@@ -23,6 +25,7 @@ public class MatchGameState extends GameState implements GameListener
     private FirstPersonHandler cameraHandler;
     private JDynaGameAdapter adapter;
     private BoardData boardData;
+    private JMEPlayerStatus playerStatus;
 
     public MatchGameState(JDynaGameAdapter adapter)
     {
@@ -67,7 +70,9 @@ public class MatchGameState extends GameState implements GameListener
     public void gameStarted(CellType [][] cells, int w, int h)
     {
         boardData = DynaUtils.createBoard(cells);
-
+        
+        playerStatus = new JMEPlayerStatus();
+        
         // scale the board to make it fit in the viewport
         float scale = 10f / w;
         boardData.boardNode.setLocalScale(scale);
@@ -81,6 +86,11 @@ public class MatchGameState extends GameState implements GameListener
         // attach the board to the root node
         rootNode.attachChild(boardData.boardNode);
         boardData.boardNode.updateRenderState();
+        
+        playerStatus.setLocalScale(scale * w / 14.0f);
+        playerStatus.setLocalTranslation(0, 1, 0);
+        rootNode.attachChild(playerStatus);
+        playerStatus.updateRenderState();
     }
 
     @Override
@@ -123,7 +133,7 @@ public class MatchGameState extends GameState implements GameListener
     @Override
     public void playerSpawned(String name, int i, int j, boolean joined)
     {
-        DynaPlayer player = new DynaPlayer(i, j);
+        DynaPlayer player = new DynaPlayer(i, j, name);
         boardData.players.put(name, player);
         boardData.boardNode.attachChild(player);
         player.updateRenderState();
@@ -156,6 +166,13 @@ public class MatchGameState extends GameState implements GameListener
     public void bonusTaken(int i, int j)
     {
         DynaBonus bonus = boardData.bonuses.get(new Point(i, j));
-        bonus.take();
+        if (bonus!=null) bonus.take();
+    }
+    
+    @Override
+    public void updateStatus(int frame, GameStateEvent state)
+    {
+        IPlayerSprite p = state.getPlayers().get(0);
+        playerStatus.update(frame, p);
     }
 }

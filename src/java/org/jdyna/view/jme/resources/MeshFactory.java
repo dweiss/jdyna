@@ -67,6 +67,7 @@ public class MeshFactory
         modelPaths.put(CellType.CELL_BONUS_SLOW_DOWN, "bonus_slow_down");
         modelPaths.put(CellType.CELL_BONUS_BOMB_WALKING, "bonus_bomb_walking");
         modelPaths.put(CellType.CELL_BONUS_SURPRISE, "bonus_surprise");
+        modelPaths.put(CellType.CELL_BONUS_LIFE, "bonus_life");
     }
 
     private static MeshFactory singleton;

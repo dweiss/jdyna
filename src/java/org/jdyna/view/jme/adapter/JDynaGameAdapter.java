@@ -15,6 +15,7 @@ import org.jdyna.GameStartEvent;
 import org.jdyna.GameStateEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IPlayerSprite;
+import org.jdyna.view.jme.FrameData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class JDynaGameAdapter implements IGameEventListener
     private final static Logger logger = LoggerFactory.getLogger(JDynaGameAdapter.class);
 
     private boolean gameStarted;
-    private final ArrayDeque<GameStateEvent> eventQueue = new ArrayDeque<GameStateEvent>();
+    private final ArrayDeque<FrameData> eventQueue = new ArrayDeque<FrameData>();
     private int boardWidth;
     private int boardHeight;
     private Cell [][] cells;
@@ -80,7 +81,7 @@ public class JDynaGameAdapter implements IGameEventListener
                     // FIXME: storing this reference directly is a bug. Make a shallow
                     // (static) copy of all the data required for processing and then
                     // place it on the queue.
-                    eventQueue.add(state);
+                    eventQueue.add(new FrameData(frame, state));
                 }
             }
         }
@@ -89,17 +90,22 @@ public class JDynaGameAdapter implements IGameEventListener
     public void dispatchEvents(GameListener l)
     {
         GameStateEvent state;
+        FrameData frameData;
+        int frameCounter;
         synchronized (eventQueue)
         {
             if (eventQueue.isEmpty())
                 return;
-            state = eventQueue.pop();
+            frameData = eventQueue.pop();
         }
-
+        state = frameData.getStateEvent();
+        frameCounter = frameData.getFrameCounter();
+        
         if (gameStarted)
         {
             // dispatch in-game events
             generateEvents(state, l);
+            l.updateStatus(frameCounter , state);
         }
         else
         {

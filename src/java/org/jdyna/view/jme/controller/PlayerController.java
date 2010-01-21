@@ -49,6 +49,9 @@ public class PlayerController extends Controller
 
             spatial.dyingMeshes[iFrame].updateRenderState();
         }
+        
+        spatial.attachChild(spatial.text3d);
+        spatial.text3d.updateRenderState();
     }
 
     public void kill()
