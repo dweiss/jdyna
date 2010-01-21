@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/dyna-core/src/java/org/jdyna/frontend/swing/JDyna.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.jdyna.frontend.swing.JDyna"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="dyna-core"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${resource_loc:dyna-core/lib/native/win32}${system_property:path.separator}${resource_loc:dyna-core/lib/native/linux}${system_property:path.separator}${resource_loc:dyna-core/lib/native/macosx}"/>
+</launchConfiguration>
