@@ -35,12 +35,13 @@ public class MatchGameState extends GameState implements GameListener
         // setup lights and camera
         LightState ls = renderer.createLightState();
         PointLight light = new PointLight();
-        light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
+        light.setDiffuse(new ColorRGBA(1.00f, 1.00f, 1.00f, 1.00f));
         light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         light.setLocation(new Vector3f(100, 100, 100));
         light.setEnabled(true);
         ls.attach(light);
         ls.setEnabled(true);
+
         rootNode.setRenderState(ls);
         rootNode.updateRenderState();
 
