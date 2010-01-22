@@ -15,9 +15,12 @@ import org.jdyna.GameStartEvent;
 import org.jdyna.GameStateEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IPlayerSprite;
+import org.jdyna.PlayerSpriteImpl;
 import org.jdyna.view.jme.FrameData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class JDynaGameAdapter implements IGameEventListener
 {
@@ -28,6 +31,8 @@ public class JDynaGameAdapter implements IGameEventListener
     private int boardWidth;
     private int boardHeight;
     private Cell [][] cells;
+    private Cell [][] newCells;
+    private final List<PlayerSpriteImpl> statePlayers = Lists.newArrayList();
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
 
@@ -65,6 +70,10 @@ public class JDynaGameAdapter implements IGameEventListener
             {
                 GameStartEvent start = (GameStartEvent) evt;
                 boardInfo = start.getBoardInfo();
+                boardWidth = boardInfo.gridSize.width;
+                boardHeight = boardInfo.gridSize.height;
+                cells = new Cell [boardWidth][boardHeight];
+                newCells = new Cell [boardWidth][boardHeight];
             }
             else if (evt instanceof GameStateEvent)
             {
@@ -78,10 +87,45 @@ public class JDynaGameAdapter implements IGameEventListener
                         eventQueue.clear();
                     }
 
+                    for (int x = 0; x < boardWidth; x++)
+                        for (int y = 0; y < boardHeight; y++)
+                            newCells[x][y] = state.getCells()[x][y];
+
+                    statePlayers.clear();
+                    for (IPlayerSprite player : state.getPlayers())
+                    {
+                        PlayerSpriteImpl statePlayer = new PlayerSpriteImpl(
+                            player.getType(),
+                            player.getName(),
+                            player.isDead(),
+                            player.isImmortal(),
+                            player.getBombCount(),
+                            player.getLifeCount(),
+                            player.getBombRange(),
+                            player.getDiarrheaEndsAtFrame(),
+                            player.getImmortalityEndsAtFrame(),
+                            player.getMaxRangeEndsAtFrame(),
+                            player.getNoBombsEndsAtFrame(),
+                            player.getSpeedUpEndsAtFrame(),
+                            player.getSlowDownEndsAtFrame(),
+                            player.getCrateWalkingEndsAtFrame(),
+                            player.getBombWalkingEndsAtFrame(),
+                            player.getControllerReverseEndsAtFrame(),
+                            player.isAhmed()
+                        );
+                        statePlayer.animationFrame = player.getAnimationFrame();
+                        statePlayer.animationState = player.getAnimationState();
+                        statePlayer.position.setLocation(
+                            player.getPosition().x,
+                            player.getPosition().y
+                        );
+                        
+                        statePlayers.add(statePlayer);
+                    }
                     // FIXME: storing this reference directly is a bug. Make a shallow
                     // (static) copy of all the data required for processing and then
                     // place it on the queue.
-                    eventQueue.add(new FrameData(frame, state));
+                    eventQueue.add(new FrameData(frame, new GameStateEvent(newCells, statePlayers)));
                 }
             }
         }
@@ -94,32 +138,32 @@ public class JDynaGameAdapter implements IGameEventListener
         int frameCounter;
         synchronized (eventQueue)
         {
-            if (eventQueue.isEmpty())
-                return;
+            if (eventQueue.isEmpty()) return;
             frameData = eventQueue.pop();
+            state = frameData.getStateEvent();
+            frameCounter = frameData.getFrameCounter();
+
+            if (gameStarted)
+            {
+                // dispatch in-game events
+                generateEvents(state, l);
+                l.updateStatus(frameCounter, state);
+            }
+            else
+            {
+                // dispatch gameStarted event
+                for (int x = 0; x < boardWidth; x++)
+                    for (int y = 0; y < boardHeight; y++)
+                        cells[x][y] = state.getCells()[x][y];
+
+                CellType [][] adapted = adaptCells(cells);
+                l.gameStarted(adapted, boardWidth, boardHeight);
+                gameStarted = true;
+                playersAlive = new HashMap<String, Boolean>();
+                logger.debug("Game started");
+            }
         }
-        state = frameData.getStateEvent();
-        frameCounter = frameData.getFrameCounter();
-        
-        if (gameStarted)
-        {
-            // dispatch in-game events
-            generateEvents(state, l);
-            l.updateStatus(frameCounter , state);
-        }
-        else
-        {
-            // dispatch gameStarted event
-            cells = state.getCells();
-            
-            boardWidth = cells.length;
-            boardHeight = cells[0].length;
-            CellType[][] adapted = adaptCells(cells);
-            l.gameStarted(adapted, boardWidth, boardHeight);
-            gameStarted = true;
-            playersAlive = new HashMap<String, Boolean>();
-            logger.debug("Game started");
-        }
+
     }
 
     private static CellType [][] adaptCells(Cell [][] cells)
@@ -270,9 +314,7 @@ public class JDynaGameAdapter implements IGameEventListener
     
     private void generateEvents(GameStateEvent state, GameListener l)
     {
-        Cell [][] newCells = new Cell[boardWidth][];
-        for (int i = 0; i < boardWidth; i++)
-            	newCells[i] = state.getCells()[i].clone();
+        newCells = state.getCells();
         
         Point pos = new Point();
         
@@ -321,6 +363,8 @@ public class JDynaGameAdapter implements IGameEventListener
                     l.bombPlanted(i, j);
                     logger.debug("Bomb added");
                 }
+                
+                cells[i][j] = newCells[i][j];
             }
         }
 
@@ -358,7 +402,6 @@ public class JDynaGameAdapter implements IGameEventListener
             playersAlive.put(name, !player.isDead());
         }
 
-        cells = newCells;
     }
 
     private static int[] explosionRange(Cell [][] cells, int i, int j)
