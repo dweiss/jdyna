@@ -55,7 +55,7 @@ public class DynaPlayer extends DynaObject
         }
         
         text3d = font3d.createText(this.playerName, 0.5f, 0);
-        text3d.setFontColor(ColorRGBA.red.clone());
+        text3d.setFontColor(ColorRGBA.white.clone());
         text3d.setLocalTranslation(0, 1, 0);
         text3d.setLocalScale(new Vector3f(0.4f, 0.4f, 0.01f));
         text3d.setLocalRotation(new Quaternion(new float[]{-FastMath.PI/3, 0, 0}));

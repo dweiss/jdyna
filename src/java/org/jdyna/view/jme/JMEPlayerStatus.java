@@ -4,9 +4,9 @@ import java.awt.Font;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import org.jdyna.CellType;
 import org.jdyna.GameConfiguration;
 import org.jdyna.IPlayerSprite;
+import org.jdyna.view.swing.StatusType;
 
 import com.google.common.collect.Maps;
 import com.jme.scene.Node;
@@ -20,14 +20,20 @@ public class JMEPlayerStatus extends Node
      */
     private GameConfiguration conf;
     
-    private int count = 0;
-    private LinkedHashMap<CellType, JMESingleStstus> statuses;
+    /**
+     * List of all monitoring bonuses/diseases.
+     */
+    private LinkedHashMap<StatusType, JMESingleStatus> statuses;
 
-    public JMEPlayerStatus()
+
+    public JMEPlayerStatus(GameConfiguration conf)
     {
-        conf = new GameConfiguration();
-        statuses = Maps.newLinkedHashMap();
+        this.conf = conf;
+        this.statuses = Maps.newLinkedHashMap();
+
+        int position = 0;
         Font3D font3d = null;
+
         try {
             Font font = new Font("Arial", Font.BOLD, 16);
             font3d = new Font3D(font, 0.01f, true, true, true);
@@ -35,57 +41,68 @@ public class JMEPlayerStatus extends Node
             // ignore
         }
         
-        for (CellType ct : Arrays.asList(
-            CellType.CELL_BONUS_LIFE,
-            CellType.CELL_BONUS_BOMB,
-            CellType.CELL_BONUS_RANGE,
-            CellType.CELL_BONUS_MAXRANGE,
-            CellType.CELL_BONUS_AHMED,
-            CellType.CELL_BONUS_SPEED_UP,
-            CellType.CELL_BONUS_CRATE_WALKING,
-            CellType.CELL_BONUS_BOMB_WALKING,
-            CellType.CELL_BONUS_IMMORTALITY,
-            CellType.CELL_BONUS_DIARRHEA,
-            CellType.CELL_BONUS_NO_BOMBS,
-            CellType.CELL_BONUS_SLOW_DOWN,
-            CellType.CELL_BONUS_CONTROLLER_REVERSE
+        for (StatusType st : Arrays.asList(
+            StatusType.LIVES,
+            StatusType.BOMBS,
+            StatusType.BOMB_RANGE,
+            StatusType.MAX_RANGE,
+            StatusType.AHMED,
+            StatusType.SPEED_UP,
+            StatusType.CRATE_WALKING,
+            StatusType.BOMB_WALKING,
+            StatusType.IMMORTALITY,
+            StatusType.DIARRHOEA,
+            StatusType.NO_BOMBS,
+            StatusType.SLOW_DOWN,
+            StatusType.CTRL_REVERSE
         ))
         {
-            statuses.put(ct, new JMESingleStstus(ct, count++, font3d));
+            statuses.put(st, new JMESingleStatus(st, position++, font3d));
         }
 
-        for (JMESingleStstus st : statuses.values())
+        for (JMESingleStatus st : statuses.values())
         {
             attachChild(st);
         }
     }
 
-    public void update(int frame, IPlayerSprite p)
+    /**
+     * Update the values of all statuses.
+     */
+    public void update(int frame, IPlayerSprite player)
     {
-        p.getType();
-        statuses.get(CellType.CELL_BONUS_LIFE).update(p.getLifeCount());
-        statuses.get(CellType.CELL_BONUS_BOMB).update(p.getBombCount());
-        statuses.get(CellType.CELL_BONUS_RANGE).update(p.getBombRange());
-        statuses.get(CellType.CELL_BONUS_MAXRANGE).update(ifActiveCounter(p.getMaxRangeEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_AHMED).update(p.isAhmed() ? 1 : -1);
-        statuses.get(CellType.CELL_BONUS_SPEED_UP).update(ifActiveCounter(p.getSpeedUpEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_CRATE_WALKING).update(ifActiveCounter(p.getCrateWalkingEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_BOMB_WALKING).update(ifActiveCounter(p.getBombWalkingEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_IMMORTALITY).update(ifActiveCounter(p.getImmortalityEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_DIARRHEA).update(ifActiveCounter(p.getDiarrheaEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_NO_BOMBS).update(ifActiveCounter(p.getNoBombsEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_SLOW_DOWN).update(ifActiveCounter(p.getSlowDownEndsAtFrame(), frame));
-        statuses.get(CellType.CELL_BONUS_CONTROLLER_REVERSE).update(ifActiveCounter(p.getControllerReverseEndsAtFrame(), frame));
+        statuses.get(StatusType.LIVES).update(player.getLifeCount());
+        statuses.get(StatusType.BOMBS).update(player.getBombCount());
+        statuses.get(StatusType.BOMB_RANGE).update(player.getBombRange());
+        statuses.get(StatusType.MAX_RANGE).update(ifActiveCounter(player.getMaxRangeEndsAtFrame(), frame));
+        statuses.get(StatusType.AHMED).update(player.isAhmed() ? 1 : -1);
+        statuses.get(StatusType.SPEED_UP).update(ifActiveCounter(player.getSpeedUpEndsAtFrame(), frame));
+        statuses.get(StatusType.CRATE_WALKING).update(ifActiveCounter(player.getCrateWalkingEndsAtFrame(), frame));
+        statuses.get(StatusType.BOMB_WALKING).update(ifActiveCounter(player.getBombWalkingEndsAtFrame(), frame));
+        statuses.get(StatusType.IMMORTALITY).update(ifActiveCounter(player.getImmortalityEndsAtFrame(), frame));
+        statuses.get(StatusType.DIARRHOEA).update(ifActiveCounter(player.getDiarrheaEndsAtFrame(), frame));
+        statuses.get(StatusType.NO_BOMBS).update(ifActiveCounter(player.getNoBombsEndsAtFrame(), frame));
+        statuses.get(StatusType.SLOW_DOWN).update(ifActiveCounter(player.getSlowDownEndsAtFrame(), frame));
+        statuses.get(StatusType.CTRL_REVERSE).update(ifActiveCounter(player.getControllerReverseEndsAtFrame(), frame));
     }
 
+    /**
+     * Checks if specific counter is active and if so, returns seconds left, otherwise
+     * returns -1.
+     */
     private int ifActiveCounter(int counterMaxFrame, int frame)
     {
         if (counterMaxFrame < 0 || counterMaxFrame - frame < 0) return -1;
         else return secondsLeft(counterMaxFrame, frame);
     }
 
+    /**
+     * Calculates the remaining seconds of the collected bonus/disease.
+     */
     private int secondsLeft(int counterMaxFrame, int frame)
     {
-        return 1 + ((counterMaxFrame - frame) / conf.DEFAULT_FRAME_RATE);
+        int fps = new GameConfiguration().DEFAULT_FRAME_RATE;;
+        if (conf != null) fps = conf.DEFAULT_FRAME_RATE; 
+        return 1 + ((counterMaxFrame - frame) / fps);
     }
 }

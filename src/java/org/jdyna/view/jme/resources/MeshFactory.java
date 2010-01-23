@@ -35,6 +35,7 @@ public class MeshFactory
     private EnumMap<CellType, Spatial> meshes = new EnumMap<CellType, Spatial>(
         CellType.class);
     private Spatial unknownBonus;
+    private Spatial livesModel;
     private Spatial [] playerMeshes;
     private Spatial [] playerDyingMeshes;
     private static CullState cull = DisplaySystem.getDisplaySystem().getRenderer()
@@ -67,7 +68,6 @@ public class MeshFactory
         modelPaths.put(CellType.CELL_BONUS_SLOW_DOWN, "bonus_slow_down");
         modelPaths.put(CellType.CELL_BONUS_BOMB_WALKING, "bonus_bomb_walking");
         modelPaths.put(CellType.CELL_BONUS_SURPRISE, "bonus_surprise");
-        modelPaths.put(CellType.CELL_BONUS_LIFE, "bonus_life");
     }
 
     private static MeshFactory singleton;
@@ -112,6 +112,7 @@ public class MeshFactory
         }
 
         unknownBonus = loadModel("unknown_bonus", progressCallback);
+        livesModel = loadModel("bonus_life", progressCallback);
 
         String [] names = getAnimatedModelNames("player/player");
         playerMeshes = new Spatial [names.length]; // a separate cloner for each frame
@@ -279,5 +280,10 @@ public class MeshFactory
     public Spatial getUnknownBonus()
     {
         return copySpatial(unknownBonus);
+    }
+
+    public Spatial getLivesModel()
+    {
+        return copySpatial(livesModel);
     }
 }

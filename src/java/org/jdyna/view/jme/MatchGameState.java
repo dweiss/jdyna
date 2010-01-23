@@ -3,6 +3,7 @@ package org.jdyna.view.jme;
 import java.awt.Point;
 
 import org.jdyna.CellType;
+import org.jdyna.GameConfiguration;
 import org.jdyna.GameStateEvent;
 import org.jdyna.IPlayerSprite;
 
@@ -26,6 +27,7 @@ public class MatchGameState extends GameState implements GameListener
     private JDynaGameAdapter adapter;
     private BoardData boardData;
     private JMEPlayerStatus playerStatus;
+    private GameConfiguration conf;
 
     public MatchGameState(JDynaGameAdapter adapter)
     {
@@ -60,6 +62,11 @@ public class MatchGameState extends GameState implements GameListener
     }
 
     @Override
+    public void setGameConfiguration(GameConfiguration conf) {
+        this.conf = conf;
+    }
+    
+    @Override
     public void update(float tpf, float time)
     {
         adapter.dispatchEvents(this);
@@ -70,8 +77,6 @@ public class MatchGameState extends GameState implements GameListener
     public void gameStarted(CellType [][] cells, int w, int h)
     {
         boardData = DynaUtils.createBoard(cells);
-        
-        playerStatus = new JMEPlayerStatus();
         
         // scale the board to make it fit in the viewport
         float scale = 10f / w;
@@ -86,7 +91,8 @@ public class MatchGameState extends GameState implements GameListener
         // attach the board to the root node
         rootNode.attachChild(boardData.boardNode);
         boardData.boardNode.updateRenderState();
-        
+
+        playerStatus = new JMEPlayerStatus(conf);
         playerStatus.setLocalScale(scale * w / 14.0f);
         playerStatus.setLocalTranslation(0, 1, 0);
         rootNode.attachChild(playerStatus);
@@ -172,6 +178,7 @@ public class MatchGameState extends GameState implements GameListener
     @Override
     public void updateStatus(int frame, GameStateEvent state)
     {
+        if (playerStatus == null) return;
         IPlayerSprite p = state.getPlayers().get(0);
         playerStatus.update(frame, p);
     }

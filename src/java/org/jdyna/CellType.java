@@ -73,10 +73,7 @@ public enum CellType
     CELL_BONUS_AHMED('a'),
     
     /** A bonus that gives the player a randomly selected bonus or disease */
-    CELL_BONUS_SURPRISE('e'),
-    
-    /** A bonus that not visible in game, but necessary to display status */
-    CELL_BONUS_LIFE('l');
+    CELL_BONUS_SURPRISE('e');
 
     /**
      * Character code for the cell (16 bits).

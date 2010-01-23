@@ -10,6 +10,7 @@ import java.util.Map;
 import org.jdyna.BoardInfo;
 import org.jdyna.Cell;
 import org.jdyna.CellType;
+import org.jdyna.GameConfiguration;
 import org.jdyna.GameEvent;
 import org.jdyna.GameStartEvent;
 import org.jdyna.GameStateEvent;
@@ -35,6 +36,7 @@ public class JDynaGameAdapter implements IGameEventListener
     private final List<PlayerSpriteImpl> statePlayers = Lists.newArrayList();
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
+    private GameConfiguration conf;
 
     /**
      * Supported bonuses in this view.
@@ -70,6 +72,7 @@ public class JDynaGameAdapter implements IGameEventListener
             {
                 GameStartEvent start = (GameStartEvent) evt;
                 boardInfo = start.getBoardInfo();
+                conf = start.getConfiguration();
                 boardWidth = boardInfo.gridSize.width;
                 boardHeight = boardInfo.gridSize.height;
                 cells = new Cell [boardWidth][boardHeight];
@@ -157,13 +160,17 @@ public class JDynaGameAdapter implements IGameEventListener
                         cells[x][y] = state.getCells()[x][y];
 
                 CellType [][] adapted = adaptCells(cells);
-                l.gameStarted(adapted, boardWidth, boardHeight);
                 gameStarted = true;
                 playersAlive = new HashMap<String, Boolean>();
+                
+                // send information to the listener
+                l.gameStarted(adapted, boardWidth, boardHeight);
+                if (conf != null) l.setGameConfiguration(conf);
+                else l.setGameConfiguration(new GameConfiguration());
+                
                 logger.debug("Game started");
             }
         }
-
     }
 
     private static CellType [][] adaptCells(Cell [][] cells)

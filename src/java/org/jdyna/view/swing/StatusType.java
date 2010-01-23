@@ -4,7 +4,7 @@ package org.jdyna.view.swing;
 /**
  * A single icon on the {@link PlayerStatusPanel}.
  */
-enum StatusType
+public enum StatusType
 {
     LIVES("Lives"),
     BOMBS("Bombs"),
