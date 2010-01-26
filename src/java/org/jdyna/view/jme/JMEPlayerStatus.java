@@ -23,14 +23,12 @@ public class JMEPlayerStatus extends Node
     /**
      * List of all monitoring bonuses/diseases.
      */
-    private LinkedHashMap<StatusType, JMESingleStatus> statuses;
+    private LinkedHashMap<StatusType, JMESingleStatus> statuses = Maps.newLinkedHashMap();
 
 
     public JMEPlayerStatus(GameConfiguration conf)
     {
         this.conf = conf;
-        this.statuses = Maps.newLinkedHashMap();
-
         int position = 0;
         Font3D font3d = null;
 
@@ -101,8 +99,7 @@ public class JMEPlayerStatus extends Node
      */
     private int secondsLeft(int counterMaxFrame, int frame)
     {
-        int fps = new GameConfiguration().DEFAULT_FRAME_RATE;;
-        if (conf != null) fps = conf.DEFAULT_FRAME_RATE; 
+        int fps = this.conf.DEFAULT_FRAME_RATE; 
         return 1 + ((counterMaxFrame - frame) / fps);
     }
 }

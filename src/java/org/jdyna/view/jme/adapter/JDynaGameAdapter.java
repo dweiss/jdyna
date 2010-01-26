@@ -72,7 +72,7 @@ public class JDynaGameAdapter implements IGameEventListener
             {
                 GameStartEvent start = (GameStartEvent) evt;
                 boardInfo = start.getBoardInfo();
-                conf = start.getConfiguration();
+                this.conf = start.getConfiguration();
                 boardWidth = boardInfo.gridSize.width;
                 boardHeight = boardInfo.gridSize.height;
                 cells = new Cell [boardWidth][boardHeight];
@@ -164,10 +164,10 @@ public class JDynaGameAdapter implements IGameEventListener
                 playersAlive = new HashMap<String, Boolean>();
                 
                 // send information to the listener
+                if (this.conf == null)
+                    this.conf = new GameConfiguration();
+                l.setGameConfiguration(this.conf);
                 l.gameStarted(adapted, boardWidth, boardHeight);
-                if (conf != null) l.setGameConfiguration(conf);
-                else l.setGameConfiguration(new GameConfiguration());
-                
                 logger.debug("Game started");
             }
         }

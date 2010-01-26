@@ -92,7 +92,7 @@ public class MatchGameState extends GameState implements GameListener
         rootNode.attachChild(boardData.boardNode);
         boardData.boardNode.updateRenderState();
 
-        playerStatus = new JMEPlayerStatus(conf);
+        playerStatus = new JMEPlayerStatus(this.conf);
         playerStatus.setLocalScale(scale * w / 14.0f);
         playerStatus.setLocalTranslation(0, 1, 0);
         rootNode.attachChild(playerStatus);
