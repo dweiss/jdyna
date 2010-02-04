@@ -886,6 +886,7 @@ public final class JDyna
         if (!StringUtils.isEmpty(trackedPlayer))
         {
             window.scoreFrame.showStatusFor(trackedPlayer);
+            window.trackPlayer(trackedPlayer);
         }
         else
         {

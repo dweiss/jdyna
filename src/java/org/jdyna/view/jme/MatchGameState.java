@@ -28,6 +28,7 @@ public class MatchGameState extends GameState implements GameListener
     private BoardData boardData;
     private JMEPlayerStatus playerStatus;
     private GameConfiguration conf;
+    private String trackedPlayer;
 
     public MatchGameState(JDynaGameAdapter adapter)
     {
@@ -179,7 +180,19 @@ public class MatchGameState extends GameState implements GameListener
     public void updateStatus(int frame, GameStateEvent state)
     {
         if (playerStatus == null) return;
-        IPlayerSprite p = state.getPlayers().get(0);
-        playerStatus.update(frame, p);
+        for (IPlayerSprite p : state.getPlayers())
+        {
+            if (p.getName().equals(this.trackedPlayer)) {
+                playerStatus.update(frame, p);
+                break;
+            }
+        }
+        
+    }
+
+    @Override
+    public void setTrackedPlayer(String trackedPlayer)
+    {
+        this.trackedPlayer = trackedPlayer;
     }
 }

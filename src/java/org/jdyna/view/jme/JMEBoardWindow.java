@@ -151,4 +151,9 @@ public class JMEBoardWindow implements IGameEventListener
             }
         }
     }
+
+    public void trackPlayer(String trackedPlayer)
+    {
+        gameAdapter.setTrackedPlayer(trackedPlayer);
+    }
 }

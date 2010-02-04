@@ -29,4 +29,6 @@ public interface GameListener
     void updateStatus(int frame, GameStateEvent state);
 
     void setGameConfiguration(GameConfiguration conf);
+
+    void setTrackedPlayer(String trackedPlayer);
 }

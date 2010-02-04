@@ -37,6 +37,7 @@ public class JDynaGameAdapter implements IGameEventListener
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
     private GameConfiguration conf;
+    private String trackedPlayer;
 
     /**
      * Supported bonuses in this view.
@@ -56,7 +57,7 @@ public class JDynaGameAdapter implements IGameEventListener
         CellType.CELL_BONUS_BOMB_WALKING,
         CellType.CELL_BONUS_SURPRISE
     );
-    
+
     /**
      * Not supported bonuses in this view (i.e. they doesn't have models/textures) 
      */
@@ -167,6 +168,7 @@ public class JDynaGameAdapter implements IGameEventListener
                 if (this.conf == null)
                     this.conf = new GameConfiguration();
                 l.setGameConfiguration(this.conf);
+                l.setTrackedPlayer(this.trackedPlayer);
                 l.gameStarted(adapted, boardWidth, boardHeight);
                 logger.debug("Game started");
             }
@@ -419,5 +421,10 @@ public class JDynaGameAdapter implements IGameEventListener
         for (int y=j-1;cells[i][y].type.isExplosion();range[2]++,y--);
         for (int y=j+1;cells[i][y].type.isExplosion();range[3]++,y++);
         return range;
+    }
+
+    public void setTrackedPlayer(String trackedPlayer)
+    {
+        this.trackedPlayer = trackedPlayer;
     }
 }
