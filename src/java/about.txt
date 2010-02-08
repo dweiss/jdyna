@@ -24,23 +24,20 @@ Authors
 
 JDyna:
 
-	Dawid Weiss (lead, controller code)
-
-	Przemysław Król (bug fixes, improvements)
-	Piotr Jędrzejczak (bug fixes, improvements)
-	Michał Kozłowski (bug fixes)
-	Krzysztof Kaźmierczyk (improvements)
-	
-Contributors:
-
 	Marta Dudek
 	Sebastian Hetman
+	Piotr Jędrzejczak
+	Krzysztof Kaźmierczyk
 	Bartosz Kita
+	Artur Kłopotek
+	Michał Kozłowski
+	Przemysław Król
 	Bartosz Królikowski
 	Mateusz Matela
 	Krzysztof Niespodziany
 	Krzysztof Nowaczyk
 	Tomasz Szymanowski
+	Dawid Weiss (project lead)
 
 Bots (artificial intelligence):
 
