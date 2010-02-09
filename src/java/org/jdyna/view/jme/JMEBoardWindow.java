@@ -14,12 +14,12 @@ import org.jdyna.Game;
 import org.jdyna.GameEvent;
 import org.jdyna.IGameEventListener;
 import org.jdyna.IViewListener;
+import org.jdyna.frontend.swing.Configuration;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 import org.jdyna.view.swing.ScoreFrameFor3d;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.jme.input.MouseInput;
-import com.jme.system.GameSettings;
 import com.jme.util.GameTaskQueueManager;
 
 /**
@@ -57,6 +57,7 @@ public class JMEBoardWindow implements IGameEventListener
     private StandardGame game;
     private JDynaGameAdapter gameAdapter;
     private IViewListener viewListener;
+    private final Configuration config;
     public ScoreFrameFor3d scoreFrame;
 
     /**
@@ -77,26 +78,31 @@ public class JMEBoardWindow implements IGameEventListener
 
     public JMEBoardWindow()
     {
-        this(null);
+        this(null, null);
     }
 
     public JMEBoardWindow(IViewListener listener)
     {
-       this.viewListener = listener;
-       init();
+       this(listener, null);
+    }
+    
+    public JMEBoardWindow(Configuration config)
+    {
+        this(null, config);
+    }
+    
+    public JMEBoardWindow(IViewListener listener, Configuration config)
+    {
+        this.viewListener = listener;
+        this.config = config;
+        init();
     }
 
     private void init()
     {
         gameAdapter = new JDynaGameAdapter();
 
-        // TODO: read and pass settings here.
-        game = new StandardGame("JDyna 3D", /* settings */ null);
-        GameSettings gameSettings = game.getSettings();
-
-        // TODO: get the settings from configuration menu
-        gameSettings.setSFX(false);
-        gameSettings.setMusic(false);
+        game = new StandardGame("JDyna 3D", config.getJMESettings());
 
         // Start the OpenGL loop. 
         game.start();

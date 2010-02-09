@@ -3,7 +3,9 @@ package org.jdyna.frontend.swing;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.DisplayMode;
 import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import org.jdyna.frontend.swing.Configuration.*;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jme.system.GameSettings;
 
 /**
  * Configuration dialog.
@@ -94,7 +97,7 @@ final class ConfigurationDialog
         mode.setSelectedItem(configClone.viewType);
         mode.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent arg0)
+            public void actionPerformed(ActionEvent e)
             {
                 final ViewType viewType = (ViewType) mode.getSelectedItem();
                 configClone.viewType = viewType;
@@ -306,53 +309,168 @@ final class ConfigurationDialog
             );
         final CellConstraints cc = new CellConstraints();
         
-        final JComboBox renderer = new JComboBox();
+        // TODO fill renderer list :)
+        final JComboBox renderer = new JComboBox(new String[] {GameSettings.DEFAULT_RENDERER});
+        renderer.setSelectedItem(configClone.renderer);
         builder.add(new JLabel("renderer:"), cc.xy(1, 1));
-        builder.add(renderer, cc.xy(3, 1));
+        builder.add(renderer, cc.xyw(3, 1, 5));
+
+        final JComboBox videoMode = new JComboBox(GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayModes());
+        // set custom renderer to display list items from DisplayMode  
+        videoMode.setRenderer(new ListCellRenderer()
+        {
+            public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus)
+            {
+                final JLabel label = new JLabel();
+                if (isSelected)
+                {
+                    label.setBackground(list.getSelectionBackground());
+                    label.setForeground(list.getSelectionForeground());
+                }
+                else
+                {
+                    label.setBackground(list.getBackground());
+                    label.setForeground(list.getForeground());
+                }
+                label.setOpaque(true);
+                final DisplayMode mode = (DisplayMode) value;
+                label.setText(mode.getWidth() + "x" + mode.getHeight() + " ("
+                    + mode.getBitDepth() + "bpp, " + mode.getRefreshRate() + "Hz)");
+                return label;
+            }
+        });
+        videoMode.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                final DisplayMode mode = (DisplayMode) videoMode.getSelectedItem();
+                configClone.resolutionWidth = mode.getWidth();
+                configClone.resolutionHeight = mode.getHeight();
+                configClone.depth = mode.getBitDepth();
+                configClone.frequency = mode.getRefreshRate();
+            }
+        });
+        // set item selected on creation
+        boolean selected = false;
+        for (int i = 0; i < videoMode.getItemCount(); i++)
+        {
+            final DisplayMode mode = (DisplayMode) videoMode.getItemAt(i);
+            if (mode.getWidth() == configClone.resolutionWidth &&
+                mode.getHeight() == configClone.resolutionHeight &&
+                mode.getBitDepth() == configClone.depth &&
+                mode.getRefreshRate() == configClone.frequency)
+            {
+                videoMode.setSelectedIndex(i);
+                selected = true;
+                break;
+            }
+        }
+        // if item hasn't been selected yet, explicitly set selected index to 0 to ensure
+        // that combobox's action listener's action will be fired anyway, so that even if
+        // video mode in given configuration is incorrect, it will be selected to any
+        // correct
+        if (!selected && videoMode.getItemCount() > 0)
+        {
+            videoMode.setSelectedIndex(0);
+        }
+        builder.add(new JLabel("video mode:"), cc.xy(1, 3));
+        builder.add(videoMode, cc.xyw(3, 3, 5));
         
-        final JComboBox music = new JComboBox();
-        builder.add(new JLabel("music:"), cc.xy(5, 1));
-        builder.add(music, cc.xy(7, 1));
+        final JCheckBox music = new JCheckBox();
+        music.setSelected(configClone.music);
+        music.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.music = music.isSelected();
+            }
+        });
+        builder.add(new JLabel("music:"), cc.xy(1, 5));
+        builder.add(music, cc.xy(3, 5));
         
-        final JComboBox resolution = new JComboBox();
-        builder.add(new JLabel("resolution:"), cc.xy(1, 3));
-        builder.add(resolution, cc.xy(3, 3));
+        // TODO: fill samples list
+        final JComboBox samples = new JComboBox(new Integer [] { GameSettings.DEFAULT_SAMPLES });
+        samples.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.samples = (Integer) samples.getSelectedItem();
+            }
+        });
+        builder.add(new JLabel("samples:"), cc.xy(5, 5));
+        builder.add(samples, cc.xy(7, 5));
         
-        final JComboBox soundEffects = new JComboBox();
-        builder.add(new JLabel("sound effects:"), cc.xy(5, 3));
-        builder.add(soundEffects, cc.xy(7, 3));
+        final JCheckBox sfx = new JCheckBox();
+        sfx.setSelected(configClone.sfx);
+        sfx.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.sfx = sfx.isSelected();
+            }
+        });
+        builder.add(new JLabel("sound effects:"), cc.xy(1, 7));
+        builder.add(sfx, cc.xy(3, 7));
         
-        final JComboBox depth = new JComboBox();
-        builder.add(new JLabel("depth:"), cc.xy(1, 5));
-        builder.add(depth, cc.xy(3, 5));
-        
-        final JComboBox depthBits = new JComboBox();
-        builder.add(new JLabel("depth bits:"), cc.xy(5, 5));
-        builder.add(depthBits, cc.xy(7, 5));
-        
-        final JComboBox frequency = new JComboBox();
-        builder.add(new JLabel("frequency:"), cc.xy(1, 7));
-        builder.add(frequency, cc.xy(3, 7));
-        
-        final JComboBox alphaBits = new JComboBox();
-        builder.add(new JLabel("alpha bits:"), cc.xy(5, 7));
+        // TODO: fill alpha bits list
+        final JComboBox alphaBits = new JComboBox(new Integer [] { GameSettings.DEFAULT_ALPHA_BITS });
+        alphaBits.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.alphaBits = (Integer) alphaBits.getSelectedItem();
+            }
+        });        builder.add(new JLabel("alpha bits:"), cc.xy(5, 7));
         builder.add(alphaBits, cc.xy(7, 7));
         
-        final JComboBox verticalSync = new JComboBox();
+        final JCheckBox verticalSync = new JCheckBox();
+        verticalSync.setSelected(configClone.vSync);
+        verticalSync.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.vSync = verticalSync.isSelected();
+            }
+        });
         builder.add(new JLabel("vertical sync:"), cc.xy(1, 9));
         builder.add(verticalSync, cc.xy(3, 9));
         
-        final JComboBox stencilBits = new JComboBox();
+        // TODO: fill stencil bits list
+        final JComboBox stencilBits = new JComboBox(new Integer [] { GameSettings.DEFAULT_STENCIL_BITS });
+        stencilBits.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.stencilBits = (Integer) stencilBits.getSelectedItem();
+            }
+        });
         builder.add(new JLabel("stencil bits:"), cc.xy(5, 9));
         builder.add(stencilBits, cc.xy(7, 9));
         
-        final JComboBox fullscreen = new JComboBox();
+        final JCheckBox fullscreen = new JCheckBox();
+        fullscreen.setSelected(configClone.fullscreen);
+        fullscreen.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.fullscreen = fullscreen.isSelected();
+            }
+        });
         builder.add(new JLabel("fullscreen:"), cc.xy(1, 11));
         builder.add(fullscreen, cc.xy(3, 11));
         
-        final JComboBox samples = new JComboBox();
-        builder.add(new JLabel("samples:"), cc.xy(5, 11));
-        builder.add(samples, cc.xy(7, 11));
+        // TODO: fill depth bits list
+        final JComboBox depthBits = new JComboBox(new Integer [] { GameSettings.DEFAULT_DEPTH_BITS });
+        depthBits.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                configClone.depthBits = (Integer) depthBits.getSelectedItem();
+            }
+        });
+        builder.add(new JLabel("depth bits:"), cc.xy(5, 11));
+        builder.add(depthBits, cc.xy(7, 11));
         
         return builder.getPanel();
     }

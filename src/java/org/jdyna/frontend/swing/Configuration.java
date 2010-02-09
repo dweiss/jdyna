@@ -8,6 +8,9 @@ import org.jdyna.network.sockets.GameServer;
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.load.Persister;
 
+import com.jme.system.GameSettings;
+import com.jme.system.PropertiesGameSettings;
+
 /**
  * Game configuration (persisted).
  */
@@ -127,6 +130,56 @@ public class Configuration
      */
     @Element(name = "udp-broadcast-port", required = true)
     public int UDPBroadcastPort = GameServer.DEFAULT_UDP_BROADCAST;
+
+    // JME configuration.
+    @Element(name = "jme-renderer", required = false)
+    public String renderer = GameSettings.DEFAULT_RENDERER;
+    @Element(name = "jme-resolution-width", required = false)
+    public int resolutionWidth = GameSettings.DEFAULT_WIDTH;
+    @Element(name = "jme-resolution-height", required = false)
+    public int resolutionHeight = GameSettings.DEFAULT_HEIGHT;
+    @Element(name = "jme-depth", required = false)
+    public int depth = GameSettings.DEFAULT_DEPTH;
+    @Element(name = "jme-frequency", required = false)
+    public int frequency = GameSettings.DEFAULT_FREQUENCY;
+    @Element(name = "jme-vertical-sync", required = false)
+    public boolean vSync = GameSettings.DEFAULT_VERTICAL_SYNC;
+    @Element(name = "jme-fullscreen", required = false)
+    public boolean fullscreen = GameSettings.DEFAULT_FULLSCREEN;
+    @Element(name = "jme-music", required = false)
+    public boolean music = GameSettings.DEFAULT_MUSIC;
+    @Element(name = "jme-sfx", required = false)
+    public boolean sfx = GameSettings.DEFAULT_SFX;
+    @Element(name = "jme-depth-bits", required = false)
+    public int depthBits = GameSettings.DEFAULT_DEPTH_BITS;
+    @Element(name = "jme-alpha-bits", required = false)
+    public int alphaBits = GameSettings.DEFAULT_ALPHA_BITS;
+    @Element(name = "jme-stencil-bits", required = false)
+    public int stencilBits = GameSettings.DEFAULT_STENCIL_BITS;
+    @Element(name = "jme-samples", required = false)
+    public int samples = GameSettings.DEFAULT_SAMPLES;
+    
+    /**
+     * Returns JME game settings as specified by this <code>Configuration</code>.
+     */
+    public GameSettings getJMESettings()
+    {
+        final PropertiesGameSettings settings = new PropertiesGameSettings("", null);
+        settings.setRenderer(renderer);
+        settings.setWidth(resolutionWidth);
+        settings.setHeight(resolutionHeight);
+        settings.setDepth(depth);
+        settings.setFrequency(frequency);
+        settings.setVerticalSync(vSync);
+        settings.setFullscreen(fullscreen);
+        settings.setMusic(music);
+        settings.setSFX(sfx);
+        settings.setDepthBits(depthBits);
+        settings.setAlphaBits(alphaBits);
+        settings.setStencilBits(stencilBits);
+        settings.setSamples(samples);
+        return settings;
+    }
     
     /**
      * Save the state of this object to an XML.

@@ -880,7 +880,7 @@ public final class JDyna
     private IGameEventListener createJmeView(String trackedPlayer,
         final IViewListener listener, IPlayerSprite... players)
     {
-        JMEBoardWindow window = new JMEBoardWindow(listener);
+        JMEBoardWindow window = new JMEBoardWindow(listener, config);
         // TODO: adding on game close event
 
         if (!StringUtils.isEmpty(trackedPlayer))
