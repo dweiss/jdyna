@@ -1,5 +1,7 @@
 package org.jdyna.view.jme.adapter;
 
+import java.util.List;
+
 import org.jdyna.CellType;
 import org.jdyna.GameConfiguration;
 import org.jdyna.GameStateEvent;
@@ -30,5 +32,5 @@ public interface GameListener
 
     void setGameConfiguration(GameConfiguration conf);
 
-    void setTrackedPlayer(String trackedPlayer);
+    void setTrackedPlayers(List<String> trackedPlayers);
 }

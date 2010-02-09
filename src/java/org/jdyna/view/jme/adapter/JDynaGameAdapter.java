@@ -37,7 +37,7 @@ public class JDynaGameAdapter implements IGameEventListener
     private Map<String, Boolean> playersAlive;
     private BoardInfo boardInfo;
     private GameConfiguration conf;
-    private String trackedPlayer;
+    private List<String> trackedPlayers = Lists.newArrayList();
 
     /**
      * Supported bonuses in this view.
@@ -168,7 +168,7 @@ public class JDynaGameAdapter implements IGameEventListener
                 if (this.conf == null)
                     this.conf = new GameConfiguration();
                 l.setGameConfiguration(this.conf);
-                l.setTrackedPlayer(this.trackedPlayer);
+                l.setTrackedPlayers(this.trackedPlayers);
                 l.gameStarted(adapted, boardWidth, boardHeight);
                 logger.debug("Game started");
             }
@@ -423,8 +423,8 @@ public class JDynaGameAdapter implements IGameEventListener
         return range;
     }
 
-    public void setTrackedPlayer(String trackedPlayer)
+    public void addTrackedPlayer(String trackedPlayer)
     {
-        this.trackedPlayer = trackedPlayer;
+        this.trackedPlayers.add(trackedPlayer);
     }
 }

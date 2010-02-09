@@ -881,18 +881,15 @@ public final class JDyna
         final IViewListener listener, IPlayerSprite... players)
     {
         JMEBoardWindow window = new JMEBoardWindow(listener, config);
-        // TODO: adding on game close event
 
         if (!StringUtils.isEmpty(trackedPlayer))
         {
-            window.scoreFrame.showStatusFor(trackedPlayer);
             window.trackPlayer(trackedPlayer);
         }
         else
         {
-            window.scoreFrame.showStatusFor(players);
+            window.trackPlayers(players);
         }
-        window.scoreFrame.setVisible(true);
         
         return window;
     }

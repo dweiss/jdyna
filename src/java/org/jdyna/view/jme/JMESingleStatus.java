@@ -1,83 +1,135 @@
 package org.jdyna.view.jme;
 
-import org.jdyna.CellType;
-import org.jdyna.view.jme.resources.MeshFactory;
-import org.jdyna.view.swing.StatusType;
+import java.io.IOException;
+import java.nio.FloatBuffer;
 
-import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
+import org.jdyna.view.resources.ResourceUtilities;
+import org.jdyna.view.swing.StatusType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jme.image.Texture;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jmex.font3d.Font3D;
-import com.jmex.font3d.Text3D;
+import com.jme.scene.TexCoords;
+import com.jme.scene.Text;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
+import com.jmex.font2d.Text2D;
 
 @SuppressWarnings("serial")
 public class JMESingleStatus extends Node
 {
-    /**
-     * 3d model for the status icon.
-     */
-    Spatial model;
-    
-    /**
-     * The text that displaying current value.
-     */
-    Text3D text3d;
-    
-    public JMESingleStatus(StatusType type, float position, Font3D font3d)
+    private final static Logger logger = LoggerFactory.getLogger(JMESingleStatus.class);
+
+    final String BASE_DIR = "jme/status";
+    private Text counterLabel;
+    private Quad counterBackground;
+    private int x, y, width, height;
+    private StatusType statusType;
+    private Renderer renderer;
+    final int iconWidth = 24;
+    final int iconHeight = 24;
+
+    public JMESingleStatus(Renderer renderer, StatusType statusType, int position,
+        int statusIndex)
     {
-        model = createModel(type);
-        model.setLocalTranslation(position, 0, 0);
-        model.setLocalRotation(new Quaternion(new float[]{-FastMath.PI/3, 0, 0}));
-        attachChild(model);
-        model.updateRenderState();
-        
-        text3d = font3d.createText("", 0.5f, 0);
-        text3d.setFontColor(ColorRGBA.red.clone());
-        text3d.setLocalTranslation(position, -0.1f, 0.4f);
-        text3d.setLocalScale(new Vector3f(0.5f, 0.5f, 0.01f));
-        text3d.setLocalRotation(new Quaternion(new float[]{-FastMath.PI/3, 0, 0}));
-        attachChild(text3d);
-        text3d.updateRenderState();
+        boolean isRightSide = statusIndex % 2 != 0;
+        this.x = (isRightSide ? 1 : 0) * renderer.getWidth() + (isRightSide ? -1 : 1)
+            * iconWidth * (position + (isRightSide ? 1 : 0));
+        this.y = renderer.getHeight() - (statusIndex / 2) * iconHeight;
+        this.height = iconHeight;
+        this.width = iconWidth;
+        this.statusType = statusType;
+        this.renderer = renderer;
+
+        createStatusIcon();
+        attachChild(createStatusLabel());
     }
-    
+
     /**
-     * Create a model for status icon.  
+     * Create empty label for status.
      */
-    private Spatial createModel(StatusType type)
+    private Text createStatusLabel()
     {
-        switch (type)
+        return createStatusLabel("");
+    }
+
+    /**
+     * Create label for status.
+     */
+    private Text createStatusLabel(String textLabel)
+    {
+        counterLabel = Text2D.createDefaultTextLabel("status_label", textLabel);
+        counterLabel.setTextColor(ColorRGBA.white.clone());
+        counterLabel.setLocalTranslation(
+            x + width - counterLabel.getWidth() - 1,
+            y - height - 1,
+            0);
+        counterLabel.updateRenderState();
+
+        return counterLabel;
+    }
+
+    /**
+     * Create one icon of the status bar.
+     */
+    private void createStatusIcon()
+    {
+        counterBackground = new Quad("status_icon", this.width, this.height);
+        counterBackground.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        counterBackground.setLocalTranslation(
+            this.x + this.width / 2,
+            this.y - this.height / 2,
+            0);
+        counterBackground.setLightCombineMode(Spatial.LightCombineMode.Off);
+
+        // create the texture state to handle the texture
+        final TextureState ts = renderer.createTextureState();
+        // set the texture for this texture state
+        ts.setTexture(loadTexture(BASE_DIR + "/" + statusType.name().toLowerCase() + ".png"));
+        // activate the texture state
+        ts.setEnabled(true);
+
+        // correct texture application:
+        final FloatBuffer texCoords = BufferUtils.createVector2Buffer(4);
+        texCoords.put(0).put(1);
+        texCoords.put(0).put(0);
+        texCoords.put(1).put(0);
+        texCoords.put(1).put(1);
+        // assign texture coordinates to the quad
+        counterBackground.setTextureCoords(new TexCoords(texCoords));
+        // apply the texture state to the quad
+        counterBackground.setRenderState(ts);
+
+        counterBackground.updateRenderState();
+
+        attachChild(counterBackground);
+    }
+
+    private Texture loadTexture(String texturePath)
+    {
+        Texture texture = null;
+
+        try
         {
-            case AHMED:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_AHMED);
-            case BOMB_RANGE:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_RANGE);
-            case BOMB_WALKING:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_BOMB_WALKING);
-            case BOMBS:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_BOMB);
-            case CRATE_WALKING:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_CRATE_WALKING);
-            case CTRL_REVERSE:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_CONTROLLER_REVERSE);
-            case DIARRHOEA:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_DIARRHEA);
-            case IMMORTALITY:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_IMMORTALITY);
-            case LIVES:
-                return MeshFactory.getSingleton().getLivesModel();
-            case MAX_RANGE:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_MAXRANGE);
-            case NO_BOMBS:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_NO_BOMBS);
-            case SLOW_DOWN:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_SLOW_DOWN);
-            case SPEED_UP:
-                return MeshFactory.getSingleton().createMesh(CellType.CELL_BONUS_SPEED_UP);
+            texture = TextureManager.loadTexture(
+            ResourceUtilities.getResourceURL(texturePath),
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear,
+            1.0f,
+            true);
         }
-        throw new RuntimeException("Unreachable status type.");
+        catch (IOException e)
+        {
+            logger.error("Loading texture failed.");
+        }
+
+        return texture;
     }
 
     /**
@@ -85,22 +137,19 @@ public class JMESingleStatus extends Node
      */
     public void update(int value)
     {
-        text3d.setText(getValue(value));
-        if (value < 0)
-            detachAllChildren();
-        else
+        detachAllChildren();
+        if (value >= 0)
         {
-            attachChild(model);
-            attachChild(text3d);
+            attachChild(counterBackground);
+            attachChild(createStatusLabel(getValue(value)));
         }
-        text3d.updateRenderState();
     }
 
     /**
      * Return string that is displaying on the status base on the value. When value is
      * less than 0 no string is displaying, when value is infinity - displaying x.
      */
-    private String getValue(int value)
+    public String getValue(int value)
     {
         if (value == Integer.MAX_VALUE) return "x";
         else if (value < 0) return "";

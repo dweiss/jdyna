@@ -1,6 +1,5 @@
 package org.jdyna.view.jme;
 
-import java.awt.Font;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -9,8 +8,8 @@ import org.jdyna.IPlayerSprite;
 import org.jdyna.view.swing.StatusType;
 
 import com.google.common.collect.Maps;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jmex.font3d.Font3D;
 
 @SuppressWarnings("serial")
 public class JMEPlayerStatus extends Node
@@ -25,20 +24,15 @@ public class JMEPlayerStatus extends Node
      */
     private LinkedHashMap<StatusType, JMESingleStatus> statuses = Maps.newLinkedHashMap();
 
-
-    public JMEPlayerStatus(GameConfiguration conf)
+    /**
+     * Create status bar for the 3d view. Odd @statusIndex value place status in left
+     * side, even in right side.
+     */
+    public JMEPlayerStatus(GameConfiguration conf, Renderer renderer, int statusIndex)
     {
         this.conf = conf;
         int position = 0;
-        Font3D font3d = null;
 
-        try {
-            Font font = new Font("Arial", Font.BOLD, 16);
-            font3d = new Font3D(font, 0.01f, true, true, true);
-        } catch (Exception e) {
-            // ignore
-        }
-        
         for (StatusType st : Arrays.asList(
             StatusType.LIVES,
             StatusType.BOMBS,
@@ -55,7 +49,7 @@ public class JMEPlayerStatus extends Node
             StatusType.CTRL_REVERSE
         ))
         {
-            statuses.put(st, new JMESingleStatus(st, position++, font3d));
+            statuses.put(st, new JMESingleStatus(renderer, st, position++, statusIndex));
         }
 
         for (JMESingleStatus st : statuses.values())

@@ -1,12 +1,13 @@
 package org.jdyna.view.jme;
 
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.List;
 
 import org.jdyna.CellType;
 import org.jdyna.GameConfiguration;
 import org.jdyna.GameStateEvent;
 import org.jdyna.IPlayerSprite;
-
 import org.jdyna.view.jme.adapter.GameListener;
 import org.jdyna.view.jme.adapter.JDynaGameAdapter;
 import org.jdyna.view.jme.resources.DynaBomb;
@@ -26,9 +27,9 @@ public class MatchGameState extends GameState implements GameListener
     private FirstPersonHandler cameraHandler;
     private JDynaGameAdapter adapter;
     private BoardData boardData;
-    private JMEPlayerStatus playerStatus;
     private GameConfiguration conf;
-    private String trackedPlayer;
+    private List<String> trackedPlayers;
+    private HashMap<String, JMEPlayerStatus> playerStatuses;
 
     public MatchGameState(JDynaGameAdapter adapter)
     {
@@ -60,13 +61,16 @@ public class MatchGameState extends GameState implements GameListener
 
         cameraHandler = new FirstPersonHandler(camera, 50, 1);
         cameraHandler.setEnabled(false);
+        
+        playerStatuses = new HashMap<String, JMEPlayerStatus>();
     }
 
     @Override
-    public void setGameConfiguration(GameConfiguration conf) {
+    public void setGameConfiguration(GameConfiguration conf)
+    {
         this.conf = conf;
     }
-    
+
     @Override
     public void update(float tpf, float time)
     {
@@ -78,7 +82,7 @@ public class MatchGameState extends GameState implements GameListener
     public void gameStarted(CellType [][] cells, int w, int h)
     {
         boardData = DynaUtils.createBoard(cells);
-        
+
         // scale the board to make it fit in the viewport
         float scale = 10f / w;
         boardData.boardNode.setLocalScale(scale);
@@ -86,18 +90,20 @@ public class MatchGameState extends GameState implements GameListener
         // center the camera
         float cx = scale * w / 2 - scale / 2;
         float cy = scale * h / 2 - scale / 2;
-        camera.setLocation(new Vector3f(cx, 10, 2 * cy));
+        camera.setLocation(new Vector3f(cx, 10, 2.25f * cy));
         camera.lookAt(new Vector3f(cx, 0, cy), Vector3f.UNIT_Y);
 
         // attach the board to the root node
         rootNode.attachChild(boardData.boardNode);
         boardData.boardNode.updateRenderState();
 
-        playerStatus = new JMEPlayerStatus(this.conf);
-        playerStatus.setLocalScale(scale * w / 14.0f);
-        playerStatus.setLocalTranslation(0, 1, 0);
-        rootNode.attachChild(playerStatus);
-        playerStatus.updateRenderState();
+        int statusIndex = 0;
+        for (String playerName: trackedPlayers) {
+            JMEPlayerStatus playerStatus = new JMEPlayerStatus(this.conf, renderer, statusIndex++);
+            playerStatuses.put(playerName, playerStatus);
+            rootNode.attachChild(playerStatus);
+            playerStatus.updateRenderState();
+        }
     }
 
     @Override
@@ -173,26 +179,25 @@ public class MatchGameState extends GameState implements GameListener
     public void bonusTaken(int i, int j)
     {
         DynaBonus bonus = boardData.bonuses.get(new Point(i, j));
-        if (bonus!=null) bonus.take();
-    }
-    
-    @Override
-    public void updateStatus(int frame, GameStateEvent state)
-    {
-        if (playerStatus == null) return;
-        for (IPlayerSprite p : state.getPlayers())
-        {
-            if (p.getName().equals(this.trackedPlayer)) {
-                playerStatus.update(frame, p);
-                break;
-            }
-        }
-        
+        if (bonus != null) bonus.take();
     }
 
     @Override
-    public void setTrackedPlayer(String trackedPlayer)
+    public void updateStatus(int frame, GameStateEvent state)
     {
-        this.trackedPlayer = trackedPlayer;
+        for (IPlayerSprite p : state.getPlayers()) {
+            for (String playerName: trackedPlayers) {
+                if (p.getName().equals(playerName)) {
+                    playerStatuses.get(playerName).update(frame, p);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setTrackedPlayers(List<String> trackedPlayers)
+    {
+        this.trackedPlayers = trackedPlayers;
     }
 }

@@ -42,7 +42,7 @@ public final class Main3D
         final Board board = boards.get("classic-random");
 
         final IPlayerController c1 = JMEKeyboardController.getDefaultKeyboardController(0); 
-        final IPlayerController c2 = JMEKeyboardController.getDefaultKeyboardController(1); 
+        final IPlayerController c2 = JMEKeyboardController.getDefaultKeyboardController(1);
 
         final BoardInfo boardInfo = new BoardInfo(
             new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
@@ -52,22 +52,12 @@ public final class Main3D
 
         final Player p1 = new Player("Player 1", c1);
         final Player p2 = new Player("Player 2", c2);
-        new Thread() {
-            public void run()
-            {
-                try
-                {
-                    Thread.sleep(2000);
-                }
-                catch (InterruptedException e) 
-                {
-                    // Ignore.
-                }
 
-                game.addPlayer(p1);
-                game.addPlayer(p2);
-            }
-        }.start();
+        final IPlayerSprite [] infos = new IPlayerSprite []
+        {
+            game.addPlayer(p1),
+            game.addPlayer(p2)
+        };
 
         /*
          * Attach sounds view to the game.
@@ -90,6 +80,7 @@ public final class Main3D
             }
         };
         final JMEBoardWindow window = new JMEBoardWindow(onWindowClose);
+        window.trackPlayers(infos);
         game.addListener(window);
 
         final GameResult result = game.run(Game.Mode.INFINITE_DEATHMATCH);
