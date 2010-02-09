@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashSet;
 
 import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import org.jdyna.frontend.swing.Configuration.*;
 
@@ -29,6 +31,10 @@ final class ConfigurationDialog
     private Configuration original;
     
     private final JTextField[] keyBindingFields;
+    
+    private JTextField udpBroadcastPort;
+    private JTextField tcpControlPort;
+    private JTextField udpFeedbackPort;
 
     public ConfigurationDialog(Configuration config)
     {
@@ -135,22 +141,84 @@ final class ConfigurationDialog
         final DefaultFormBuilder builder = createFormBuilder("top:pref, 3dlu, top:pref, 3dlu, top:pref");
         final CellConstraints cc = new CellConstraints();
         
-        final JTextField udpBroadcastPort = new JTextField(3);
-        builder.add(new JLabel("UDP broadcast port:"), cc.xy(5, 1));
+        udpBroadcastPort = new JTextField(Integer.toString(configClone.UDPBroadcastPort), 3);
+        udpBroadcastPort.addCaretListener(createPortCaretListener(udpBroadcastPort));
+        builder.add(new JLabel("UDP broadcast port (server):"), cc.xy(5, 1));
         builder.add(udpBroadcastPort, cc.xy(7, 1));
         
-        final JTextField tcpControlPort = new JTextField(3);
-        builder.add(new JLabel("TCP control port:"), cc.xy(5, 3));
+        tcpControlPort = new JTextField(Integer.toString(configClone.TCPport), 3);
+        tcpControlPort.addCaretListener(createPortCaretListener(tcpControlPort));
+        builder.add(new JLabel("TCP control port (client):"), cc.xy(5, 3));
         builder.add(tcpControlPort, cc.xy(7, 3));
         
-        final JTextField udpFeedbackPort = new JTextField(3);
-        builder.add(new JLabel("UDP feedback port:"), cc.xy(5, 5));
+        udpFeedbackPort = new JTextField(Integer.toString(configClone.UDPport), 3);
+        udpFeedbackPort.addCaretListener(createPortCaretListener(udpFeedbackPort));
+        builder.add(new JLabel("UDP feedback port (client):"), cc.xy(5, 5));
         builder.add(udpFeedbackPort, cc.xy(7, 5));
 
         addVerticalSeparator(builder);
         return builder.getPanel();
     }
     
+    private CaretListener createPortCaretListener(final JTextField field)
+    {
+        return new CaretListener()
+        {
+            public void caretUpdate(CaretEvent e)
+            {
+                if (field == udpBroadcastPort)
+                {
+                    try
+                    {
+                        configClone.UDPBroadcastPort = Integer.parseInt(udpBroadcastPort.getText());
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        configClone.UDPBroadcastPort = original.UDPBroadcastPort;
+                    }
+                }
+                else if (field == udpFeedbackPort)
+                {
+                    try
+                    {
+                        configClone.UDPport = Integer.parseInt(udpFeedbackPort.getText());
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        configClone.UDPport = original.UDPport;
+                    }
+                }
+                else if (field == tcpControlPort)
+                {
+                    try
+                    {
+                        configClone.TCPport = Integer.parseInt(tcpControlPort.getText());
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        configClone.TCPport = original.TCPport;
+                    }
+                }
+                
+                // set default field colors assuming no conflicts
+                udpBroadcastPort.setBackground(OK_COLOR);
+                udpFeedbackPort.setBackground(OK_COLOR);
+                tcpControlPort.setBackground(OK_COLOR);
+                // check for conflicts
+                if (configClone.UDPBroadcastPort == configClone.UDPport)
+                {
+                    udpBroadcastPort.setBackground(ERROR_COLOR);
+                    udpFeedbackPort.setBackground(ERROR_COLOR);
+                }
+                if (configClone.UDPBroadcastPort == configClone.TCPport)
+                {
+                    udpBroadcastPort.setBackground(ERROR_COLOR);
+                    tcpControlPort.setBackground(ERROR_COLOR);
+                }
+            }
+        };
+    }
+
     private JPanel createControllerPanel()
     {
         final DefaultFormBuilder builder = createFormBuilder("30dlu, 3dlu, 60dlu, center:10dlu, right:30dlu, 3dlu, left:30dlu, 33dlu, right:30dlu, 3dlu, left:30dlu",

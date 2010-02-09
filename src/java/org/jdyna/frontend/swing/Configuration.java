@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 
 import org.jdyna.network.sockets.Closeables;
+import org.jdyna.network.sockets.GameServer;
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.load.Persister;
 
@@ -110,6 +111,22 @@ public class Configuration
         // default player 4 keys
         KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_QUOTE
     };
+    
+    /**
+     * TCP port for server configuration.
+     */
+    @Element(name = "tcp-port", required = true)
+    public int TCPport = GameServer.DEFAULT_TCP_CONTROL_PORT;
+    /**
+     * UDP port for server configuration.
+     */
+    @Element(name = "udp-port", required = true)
+    public int UDPport = GameServer.DEFAULT_UDP_FEEDBACK_PORT;
+    /**
+     * UDP broadcast port for server configuration.
+     */
+    @Element(name = "udp-broadcast-port", required = true)
+    public int UDPBroadcastPort = GameServer.DEFAULT_UDP_BROADCAST;
     
     /**
      * Save the state of this object to an XML.

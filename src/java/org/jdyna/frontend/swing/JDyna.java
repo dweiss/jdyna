@@ -449,7 +449,7 @@ public final class JDyna
             protected List<GameListEntry> doInBackground() throws Exception
             {
                 List<ServerInfo> servers = GameServerClient.lookup(
-                    GameServer.DEFAULT_UDP_BROADCAST, 
+                    config.UDPBroadcastPort, 
                     /* Look for all servers. */ 0,
                     2 * GameServer.AUTO_DISCOVERY_INTERVAL);
 
@@ -614,7 +614,7 @@ public final class JDyna
         /*
          * Start local server, create the game and attach the player to the server.
          */
-        final GameServer server = new GameServer();
+        final GameServer server = new GameServer(config.UDPBroadcastPort, config.UDPport, config.TCPport);
         server.gameStateLogging = false;
 
         try
