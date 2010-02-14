@@ -351,6 +351,8 @@ final class StandardGame extends AbstractGame implements Runnable
         {
             AudioSystem.getSystem().cleanup();
         }
+        
+        MouseInput.get().setCursorVisible(true);
     }
 
     @Override
