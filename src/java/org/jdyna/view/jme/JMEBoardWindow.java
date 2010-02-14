@@ -97,7 +97,7 @@ public class JMEBoardWindow implements IGameEventListener
     {
         gameAdapter = new JDynaGameAdapter();
 
-        game = new StandardGame("JDyna 3D", config.getJMESettings());
+        game = new StandardGame("JDyna 3D", (config != null ? config.getJMESettings() : null));
 
         // Start the OpenGL loop. 
         game.start();

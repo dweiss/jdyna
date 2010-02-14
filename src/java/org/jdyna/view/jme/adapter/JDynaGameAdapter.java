@@ -208,6 +208,13 @@ public class JDynaGameAdapter implements IGameEventListener
                     case CELL_BONUS_SLOW_DOWN:
                     case CELL_BONUS_BOMB_WALKING:
                     case CELL_BONUS_SURPRISE:
+                    case CELL_BOOM_BY:
+                    case CELL_BOOM_LX:
+                    case CELL_BOOM_RX:
+                    case CELL_BOOM_TY:
+                    case CELL_BOOM_X:
+                    case CELL_BOOM_XY:
+                    case CELL_BOOM_Y:
                         cell = cells[i][j].type;
                         break;
                     default:

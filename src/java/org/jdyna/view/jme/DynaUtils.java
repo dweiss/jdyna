@@ -34,6 +34,13 @@ public class DynaUtils
                         obj = new DynaWall(i, j);
                         break;
                     case CELL_EMPTY:
+                    case CELL_BOOM_BY:
+                    case CELL_BOOM_LX:
+                    case CELL_BOOM_RX:
+                    case CELL_BOOM_TY:
+                    case CELL_BOOM_X:
+                    case CELL_BOOM_XY:
+                    case CELL_BOOM_Y:
                         obj = new DynaFloor(i, j);
                         break;
                     case CELL_CRATE:
