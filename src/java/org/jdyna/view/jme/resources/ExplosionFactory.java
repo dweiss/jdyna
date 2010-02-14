@@ -1,5 +1,11 @@
 package org.jdyna.view.jme.resources;
 
+import java.io.IOException;
+
+import org.jdyna.view.resources.ResourceUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
 import com.jme.math.FastMath;
@@ -23,6 +29,8 @@ import com.jmex.effects.particles.ParticleSystem.EmitType;
 
 public class ExplosionFactory
 {
+    private final static Logger logger = LoggerFactory.getLogger(ExplosionFactory.class);
+    private static String BASE_DIR = "jme";
     private static BlendState bs;
     private static TextureState ts;
     private static TextureState tsSmoke;
@@ -148,10 +156,23 @@ public class ExplosionFactory
         bs.setTestFunction(TestFunction.GreaterThan);
 
         ts = display.getRenderer().createTextureState();
-        ts.setTexture(TextureManager.loadTexture("src/graphics/jme/explosion.jpg",MinificationFilter.Trilinear,MagnificationFilter.Bilinear));
-        
         tsSmoke = display.getRenderer().createTextureState();
-        tsSmoke.setTexture(TextureManager.loadTexture("src/graphics/jme/smoke.jpg",MinificationFilter.Trilinear,MagnificationFilter.Bilinear));
+        try
+        {
+            ts.setTexture(TextureManager.loadTexture(
+                 ResourceUtilities.getResourceURL(BASE_DIR + "/explosion.jpg"),
+                 MinificationFilter.Trilinear,
+                MagnificationFilter.Bilinear));
+            tsSmoke.setTexture(TextureManager.loadTexture(
+                ResourceUtilities.getResourceURL(BASE_DIR + "/smoke.jpg"),
+                MinificationFilter.Trilinear,
+                MagnificationFilter.Bilinear));
+        }
+        catch (IOException e)
+        {
+            logger.error("Failed loading texture for explosion.");
+        }
+        
         
         zstate = display.getRenderer().createZBufferState();
         zstate.setWritable(false);
