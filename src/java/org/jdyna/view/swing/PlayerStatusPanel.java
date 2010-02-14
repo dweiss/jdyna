@@ -269,4 +269,12 @@ public class PlayerStatusPanel extends JPanel implements IGameEventListener
             throw new RuntimeException("Missing image for cell: " + cell);
         return cellImages[0];
     }
+
+    /**
+     * Stop timers of statuses.
+     */
+    public void clearStatuses() {
+        for (Status s : statuses.values())
+            s.stopTimer();
+    }
 }

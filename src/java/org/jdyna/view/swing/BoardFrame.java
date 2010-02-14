@@ -165,4 +165,18 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         sublisteners.add(p);
         statuses.add(p);
     }
+
+    /**
+     * Do the cleanup. Needed to stop running timers of statuses.
+     */
+    public void cleanup()
+    {
+        for (IGameEventListener l : sublisteners)
+        {
+            if (l instanceof PlayerStatusPanel)
+            {
+                ((PlayerStatusPanel) l).clearStatuses();
+            }
+        }
+    }
 }

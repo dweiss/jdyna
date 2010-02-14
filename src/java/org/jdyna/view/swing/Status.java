@@ -114,6 +114,14 @@ final class Status extends JPanel
         SwingUtilities.invokeLater(updater);
     }
 
+    /**
+     * Stop status timer if it's running.
+     */
+    public void stopTimer() {
+        if (timer.isRunning())
+            timer.stop();
+    }
+    
     /*
      * Run the update in the swing thread.
      */

@@ -767,7 +767,8 @@ public final class JDyna
                 game.interrupt();
                 try
                 {
-                    gameThread.join();
+                    if (Thread.currentThread() != gameThread)
+                        gameThread.join();
                 }
                 catch (InterruptedException e1)
                 {
@@ -869,6 +870,7 @@ public final class JDyna
         {
             public void windowClosed(WindowEvent e)
             {
+                boardFrame.cleanup();
                 if (listener != null) listener.viewClosed();
             }
         });
