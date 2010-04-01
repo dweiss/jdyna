@@ -4,7 +4,8 @@
     header("Cache-Control: no-cache");
     header("Pragma: no-cache");
 	header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-?><?xml version="1.0" encoding="utf-8"?>
+
+echo '<?xml version="1.0" encoding="utf-8"?>
 
 <jnlp spec="1.0+" codebase="http://www.jdyna.com/play/">
         <information>
@@ -64,5 +65,5 @@
         </resources>
 
         <application-desc main-class="org.jdyna.frontend.swing.JDyna" />
-</jnlp>
-
+</jnlp>';
+?>
