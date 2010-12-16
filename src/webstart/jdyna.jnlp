@@ -7,11 +7,11 @@
 
 echo '<?xml version="1.0" encoding="utf-8"?>
 
-<jnlp spec="1.0+" codebase="http://www.jdyna.com/play/">
+<jnlp spec="1.0+" codebase="http://www.dawidweiss.com/jdyna/">
         <information>
                 <title>jdyna.com</title>
                 <vendor>jdyna.com developers</vendor>
-                <homepage href="http://www.jdyna.com/" />
+                <homepage href="http://www.dawidweiss.com/jdyna/" />
 
                 <description>Dyna Blaster for your enjoyment.</description>
 		<description kind="tooltip">JDyna</description>
