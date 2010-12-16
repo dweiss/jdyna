@@ -7,7 +7,7 @@
 
 echo '<?xml version="1.0" encoding="utf-8"?>
 
-<jnlp spec="1.0+" codebase="http://www.dawidweiss.com/jdyna/">
+<jnlp spec="1.0+" codebase="http://www.dawidweiss.com/jdyna/play/">
         <information>
                 <title>jdyna.com</title>
                 <vendor>jdyna.com developers</vendor>
