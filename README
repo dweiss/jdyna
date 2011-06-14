@@ -1,0 +1,31 @@
+
+JDYNA
+=====
+
+A nostalgic reimplementation of the once-famous Dyna Blaster (aka Bomberman) in Java.
+
+
+Goals of the project
+--------------------
+
+- close to identical simulation of behavior (gfx, sounds, movements) compared to Dyna Blaster,
+- ability to play with a number of opponents on the local network,
+- ability to play against an AI bot.
+
+
+License and Copyright
+---------------------
+
+The code is GPLed. We ripped the graphics and sounds from an (owned) copy of Dyna Blaster 
+and we hope by now it is considered "abandonware". We mean no harm, but want to revive old
+memories of this fantastic game.
+
+
+Branches
+--------
+
+master   - this is the "classic" version
+
+3d       - this is a branch with 3D-enabled and much improved version (additional bonuses, 
+           status panel, etc.). Unfortunately this branch is no longer actively maintained
+           (but if you do fix it, contribute back).
