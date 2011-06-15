@@ -41,6 +41,6 @@ public class CustomControllerPlayerFactory implements IPlayerFactory
     @Override
     public String getVendorName()
     {
-        return "jdyna.com";
+        return "JDyna";
     }
 }

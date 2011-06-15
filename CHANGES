@@ -1,4 +1,11 @@
-VERSION <HEAD>
+VERSION 0.96-SNAPSHOT
+
+    - 
+
+VERSION 0.95
+
+    - Integrated various improvements from the 3D branch (no 3D view though). 
+      One can play in "extra bonuses" mode now (but not against bots).
 
     - Cleanups removing jdyna.com (not renewed). Updated authors file.
 
