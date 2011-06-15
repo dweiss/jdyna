@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.List;
 
 import org.jdyna.*;
+import org.jdyna.view.resources.ResourceUtilities;
 import org.lwjgl.util.WaveData;
 
 import com.google.common.collect.Maps;
@@ -71,26 +72,17 @@ public final class OpenALSFX implements IGameEventListener
     {
         try
         {
-            return WaveData.create(open(resource));
+            InputStream stream = ResourceUtilities.open(resource);
+            if (stream == null)
+                throw new IOException("No resource: " + resource);
+            WaveData wd = WaveData.create(stream);
+            if (wd == null)
+                throw new IOException("WaveData creation failed: " + resource);
+            return wd;
         }
         catch (Exception e)
         {
             throw new RuntimeException("Could not open audio clip: " + resource, e);
         }
-    }
-
-    /*
-     * 
-     */
-    private InputStream open(String resource) throws IOException
-    {
-        final ClassLoader contextClassLoader = Thread.currentThread()
-            .getContextClassLoader();
-        final InputStream is = contextClassLoader.getResourceAsStream(resource);
-        if (is == null)
-        {
-            throw new IOException("Resource not found: " + resource);
-        }
-        return is;
     }
 }

@@ -5,7 +5,7 @@
 -repackageclasses jdyna
 
 -dontoptimize
-# -dontobfuscate
+-dontobfuscate
 
 -dontnote
 -dontwarn

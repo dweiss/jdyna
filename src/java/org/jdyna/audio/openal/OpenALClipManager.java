@@ -114,6 +114,9 @@ public final class OpenALClipManager<T extends Enum<T>>
         for (T e : clips.keySet())
         {
             final WaveData waveFile = clips.get(e);
+            if (waveFile == null)
+                throw new RuntimeException("Missing audio clip: " + e);
+
             clipsInBuffer.put(e, posInBuffer);
             AL10.alBufferData(
                 buffer.get(posInBuffer), waveFile.format, waveFile.data, waveFile.samplerate);
