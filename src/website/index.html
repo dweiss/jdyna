@@ -8,23 +8,6 @@
 
 <body>
 <div class="container">
-
-    <!--
-	<div class="navigation">
-		<div class="title">
-            <h1>jdyna.com</h1>
-            <h2>Dyna Blaster in Java</h2>
-		</div>
-
-		<a href="index.html">Vestibulum</a>
-		<a href="index.html">Suspendisse</a>
-		<a href="index.html">Elemen</a>
-		<a href="index.html">Maecenas</a>
-        <a href="play/">WebStart</a>
-		<div class="clearer"><span></span></div>
-	</div>
-    -->
-
 	<div class="holder_top"></div>
 
 	<div class="holder">
@@ -70,10 +53,10 @@
             <li><b>Does it work on Linux/ MacOS/ Windows?</b> Yes, in the current
             implementation everything should work on compatible Java virtual machines. The
             performance of Java2D (drawing) engine may vary from platform to platform though.</li>
-            
+
             <li><b>Sound does not work.</b> Java Sound API is somewhat crippled and uses hardware audio
-	    devices on certain platforms (it does not use high-level mixers like ALSA). We are working
-	    on this.</li>
+	    devices on certain platforms (it does not use high-level mixers like ALSA). You can try to switch to
+	    OpenAL using the preferences button (this is the default setting anyway).</li>
 
             <li><b>Where is the source code?</b> Unfortunately we cannot release source
             code to JDyna at this moment. If you're interested in development, however,
@@ -91,6 +74,8 @@
 
         <h1>Release history</h1>
         <ul>
+        	<li><b>Version 0.95 [SNAPSHOT].</b> Fixed missing 64-bit Windows libraries.</li>
+
         	<li><b>Version 0.94.</b> Selection havoc fixed in the score tables. Shrinked
         	the distribution code size.</li>
         
@@ -108,8 +93,7 @@
 
 	<div class="footer">
 		
-		<div class="left">&copy; 2008-2009 <a href="index.html">JDyna.com</a>. 
-        <!-- Valid <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> &amp; <a href="http://validator.w3.org/check?uri=referer">XHTML</a> -->
+		<div class="left">&copy; 2008-2011 <a href="index.html">JDyna Developers</a>.
 		</div>
 
 		<div class="right">
@@ -117,9 +101,7 @@
 		</div>
 
 		<div class="clearer">&nbsp;</div>
-
 	</div>
-
 </div>
 
 <script type="text/javascript">
