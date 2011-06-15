@@ -71,7 +71,7 @@ public class GameClient implements IGameEventListenerHolder
         boardFrame = new BoardFrame();
         if (!StringUtils.isEmpty(playerName))
         {
-            boardFrame.getGamePanel().trackPlayer(playerName);
+            boardFrame.trackPlayer(playerName);
         }
         proxy.addListener(boardFrame);
         boardFrame.addWindowListener(new WindowAdapter()
@@ -99,7 +99,7 @@ public class GameClient implements IGameEventListenerHolder
         /*
          * Propagate board info to all listeners.
          */
-        proxy.onFrame(0, Arrays.asList(new GameStartEvent(gameHandle.info)));
+        proxy.onFrame(0, Arrays.asList(new GameStartEvent(gameHandle.conf, gameHandle.info)));
         if (boardFrame != null) boardFrame.setVisible(true);
 
         final UDPPacketListener listener = new UDPPacketListener(server.UDPBroadcastPort);

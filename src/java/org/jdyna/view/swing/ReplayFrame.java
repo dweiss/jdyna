@@ -22,14 +22,18 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("serial")
 public final class ReplayFrame extends JFrame
 {
-    private final GraphicsConfiguration conf;
+    private final GraphicsConfiguration graphicsConf;
     private BoardPanel gamePanel;
     private List<FrameData> frameData;
+    private List<IHighlightDetector.FrameRange> highlightData;
 
     private boolean playing;
     private int frame;
-    private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
+   
+    private final GameTimer timer;
+    private final GameConfiguration conf;
 
+    private int currentHighlight;
     private JSlider slider; 
 
     /*
@@ -111,27 +115,33 @@ public final class ReplayFrame extends JFrame
             return events;
         }
     };
+
     private JButton slow;
     private JButton play;
     private JButton stop;
 
+    private JButton nextHighlight;
+    private JButton previousHighlight;
+
     /*
      * 
      */
-    private ReplayFrame(GraphicsConfiguration conf)
+    private ReplayFrame(GameConfiguration conf, GraphicsConfiguration graphicsConf)
     {
         this.conf = conf;
+        this.graphicsConf = graphicsConf;
+        this.timer = new GameTimer(conf.DEFAULT_FRAME_RATE);
     }
 
     /*
      * 
      */
-    public ReplayFrame(BoardInfo boardInfo, List<FrameData> frameData)
+    public ReplayFrame(GameConfiguration c, BoardInfo boardInfo, List<FrameData> frameData)
     {
-        this(ImageUtilities.getGraphicsConfiguration());
-        final Images images = ImagesFactory.DYNA_CLASSIC;
+        this(c, ImageUtilities.getGraphicsConfiguration());
 
-        gamePanel = new BoardPanel(images, conf);
+        final Images images = ImagesFactory.DYNA_CLASSIC;
+        gamePanel = new BoardPanel(images, graphicsConf);
         gamePanel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e)
             {
@@ -143,7 +153,7 @@ public final class ReplayFrame extends JFrame
         });
 
         this.frameData = frameData;
-        gamePanel.onFrame(0, Arrays.asList(new GameStartEvent(boardInfo)));
+        gamePanel.onFrame(0, Arrays.asList(new GameStartEvent(c, boardInfo)));
 
         final JPanel panel = createMainPanel();
         getContentPane().add(panel);
@@ -172,6 +182,32 @@ public final class ReplayFrame extends JFrame
                 replayer.interrupt();
             }
         });
+    }
+
+    /*
+     * 
+     */
+    public ReplayFrame(GameConfiguration c, BoardInfo boardInfo,
+        List<FrameData> frameData, List<IHighlightDetector.FrameRange> highlightData)
+    {
+        this(c, boardInfo, frameData);
+
+        if (highlightData != null && highlightData.size() > 0)
+        {
+            currentHighlight = 0;
+            this.highlightData = highlightData;
+
+            Dictionary<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
+            for (IHighlightDetector.FrameRange frameRange : highlightData)
+            {
+                labels.put(frameRange.beginFrame, new JLabel("^"));
+            }
+            slider.setLabelTable(labels);
+            slider.setPaintLabels(true);
+
+            nextHighlight.setEnabled(true);
+            previousHighlight.setEnabled(true);
+        }
     }
 
     /*
@@ -211,6 +247,16 @@ public final class ReplayFrame extends JFrame
         panel.add(stop);
         stop.setEnabled(false);
 
+        previousHighlight = new JButton("<--");
+        gridbag.setConstraints(previousHighlight, cc);
+        panel.add(previousHighlight);
+        previousHighlight.setEnabled(false);
+
+        nextHighlight = new JButton("-->");
+        gridbag.setConstraints(nextHighlight, cc);
+        panel.add(nextHighlight);
+        nextHighlight.setEnabled(false);
+
         slider = new JSlider(0, frameData.size() - 1);
         cc.fill = GridBagConstraints.HORIZONTAL;
         cc.anchor = GridBagConstraints.CENTER;
@@ -240,7 +286,7 @@ public final class ReplayFrame extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                timer.setFrameRate(Globals.DEFAULT_FRAME_RATE);
+                timer.setFrameRate(conf.DEFAULT_FRAME_RATE);
                 play();
             }
         });
@@ -253,7 +299,55 @@ public final class ReplayFrame extends JFrame
             }
         });
 
+        nextHighlight.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (setNextHighlight())
+                {
+                    slider.setValue(highlightData.get(currentHighlight).beginFrame);
+                }
+            }
+        });
+
+        previousHighlight.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (setPreviousHighlight())
+                {
+                    slider.setValue(highlightData.get(currentHighlight).beginFrame);
+                }
+            }
+        });
+
         return panel;
+    }
+
+    private boolean setNextHighlight()
+    {
+        for (int i = 0; i < highlightData.size(); i++)
+        {
+            if (highlightData.get(i).beginFrame > frame)
+            {
+                currentHighlight = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean setPreviousHighlight() 
+    {
+        for (int i = highlightData.size() - 1; i >= 0; i--)
+        {
+            if (highlightData.get(i).beginFrame + conf.DEFAULT_FRAME_RATE < frame)
+            {
+                currentHighlight = i;
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

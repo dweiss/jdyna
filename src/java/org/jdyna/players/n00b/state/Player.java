@@ -2,7 +2,7 @@ package org.jdyna.players.n00b.state;
 
 import java.awt.Point;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 /**
  * Represents a single player taking part in the game.
@@ -34,18 +34,20 @@ public class Player
      */
     private PlayerState state;
 
-    Player(String name, int x, int y)
-    {
-        this(name, new Point(x, y));
-    }
+    /**
+     * Configuration and settings.
+     */
+    GameConfiguration conf;
 
-    Player(String name, Point position)
+    Player(GameConfiguration conf, String name, Point position)
     {
         this.name = name;
-        this.range = Globals.DEFAULT_BOMB_RANGE;
-        this.bombsRemaining = Globals.DEFAULT_BOMB_COUNT;
+        this.range = conf.DEFAULT_BOMB_RANGE;
+        this.bombsRemaining = conf.DEFAULT_BOMB_COUNT;
         this.position = position;
         this.state = PlayerState.CHEATING;
+        
+        this.conf = conf;
     }
 
     public Point getPosition()
@@ -115,8 +117,8 @@ public class Player
      */
     private void reset()
     {
-        this.range = Globals.DEFAULT_BOMB_RANGE;
-        this.bombsRemaining = Globals.DEFAULT_BOMB_COUNT;
+        this.range = conf.DEFAULT_BOMB_RANGE;
+        this.bombsRemaining = conf.DEFAULT_BOMB_COUNT;
     }
 
     @Override

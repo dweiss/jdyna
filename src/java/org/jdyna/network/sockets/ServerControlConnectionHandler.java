@@ -169,7 +169,7 @@ final class ServerControlConnectionHandler extends Thread
             throw new FailureResponseException("Board does not exist: " + req.boardName);
         }
 
-        final GameHandle handle = context.createNewGame(req.gameName, req.boardName);
+        final GameHandle handle = context.createNewGame(req.conf, req.gameName, req.boardName);
         send(new CreateGameResponse(handle));
     }
 

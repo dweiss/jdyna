@@ -110,6 +110,39 @@ public final class ImagesFactory
             create(CellType.CELL_BONUS_RANGE, 4, sb2.tile(new int [][] {
                 {1, 0}, {4, 0} })
             ),
+            create(CellType.CELL_BONUS_DIARRHEA, 4, sb2.tile(new int [][] {
+            	{6, 0}, {7, 0} })
+            ),
+            create(CellType.CELL_BONUS_IMMORTALITY, 4, sb2.tile(new int [][] {
+              	{12, 0}, {13, 0} })
+            ),
+            create(CellType.CELL_BONUS_NO_BOMBS, 4, sb2.tile(new int [][] {
+               	{8, 0}, {9, 0} })
+            ),
+            create(CellType.CELL_BONUS_MAXRANGE, 4, sb2.tile(new int [][] {
+                {10, 0}, {11, 0} })
+            ),
+            create(CellType.CELL_BONUS_SPEED_UP, 4, sb2.tile(new int [][] {
+                {14, 0}, {15, 0} })
+            ),
+            create(CellType.CELL_BONUS_CRATE_WALKING, 4, sb2.tile(new int [][] {
+                {16, 0}, {17, 0} })
+            ),
+            create(CellType.CELL_BONUS_BOMB_WALKING, 4, sb2.tile(new int [][] {
+                {18, 0}, {19, 0} })
+            ),
+            create(CellType.CELL_BONUS_CONTROLLER_REVERSE, 4, sb2.tile(new int [][] {
+                {0, 1}, {1, 1} })
+            ),
+            create(CellType.CELL_BONUS_SLOW_DOWN, 4, sb2.tile(new int [][] {
+                {2, 1}, {3, 1} })
+            ),
+            create(CellType.CELL_BONUS_AHMED, 4, sb2.tile(new int [][] {
+                {4, 1}, {5, 1} })
+            ),
+            create(CellType.CELL_BONUS_SURPRISE, 4, sb2.tile(new int [][] {
+                {6, 1}, {7, 1} })
+            ),
         });
 
         /*
@@ -195,7 +228,16 @@ public final class ImagesFactory
             createPlayer(ISprite.Type.PLAYER_4, playerFrameRate, offset, slices4),
         }));
 
-        return new Images(cellSize, cells, sprites);
+        /*
+         * Player icons for statuses.
+         */
+        
+        final ImageSliceBuilder sb3 = new ImageSliceBuilder("tiles/15.png", 8);
+        sb3.h = sb3.w = 24;
+        final BufferedImage [] playerStatuses =
+            load(sb3.tile(new int [][] { {0, 8}, {12, 8}, {6, 8}, {9, 8}, /*  */ }));
+
+        return new Images(cellSize, cells, sprites, playerStatuses);
     }
 
     /*

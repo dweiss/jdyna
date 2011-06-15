@@ -37,8 +37,14 @@ public class GameState
      */
     private int lastFrame;
 
+    /**
+     * Game settings and configuration.
+     */
+    private GameConfiguration conf;
+
     public GameState(GameStartEvent event)
     {
+        this.conf = event.getConfiguration();
         this.boardInfo = event.getBoardInfo();
         spaces = new Space [boardInfo.gridSize.width] [boardInfo.gridSize.height];
         for (int i = 0; i < spaces.length; ++i)
@@ -161,7 +167,6 @@ public class GameState
      */
     public void update(int currentFrame, GameStateEvent event)
     {
-
         final int frameDifference = currentFrame - lastFrame;
         if (frameDifference < 1)
         {
@@ -175,7 +180,7 @@ public class GameState
         {
             for (IPlayerSprite pl : event.getPlayers())
             {
-                players.add(new Player(pl.getName(), pl.getPosition()));
+                players.add(new Player(conf, pl.getName(), pl.getPosition()));
             }
         }
         else
@@ -206,7 +211,7 @@ public class GameState
                 }
                 if (!found)
                 {
-                    players.add(new Player(pl.getName(), pl.getPosition()));
+                    players.add(new Player(conf, pl.getName(), pl.getPosition()));
                 }
             }
         }
@@ -417,7 +422,7 @@ public class GameState
      */
     private void dropBomb(Player owner, Space location, int compensation)
     {
-        final Bomb bomb = new Bomb(owner);
+        final Bomb bomb = new Bomb(owner, conf);
         final List<Space> affectedSpaces = new ArrayList<Space>();
 
         // check if this bomb will be prematurely detonated by another explosion
@@ -425,7 +430,7 @@ public class GameState
         if (detonationTime == null)
         {
             // no explosions found, use the default detonation time
-            detonationTime = Globals.DEFAULT_FUSE_FRAMES + 1 - compensation;
+            detonationTime = conf.DEFAULT_FUSE_FRAMES + 1 - compensation;
         }
         bomb.setTimer(detonationTime);
 

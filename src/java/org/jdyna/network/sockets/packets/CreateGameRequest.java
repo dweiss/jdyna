@@ -2,6 +2,8 @@ package org.jdyna.network.sockets.packets;
 
 import java.io.Serializable;
 
+import org.jdyna.GameConfiguration;
+
 /**
  * Start a new game room. 
  */
@@ -15,14 +17,18 @@ public class CreateGameRequest implements Serializable
 
     /** Game name. */
     public String gameName;
+    
+    /** Game configuration. */
+    public GameConfiguration conf;
 
     protected CreateGameRequest()
     {
         // Serialization.
     }
     
-    public CreateGameRequest(String gameName, String boardName)
+    public CreateGameRequest(GameConfiguration conf, String gameName, String boardName)
     {
+        this.conf = conf;
         this.gameName = gameName;
         this.boardName = boardName;
     }

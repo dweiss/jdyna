@@ -119,7 +119,8 @@ public class BotClient
         if (boardName != null)
         {
             logger.info("Creating a new game: " + gameName + " [board: " + boardName + "]");
-            handle = client.createGame(gameName, boardName);
+            // bot probably should create a game with class configuration 
+            handle = client.createGame(GameConfiguration.CLASSIC, gameName, boardName);
         }
         else
         {

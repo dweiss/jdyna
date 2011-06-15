@@ -30,9 +30,9 @@ public final class ReplaySavedGame
     private ReplayFrame board;
 
     /**
-     * Replay a stream of saved events at the given frame rate.
+     * Replay a stream of saved events.
      */
-    private void start()
+    private void start(File gameLog, List<IHighlightDetector.FrameRange> highlights)
     {
         try
         {
@@ -52,7 +52,12 @@ public final class ReplaySavedGame
 
             logger.info("Replaying...");
 
-            this.board = new ReplayFrame(findBoardInfo(frames), frames);
+            if (highlights != null) 
+                this.board = new ReplayFrame(
+                findGameConfiguration(frames), findBoardInfo(frames), frames, highlights);
+            else 
+                this.board = new ReplayFrame(findGameConfiguration(frames),
+                findBoardInfo(frames), frames);
             board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             board.setVisible(true);
         }
@@ -80,13 +85,43 @@ public final class ReplaySavedGame
         throw new IOException("No board info in the replay stream.");
     }
 
+    /*
+     * 
+     */
+    private static GameConfiguration findGameConfiguration(List<FrameData> frames) throws IOException
+    {
+        for (FrameData fd : frames)
+        {
+            for (GameEvent ge : fd.events)
+            {
+                if (ge instanceof GameStartEvent)
+                {
+                    return ((GameStartEvent) ge).getConfiguration();
+                }
+            }
+        }
+        throw new IOException("No game configuration in the replay stream.");
+    }
+
     /* Command-line entry point. */
     public static void main(String [] args) throws IOException
     {
         final ReplaySavedGame launcher = new ReplaySavedGame();
         if (CmdLine.parseArgs(launcher, args))
         {
-            launcher.start();
+            launcher.start(launcher.gameLog, null);
         }
+    }
+    
+    /** 
+     * Replays game from log file.
+     * @param filename Path to log file
+     * @param highlights Highlights data, if null highlights feature will be disabled
+     */
+    public static void ReplayGame(String filename,
+        List<IHighlightDetector.FrameRange> highlights)
+    {
+        final ReplaySavedGame launcher = new ReplaySavedGame();
+        launcher.start(new File(filename), highlights);
     }
 }

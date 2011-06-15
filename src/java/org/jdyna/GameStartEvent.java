@@ -9,12 +9,17 @@ public final class GameStartEvent extends GameEvent
     /**
      * @see GameEvent#serialVersionUID
      */
-    private static final long serialVersionUID = 0x200812241355L;
+    private static final long serialVersionUID = 0x200912130117L;
 
     /**
      * Board information for the game.
      */
     private BoardInfo boardInfo;
+
+    /**
+     * Configuration and settings for the game.
+     */
+    private GameConfiguration conf;
 
     /*
      * 
@@ -27,10 +32,11 @@ public final class GameStartEvent extends GameEvent
     /*
      *  
      */
-    public GameStartEvent(BoardInfo boardInfo)
+    public GameStartEvent(GameConfiguration conf, BoardInfo boardInfo)
     {
         this();
         this.boardInfo = boardInfo;
+        this.conf = conf;
     }
 
     /*
@@ -39,5 +45,13 @@ public final class GameStartEvent extends GameEvent
     public BoardInfo getBoardInfo()
     {
         return boardInfo;
+    }
+
+    /*
+     * 
+     */
+    public GameConfiguration getConfiguration()
+    {
+        return conf;
     }
 }

@@ -7,7 +7,7 @@ import org.jdyna.ISprite;
 
 
 /**
- * Extra data for {@link SpriteType}.
+ * Extra data for {@link ISprite.Type}.
  */
 class SpriteData
 {

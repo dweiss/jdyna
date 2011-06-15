@@ -26,8 +26,14 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Movement speed in each direction.
      */
-    final Point speed = new Point(2, 2);
+    Point speed = new Point(Constants.DEFAULT_PLAYER_SPEED, Constants.DEFAULT_PLAYER_SPEED);
 
+    /**
+     * If player collects the speed bonus the variable is changed. 
+     * If player doesn't have speed bonus the variable is set to 1.0. 
+     */
+    float speedMultiplier = 1.0f;
+    
     /**
      * An increasing counter of frames if the player is in walking state.
      */
@@ -46,25 +52,87 @@ final class PlayerInfo implements IPlayerSprite
     /**
      * Current arsenal to use (bomb count).
      */
-    int bombCount = Globals.DEFAULT_BOMB_COUNT;
+    int bombCount;
 
     /**
      * Bomb range for this player. Assigned to {@link BombCell#range}.
      */
-    int bombRange = Globals.DEFAULT_BOMB_RANGE;
+    int bombRange;
+    
+    /**
+     * Stores the actual bomb range when player is under the influence of max range bonus.
+     */
+    int storedBombRange = Integer.MIN_VALUE;
+    
+    /**
+     * Frame number after which diarrhea bonus ends for the player.
+     */
+    int diarrheaEndsAtFrame = Integer.MIN_VALUE;
 
+    /**
+     * Frame number after which max range bonus ends for the player.
+     */
+    int maxRangeEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * Frame number after which slow down or speed up bonus ends for this player.
+     */
+    int speedEndsAtFrame = Integer.MIN_VALUE;
+
+    /**
+     * Frames number the player is under Wall Walking Bonus influence
+     */
+    int crateWalkingEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * Indicates whether or not player can walk trough crates
+     */
+    boolean canWalkCrates = false; 
+    
+    /**
+     * Frames number the player is under Bomb Walking Bonus influence
+     */
+    int bombWalkingEndsAtFrame = Integer.MIN_VALUE;
+
+    /**
+     * Indicates whether or not player can walk through bombs
+     */
+    boolean canWalkBombs = false;
+
+    /**
+     * Indicates whether or not the player has the Ahmed bonus.
+     * Ahmed bonus means that the next bomb the player drops explodes
+     * immediately but doesn't kill the player.
+     */
+    boolean isAhmed = false;
+    
     /**
      * This field stores the most recent frame number when a bomb was dropped. The purpose of this
      * is to avoid dropping two bombs when crossing the line between two grid cells.
      * 
-     * @see Globals#BOMB_DROP_DELAY
+     * @see Constants#BOMB_DROP_DELAY
      */
-    public int lastBombFrame = Integer.MIN_VALUE;
+    int lastBombFrame = Integer.MIN_VALUE;
 
     /**
      * Frame number after which immortality ends for this player.
      */
     private int immortalityEndsAtFrame = Integer.MIN_VALUE;
+    
+    /**
+     * If player collects the immortality bonus the variable is changed.  
+     */
+    boolean immortalityBonusCollected = false;
+    
+    /**
+     * Frame number after which no bombs bonus ends for this player.
+     */
+    int noBombsEndsAtFrame = Integer.MIN_VALUE; 
+
+    /**
+     * Frame number after which controller reverse disease ends for this player.
+     */
+    int controllerReverseEndsAtFrame = Integer.MIN_VALUE;
 
     /**
      * If the player is dead, this is the frame number of its death.
@@ -91,10 +159,15 @@ final class PlayerInfo implements IPlayerSprite
      */
     private int livesLeft; 
 
+    /**
+     * Global configuration for the player.
+     */
+    private GameConfiguration conf;
+
     /*
      * 
      */
-    PlayerInfo(Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
+    PlayerInfo(GameConfiguration conf, Player player, int lives, ISprite.Type spriteType, int joinedAtFrame)
     {
         assert lives > 0 : "Number of lives must be > 0";
 
@@ -102,6 +175,10 @@ final class PlayerInfo implements IPlayerSprite
         this.spriteType = spriteType;
         this.livesLeft = lives;
         this.joinedAtFrame = joinedAtFrame;
+        this.conf = conf;
+
+        bombCount = conf.DEFAULT_BOMB_COUNT;
+        bombRange = conf.DEFAULT_BOMB_RANGE;
     }
 
     /**
@@ -253,7 +330,7 @@ final class PlayerInfo implements IPlayerSprite
      */
     boolean shouldResurrect()
     {
-        return livesLeft > 0 && frame > deathAtFrame + Globals.DEFAULT_RESURRECTION_FRAMES;
+        return livesLeft > 0 && frame > deathAtFrame + conf.DEFAULT_RESURRECTION_FRAMES;
     }
 
     /**
@@ -263,11 +340,14 @@ final class PlayerInfo implements IPlayerSprite
     {
         this.stateFrame = 0;
         this.state = State.DOWN;
-        this.bombCount = Globals.DEFAULT_BOMB_COUNT;
-        this.bombRange = Globals.DEFAULT_BOMB_RANGE;
+        this.bombCount = conf.DEFAULT_BOMB_COUNT;
+        this.bombRange = conf.DEFAULT_BOMB_RANGE;
+        this.immortalityBonusCollected = false;
+        this.controllerReverseEndsAtFrame = Integer.MIN_VALUE;
+        this.isAhmed = false;
 
         this.reincarnations++;
-        makeImmortal(Globals.DEFAULT_IMMORTALITY_FRAMES);
+        makeImmortal(conf.DEFAULT_IMMORTALITY_FRAMES);
     }
  
     /**
@@ -291,4 +371,87 @@ final class PlayerInfo implements IPlayerSprite
         ps.livesLeft = livesLeft;
         return ps;
     }
+
+    /* */
+    @Override
+    public int getBombCount()
+    {
+        return bombCount;
+    }
+
+	@Override
+	public int getLifeCount() 
+	{
+		return livesLeft;
+	}
+
+	@Override
+	public int getBombRange() 
+	{
+		return bombRange;
+	}
+
+	@Override
+	public int getBombWalkingEndsAtFrame() 
+	{
+		return bombWalkingEndsAtFrame;
+	}
+
+	@Override
+	public int getControllerReverseEndsAtFrame() 
+	{
+		return controllerReverseEndsAtFrame;
+	}
+
+	@Override
+	public int getCrateWalkingEndsAtFrame() 
+	{
+		return crateWalkingEndsAtFrame;
+	}
+
+	@Override
+	public int getDiarrheaEndsAtFrame() 
+	{
+		return diarrheaEndsAtFrame;
+	}
+
+	@Override
+	public int getImmortalityEndsAtFrame() 
+	{
+		return immortalityEndsAtFrame;
+	}
+
+	@Override
+	public int getMaxRangeEndsAtFrame() 
+	{
+		return maxRangeEndsAtFrame;
+	}
+
+	@Override
+	public int getNoBombsEndsAtFrame() 
+	{
+		return noBombsEndsAtFrame;
+	}
+
+	@Override
+	public int getSlowDownEndsAtFrame() 
+	{
+		if (speedMultiplier < 1.0f)
+			return speedEndsAtFrame;
+		else return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public int getSpeedUpEndsAtFrame() 
+	{
+		if (speedMultiplier > 1.0f)
+			return speedEndsAtFrame;
+		else return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public boolean isAhmed() 
+	{
+		return isAhmed;
+	}
 }

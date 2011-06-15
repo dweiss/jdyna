@@ -1,26 +1,23 @@
 package org.jdyna.players;
 
+
 import org.jdyna.*;
 
 /**
- * Factory of human players bound to the keyboard controller. Not for real use, I guess.
+ * A factory for players bound to the given controller. Typically a keyboard
+ * controller will be used to drive the player.
  */
-public final class HumanPlayerFactory implements IPlayerFactory
+public class CustomControllerPlayerFactory implements IPlayerFactory
 {
     private final IPlayerController controller;
     private final String playerName;
 
-    public HumanPlayerFactory()
-    {
-        this(Globals.getDefaultKeyboardController(0));
-    }
-
-    public HumanPlayerFactory(IPlayerController controller)
+    public CustomControllerPlayerFactory(IPlayerController controller)
     {
         this(controller, "Human");
     }
 
-    public HumanPlayerFactory(IPlayerController controller, String defaultPlayerName)
+    public CustomControllerPlayerFactory(IPlayerController controller, String defaultPlayerName)
     {
         this.controller = controller;
         this.playerName = defaultPlayerName;
@@ -44,6 +41,6 @@ public final class HumanPlayerFactory implements IPlayerFactory
     @Override
     public String getVendorName()
     {
-        return "Dawid Weiss";
+        return "jdyna.com";
     }
 }

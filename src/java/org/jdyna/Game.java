@@ -42,7 +42,6 @@ public final class Game implements IGameEventListenerHolder
          * are ranked after the game is over.
          * 
          * @see GameResult
-         * @see Standing
          */
         LAST_MAN_STANDING,
 
@@ -65,8 +64,7 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Dynamic information about players involved in the game. Indexed identically to 
-     * {@link #players}
+     * Dynamic information about players involved in the game.
      */
     private final List<PlayerInfo> playerInfos = Lists.newArrayList();
 
@@ -82,30 +80,12 @@ public final class Game implements IGameEventListenerHolder
     /**
      * How many frames to 'linger' after the game is over.
      */
-    private int lingerFrames = Globals.DEFAULT_LINGER_FRAMES;
-    
-    /**
-     * If periodic bonuses are placed on the board, then this is 
-     * the period after which a new bonus should be placed on the board.
-     * Bonuses will be placed at random board positions.
-     */
-    private int bonusPeriod = Globals.DEFAULT_BONUS_PERIOD;
-
-    /**
-     * Last time a bonus was added to the board.
-     */
-    private int lastBonusFrame;
-
-    /**
-     * Bonus cells assigned every {@link #bonusPeriod}.
-     */
-    private final static List<CellType> BONUSES = 
-        Arrays.asList(CellType.CELL_BONUS_BOMB, CellType.CELL_BONUS_RANGE);
+    private int lingerFrames = Constants.DEFAULT_LINGER_FRAMES;
 
     /**
      * Reusable array of events dispatched in each frame.
      * 
-     * @see #run()
+     * @see #run(Mode)
      */
     private final ArrayList<GameEvent> events = Lists.newArrayList();
 
@@ -117,7 +97,7 @@ public final class Game implements IGameEventListenerHolder
     /**
      * Game timer.
      */
-    private final GameTimer timer = new GameTimer(Globals.DEFAULT_FRAME_RATE);
+    private final GameTimer timer;
 
     /**
      * Game mode of the current competition.
@@ -145,42 +125,65 @@ public final class Game implements IGameEventListenerHolder
     private Map<String, Integer> teams = Maps.newHashBiMap();
 
     /**
+     * Game configuration settings (immutable for the game duration).
+     */
+    private final GameConfiguration conf;
+    
+    /**
      * Interrupted flag.
      */
     private volatile boolean interrupted;
+    
+    /**
+     * Highlight detector or null if none.
+     */
+    private IHighlightDetector highlightDetector;
 
     /**
      * Creates a single game.
      */
-    public Game(Board board, BoardInfo boardInfo, Player... players)
+    public Game(GameConfiguration conf, Board board, BoardInfo boardInfo, Player... players)
     {
+        this.conf = conf;
         this.board = board;
         this.boardData = boardInfo;
+        this.timer = new GameTimer(conf.DEFAULT_FRAME_RATE);
+        
+        // TODO: Disable highlight detector for now.
+        this.conf.ENABLE_HIGHLIGHTS_DATA = false;
 
         for (Player p : players) addPlayer(p, 0);
     }
 
     /**
-     * Dynamically attach a new player to an existing game. If the player with the
-     * given identifier already exists, an exception is thrown.
+     * Creates a single game, without players initially.
      */
-    public synchronized void addPlayer(Player p)
+    public Game(GameConfiguration conf, Board board, BoardInfo boardInfo)
     {
-        addPlayer(p, Globals.DEFAULT_JOINING_IMMORTALITY_FRAMES);
+        this(conf, board, boardInfo, new Player [0]);
     }
 
     /**
      * Dynamically attach a new player to an existing game. If the player with the
      * given identifier already exists, an exception is thrown.
      */
-    private synchronized void addPlayer(Player p, int immortalityCount)
+    public synchronized IPlayerSprite addPlayer(Player p)
+    {
+        return addPlayer(p, conf.DEFAULT_JOINING_IMMORTALITY_FRAMES);
+    }
+
+    /**
+     * Dynamically attach a new player to an existing game. If the player with the
+     * given identifier already exists, an exception is thrown.
+     */
+    private synchronized IPlayerSprite addPlayer(Player p, int immortalityCount)
     {
         if (hasPlayer(p.name))
         {
             throw new IllegalArgumentException("Player already exists: " + p.name);            
         }
 
-        setupPlayer(p, immortalityCount);
+        return setupPlayer(p, immortalityCount);
     }
 
     /**
@@ -199,14 +202,6 @@ public final class Game implements IGameEventListenerHolder
     }
 
     /**
-     * Creates a single game, without players initially.
-     */
-    public Game(Board board, BoardInfo boardInfo)
-    {
-        this(board, boardInfo, new Player [0]);
-    }
-
-    /**
      * Starts the game, does not return until the game ends. The game can be interrupted
      * by setting the running thread's interrupted flag.
      */
@@ -214,11 +209,16 @@ public final class Game implements IGameEventListenerHolder
     {
         this.mode = mode;
 
-        lastBonusFrame = bonusPeriod;
-
         int frame = 0;
         GameResult result = null;
-        events.add(new GameStartEvent(boardData));
+
+        /*
+         * Check if highlights detector should be running.
+         */
+        if (conf.ENABLE_HIGHLIGHTS_DATA)
+            addListener(highlightDetector);
+
+        events.add(new GameStartEvent(conf, boardData));
         do
         {
             if (interrupted 
@@ -250,9 +250,17 @@ public final class Game implements IGameEventListenerHolder
                 processBoardCells();
                 processPlayers(frame);
                 processBonuses(frame);
+                processCrates(frame);
 
                 events.add(new GameStateEvent(board.cells, playerInfos));
                 
+                /*
+                 * New highlight is detected, add this event to events stream.
+                 */
+                if (conf.ENABLE_HIGHLIGHTS_DATA && highlightDetector.isHighlightDetected()) {
+                    events.add(new HighlightEvent(highlightDetector.getHighlightFrameRange())); 
+                }
+
                 /*
                  * Check if player status should be dispatched. Dispatch
                  * every 50 frames or so anyway, so that clients that have
@@ -309,7 +317,7 @@ public final class Game implements IGameEventListenerHolder
      */
     private void processBonuses(int frame)
     {
-        if (lastBonusFrame < frame)
+        if (((frame + 1) % conf.DEFAULT_BONUS_PERIOD) == 0)
         {
             /* 
              * We pick the bonus location at random, avoiding
@@ -320,33 +328,79 @@ public final class Game implements IGameEventListenerHolder
             final HashSet<Point> banned = Sets.newHashSet();
             for (PlayerInfo pi : playerInfos)
             {
-                if (!pi.isDead()) banned.add(pi.location);
+                if (!pi.isDead()) banned.add(boardData.pixelToGrid(pi.location));
             }
 
-            final ArrayList<Point> positions = 
-                Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
-            for (int y = board.height - 1; y >= 0; y--)
+            final Point p = randomEmptyCell(banned);
+            if (p != null)
             {
-                for (int x = board.width - 1; x >= 0; x--)
+				final CellType bonus = conf.randomizer.randomBonus();
+				board.cellAt(p, Cell.getInstance(bonus));
+            }
+        }
+    }
+
+    /*
+     * TODO: javadoc.
+     */
+    private Point randomEmptyCell(Collection<Point> banned) {
+        final ArrayList<Point> positions = 
+            Lists.newArrayListWithExpectedSize(board.width * board.height / 2);
+
+        for (int y = board.height - 1; y >= 0; y--)
+        {
+            for (int x = board.width - 1; x >= 0; x--)
+            {
+                final Point p = new Point(x, y);
+                if (!banned.contains(p) 
+                    && board.cellAt(p).type == CellType.CELL_EMPTY)
                 {
-                    final Point p = new Point(x, y);
-                    if (!banned.contains(p) 
-                        && board.cellAt(p).type == CellType.CELL_EMPTY)
-                    {
-                        positions.add(p);
-                    }
+                    positions.add(p);
+                }
+            }
+        }
+
+        final int size = positions.size(); 
+        if (size > 0)
+        {
+            return positions.get(random.nextInt(size));
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if new crates should be placed on the board.
+     */
+    private void processCrates(int frame)
+    {
+        if (!conf.ADD_RANDOM_CRATES)
+            return;
+
+        if (((frame + 1) % conf.DEFAULT_CRATE_PERIOD) == 0)
+        {
+        	final HashSet<Point> banned = Sets.newHashSet();
+            for (PlayerInfo pi : playerInfos)
+            {
+                if (!pi.isDead())
+                {
+                    Point point = boardData.pixelToGrid(pi.location);
+                    banned.add(point);
+                    banned.addAll(BoardUtilities.findBlockingLocations(board, point));
                 }
             }
 
-            final int size = positions.size(); 
-            if (size > 0)
+            for (Point point : board.defaultPlayerPositions)
             {
-                final CellType bonus = BONUSES.get(random.nextInt(BONUSES.size()));
-                final Point p = positions.get(random.nextInt(size));
-                board.cellAt(p, Cell.getInstance(bonus));
+                banned.add(point);
+                banned.addAll(BoardUtilities.findBlockingLocations(board, point));
             }
 
-            this.lastBonusFrame = frame + bonusPeriod;
+            final Point p = randomEmptyCell(banned);
+            if (p != null)
+            {
+                board.cellAt(p, Cell.getInstance(CellType.CELL_CRATE));
+            }
         }
     }
 
@@ -418,14 +472,6 @@ public final class Game implements IGameEventListenerHolder
         }
 
         return stats;
-    }
-
-    /**
-     * Set the frame rate. Zero means no delays.
-     */
-    public void setFrameRate(double framesPerSecond)
-    {
-        timer.setFrameRate(framesPerSecond);
     }
 
     /**
@@ -541,7 +587,26 @@ public final class Game implements IGameEventListenerHolder
         {
             final IPlayerController c = pi.player.controller;
 
-            final IPlayerController.Direction signal = c.getCurrent();
+            final IPlayerController.Direction originalSignal = c.getCurrent();
+            final IPlayerController.Direction signal;
+            if (originalSignal != null && frame < pi.controllerReverseEndsAtFrame) switch (originalSignal)
+            {
+                case DOWN:
+                    signal = Direction.UP;
+                    break;
+                case UP:
+                    signal = Direction.DOWN;
+                    break;
+                case LEFT:
+                    signal = Direction.RIGHT;
+                    break;
+                case RIGHT:
+                    signal = Direction.LEFT;
+                    break;
+                default:
+                    signal = originalSignal;
+            }
+            else signal = originalSignal;
             pi.nextFrameUpdate(signal);
 
             /*
@@ -557,7 +622,7 @@ public final class Game implements IGameEventListenerHolder
                 movePlayer(pi, signal);
             }
 
-            if (c.dropsBomb() && !pi.isImmortal())
+            if (c.dropsBomb() && (!pi.isImmortal() || pi.immortalityBonusCollected))
             {
                 dropBombAttempt(frame, pi);
             }
@@ -566,6 +631,11 @@ public final class Game implements IGameEventListenerHolder
              * check collisions against bombs and other active cells.
              */
             checkCollisions(frame, killed, pi);
+            
+            /*
+             * execute bonuses that player doesn't have influence on.
+             */
+            executeBonuses(frame, pi);
         }
         
         /*
@@ -637,24 +707,120 @@ public final class Game implements IGameEventListenerHolder
                 }
             }
         }
-
+        
         /*
-         * Process bonuses. The bonus-assignment is not entirely fair, because if
-         * two players touch the bonus at once, the player with lower index will collect
-         * the bonus. With randomized player order, however, this should be of no 
-         * practical importance.
+         * Process bonuses.
          */
-        boolean bonusCollected = false;
-        if (c.type == CellType.CELL_BONUS_BOMB)
+		processCollectedBonus(frame, pi, c.type);
+    }
+    
+    /**
+     * Process bonuses. The bonus-assignment is not entirely fair, because if
+     * two players touch the bonus at once, the player with lower index will collect
+     * the bonus. With randomized player order, however, this should be of no 
+     * practical importance.
+     */    
+    private void processCollectedBonus(int frame, PlayerInfo pi, CellType ct)
+    {
+        final Point xy = boardData.pixelToGrid(pi.location);
+        
+    	boolean bonusCollected = false;
+        if (ct == CellType.CELL_BONUS_BOMB)
         {
             pi.bombCount++;
             bonusCollected = true;
         }
 
-        if (c.type == CellType.CELL_BONUS_RANGE)
+        if (ct == CellType.CELL_BONUS_RANGE)
         {
-            pi.bombRange++;
+        	if ((pi.maxRangeEndsAtFrame > frame) && (pi.bombRange == Integer.MAX_VALUE)) 
+        	{
+        		pi.storedBombRange++;
+        	}
+        	else
+        	{
+        	    pi.bombRange++;
+        	}
+        	bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_DIARRHEA)
+        {
+        	pi.diarrheaEndsAtFrame = frame + conf.DEFAULT_DIARRHEA_FRAMES;
+        	bonusCollected = true;
+        }
+
+        if (ct == CellType.CELL_BONUS_MAXRANGE)
+        {
+            if (pi.maxRangeEndsAtFrame < frame)
+            {
+                pi.storedBombRange = pi.bombRange;
+                pi.bombRange = Integer.MAX_VALUE;
+            }
+        	pi.maxRangeEndsAtFrame = frame + conf.DEFAULT_MAXRANGE_FRAMES;
+        	bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_IMMORTALITY)
+        {
+        	pi.makeImmortal(conf.DEFAULT_IMMORTALITY_FRAMES);
+        	pi.immortalityBonusCollected = true;
+        	bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_NO_BOMBS)
+        {
+        	pi.noBombsEndsAtFrame = frame + conf.DEFAULT_NO_BOMBS_FRAMES;
+        	bonusCollected = true;
+        }
+
+        if (ct == CellType.CELL_BONUS_SPEED_UP
+            || ct == CellType.CELL_BONUS_SLOW_DOWN)
+        {
+            pi.speedEndsAtFrame = frame + conf.DEFAULT_SPEED_FRAMES;
+
+            pi.speedMultiplier = ct == CellType.CELL_BONUS_SPEED_UP ?
+                conf.SPEED_UP_MULTIPLIER	: conf.SLOW_DOWN_MULTIPLIER;
+            pi.speed = new Point(
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED));
             bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_CRATE_WALKING)
+        {
+        	pi.crateWalkingEndsAtFrame = frame + conf.DEFAULT_CRATE_WALKING_FRAMES;
+        	pi.canWalkCrates = true;
+        	bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_BOMB_WALKING)
+        {
+            pi.bombWalkingEndsAtFrame = frame + conf.DEFAULT_BOMB_WALKING_FRAMES;
+            pi.canWalkBombs = true;
+            bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_CONTROLLER_REVERSE)
+        {
+            pi.controllerReverseEndsAtFrame = frame
+                + conf.DEFAULT_CONTROLLER_REVERSE_FRAMES;
+            bonusCollected = true;
+        }
+
+        if (ct == CellType.CELL_BONUS_AHMED)
+        {
+            pi.isAhmed = true;
+            bonusCollected = true;
+        }
+        
+        if (ct == CellType.CELL_BONUS_SURPRISE)
+        {
+        	/*
+        	 * Random bonus CellType
+        	 */
+        	final CellType rct = conf.randomizer.surpriseBonus();
+        	processCollectedBonus(frame, pi, rct);
         }
 
         if (bonusCollected)
@@ -662,8 +828,56 @@ public final class Game implements IGameEventListenerHolder
             dispatchPlayerStatuses = true;
             board.cellAt(xy, Cell.getInstance(CellType.CELL_EMPTY));
             events.add(new SoundEffectEvent(SoundEffect.BONUS, 1));
-        }
+        }    	
     }
+    
+    /**
+	 * Execute bonuses that aren't controlled by the player, like diarrhea.
+	 */
+    private void executeBonuses(int frame, PlayerInfo pi)
+	{
+		if (pi.diarrheaEndsAtFrame > frame)
+		{
+			dropBombAttempt(frame, pi);
+		}
+
+		if ((pi.maxRangeEndsAtFrame < frame) && (pi.bombRange == Integer.MAX_VALUE))
+		{
+			pi.bombRange = pi.storedBombRange;
+			pi.storedBombRange = Integer.MIN_VALUE;
+		}
+
+        if ((pi.speedEndsAtFrame <= frame) && (pi.speedMultiplier != 1.0f))
+        {
+            pi.speedMultiplier = 1.0f;
+            pi.speed = new Point((int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED),
+                (int) (pi.speedMultiplier * Constants.DEFAULT_PLAYER_SPEED));
+        }
+
+        if ((pi.crateWalkingEndsAtFrame < frame) && (pi.canWalkCrates))
+        {
+        	pi.canWalkCrates = false;
+        	final Point xy = boardData.pixelToGrid(pi.location);
+        	if (!canWalkOn(pi, xy))
+        	{
+        		pi.kill();
+        		events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+        		return;
+        	}
+        }
+
+        if ((pi.bombWalkingEndsAtFrame < frame) && (pi.canWalkBombs))
+        {
+            pi.canWalkBombs = false;
+            final Point xy = boardData.pixelToGrid(pi.location);
+            if (!canWalkOn(pi, xy))
+            {
+                pi.kill();
+                events.add(new SoundEffectEvent(SoundEffect.DYING, 1));
+                return;
+            }
+        }
+	}
 
     /**
      * Attempt to drop a bomb at the given location (if the player has any bombs left
@@ -675,17 +889,26 @@ public final class Game implements IGameEventListenerHolder
 
         final boolean canPlaceBomb = board.cellAt(xy).type == CellType.CELL_EMPTY;
         final boolean hasBombs = pi.bombCount > 0;
-        final boolean dropDelay = (pi.lastBombFrame + Globals.BOMB_DROP_DELAY > frame);
+        final boolean dropDelay = (pi.lastBombFrame + Constants.BOMB_DROP_DELAY > frame);
+        final boolean noBombs = (pi.noBombsEndsAtFrame > frame);
 
-        if (canPlaceBomb && hasBombs && !dropDelay)
+        if (canPlaceBomb && hasBombs && !dropDelay && !noBombs)
         {
             pi.bombCount--;
             pi.lastBombFrame = frame;
 
             final BombCell bomb = (BombCell) Cell.getInstance(CellType.CELL_BOMB);
-            bomb.player = pi;
             bomb.range = pi.bombRange;
+            bomb.fuseCounter = conf.DEFAULT_FUSE_FRAMES;
+            bomb.player = pi;
             board.cellAt(xy, bomb);
+
+            if (pi.isAhmed) {
+                bomb.fuseCounter = 1;
+                final int explosionFramesSpan = CellType.CELL_BOOM_XY.getRemoveAtCounter();
+                pi.makeImmortal(explosionFramesSpan + 2);
+                pi.isAhmed = false;
+            }
         }
     }
 
@@ -822,13 +1045,16 @@ public final class Game implements IGameEventListenerHolder
          * Players in immortality mode can walk over bombs, but not anything else.
          */
         CellType t = board.cellAt(txy).type;
-        return t.isWalkable() || (pi.isImmortal() && t == CellType.CELL_BOMB);
+        return t.isWalkable() 
+        || (pi.isImmortal() && t == CellType.CELL_BOMB) 
+        || (pi.canWalkCrates && ((t == CellType.CELL_CRATE) ||(t == CellType.CELL_CRATE_OUT)))
+        || (pi.canWalkBombs && t == CellType.CELL_BOMB);
     }
 
     /**
      * Add a player to the game.
      */
-    private void setupPlayer(Player p, int immortalityCount)
+    private IPlayerSprite setupPlayer(Player p, int immortalityCount)
     {
         final Point [] defaults = board.defaultPlayerPositions;
         if (defaults.length < playerInfos.size())
@@ -837,7 +1063,7 @@ public final class Game implements IGameEventListenerHolder
                 + defaults.length + " < " + playerInfos.size());
         }
 
-        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : Globals.DEFAULT_LIVES);
+        final int initialLives = (mode == Mode.LAST_MAN_STANDING ? 1 : conf.DEFAULT_LIVES);
 
         if (p.controller instanceof IGameEventListener)
         {
@@ -847,10 +1073,12 @@ public final class Game implements IGameEventListenerHolder
         final int playerIndex = playerInfos.size();
         final ISprite.Type spriteType = getSpriteType(p, playerIndex);
 
-        final PlayerInfo pi = new PlayerInfo(p, initialLives, spriteType, currentFrame);
+        final PlayerInfo pi = new PlayerInfo(conf, p, initialLives, spriteType, currentFrame);
         pi.makeImmortal(immortalityCount);
         pi.location.setLocation(getDefaultLocation(playerIndex));
         playerInfos.add(pi);
+
+        return pi;
     }
 
     /**
@@ -928,7 +1156,7 @@ public final class Game implements IGameEventListenerHolder
          * Detect and propagate explosions.
          */
         final ArrayList<Point> crates = Lists.newArrayList();
-        final ArrayList<BombCell> bombs = Lists.newArrayList();
+        final ArrayList<ExplosionMetadata> explosionMetadata = Lists.newArrayList();
         for (int x = board.width - 1; x >= 0; x--)
         {
             for (int y = board.height - 1; y >= 0; y--)
@@ -941,7 +1169,7 @@ public final class Game implements IGameEventListenerHolder
                     final BombCell bomb = (BombCell) cell;
                     if (bomb.fuseCounter-- <= 0)
                     {
-                        BoardUtilities.explode(board, bombs, crates, x, y);
+                        BoardUtilities.explode(board, explosionMetadata, crates, x, y);
                     }
                 }
             }
@@ -950,9 +1178,10 @@ public final class Game implements IGameEventListenerHolder
         /*
          * Add sound events to the queue.
          */
-        if (bombs.size() > 0)
+        if (explosionMetadata.size() > 0)
         {
-            events.add(new SoundEffectEvent(SoundEffect.BOMB, bombs.size()));
+            events.add(new SoundEffectEvent(SoundEffect.BOMB, explosionMetadata.size()));
+            events.add(new ExplosionEvent(explosionMetadata));
         }
 
         /*
@@ -966,8 +1195,9 @@ public final class Game implements IGameEventListenerHolder
         /*
          * Update player bomb counters.
          */
-        for (BombCell bomb : bombs)
+        for (ExplosionMetadata e : explosionMetadata)
         {
+            final BombCell bomb = e.getBombCell();
             if (bomb.player != null)
             {
                 bomb.player.bombCount++;

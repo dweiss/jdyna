@@ -18,9 +18,14 @@ public final class BoardUtilities
     }
 
     /**
+     * Helper arrays for loops that need to go in four directions.
+     */
+    private final static int[] dx = {1, 0, -1, 0}, dy = {0, 1, 0, -1};
+
+    /**
      * A grid of resulting {@link CellType}s when two explosions overlap.
      * 
-     * @see #overlap(Cell, Cell)
+     * @see #overlap(Cell, ExplosionCell, BombCell)
      */
     private final static EnumMap<CellType, EnumMap<CellType, CellType>> EXPLOSION_OVERLAPS;
     static
@@ -77,10 +82,11 @@ public final class BoardUtilities
      * Explode <code>range</code> cells around (x,y), recursively propagating if other
      * bombs are found in the range.
      * 
-     * @param bombs A list of bombs that exploded during this call.
+     * @param explosionMetadata A list of bombs that exploded during this call.
      * @param crates A list of crate positions that should be removed as part of this explosion. 
      */
-    static void explode(Board board, List<BombCell> bombs, List<Point> crates, int x, int y)
+    static void explode(Board board, List<ExplosionMetadata> explosionMetadata, 
+        List<Point> crates, int x, int y)
     {
         // Horizontal mode.
         final BombCell c = (BombCell) board.cellAt(x, y);
@@ -94,29 +100,30 @@ public final class BoardUtilities
         // Push the bomb on the list of exploded bombs and mark it as the centerpoint.
         if (c.type == CellType.CELL_BOMB)
         {
-            bombs.add(c);
+            explosionMetadata.add(new ExplosionMetadata(x, y, c));
         }
+
         // Add flame attribution here. 
         board.cellAt(x, y, 
             overlap(c, (ExplosionCell) Cell.getInstance(CellType.CELL_BOOM_XY), c));
 
         // Propagate in all directions from the centerpoint.
-        explode0(board, c, bombs, crates, range, x - 1, xmin, -1, x, y, true,  
+        explode0(board, c, explosionMetadata, crates, range, x - 1, xmin, -1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_LX);
-        explode0(board, c, bombs, crates, range, x + 1, xmax, +1, x, y, true,  
+        explode0(board, c, explosionMetadata, crates, range, x + 1, xmax, +1, x, y, true,  
             CellType.CELL_BOOM_X, CellType.CELL_BOOM_RX);
-        explode0(board, c, bombs, crates, range, y - 1, ymin, -1, x, y, false, 
+        explode0(board, c, explosionMetadata, crates, range, y - 1, ymin, -1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_TY);
-        explode0(board, c, bombs, crates, range, y + 1, ymax, +1, x, y, false, 
+        explode0(board, c, explosionMetadata, crates, range, y + 1, ymax, +1, x, y, false, 
             CellType.CELL_BOOM_Y, CellType.CELL_BOOM_BY);
     }
 
     /**
-     * Helper method for {@link #explode(List, int, int, int)}, propagation
+     * Helper method for {@link #explode(Board, List, List, int, int)}7, propagation
      * of the explosion. 
      */
     private static void explode0(
-        Board board, BombCell bomb, List<BombCell> bombs, List<Point> crates,
+        Board board, BombCell bomb, List<ExplosionMetadata> explosionMetadata, List<Point> crates,
         int range,
         int from, int to, int step,
         final int x, final int y,
@@ -138,7 +145,7 @@ public final class BoardUtilities
                     return;
 
                 case CELL_BOMB:
-                    if (Globals.DELAYED_BOMB_EXPLOSIONS)
+                    if (Constants.DELAYED_BOMB_EXPLOSIONS)
                     {
                         /*
                          * Don't explode bombs immediately, just speed up their explosion.
@@ -151,7 +158,7 @@ public final class BoardUtilities
                      * Default Dyna behavior: recursively explode the bomb at lx, ly, but still
                      * fill in the cells that we should fill.
                      */
-                    explode(board, bombs, crates, lx, ly);
+                    explode(board, explosionMetadata, crates, lx, ly);
                     break;
             }
 
@@ -219,5 +226,85 @@ public final class BoardUtilities
     public static boolean isClose(Point a, Point b, int fuzziness)
     {
         return Math.abs(a.x - b.x) <= fuzziness && Math.abs(a.y - b.y) <= fuzziness;
+    }
+
+    /**
+     * Determines locations at which placing a crate will cause given player to
+     * be blocked (that is close him in a tunnel without exit).
+     * 
+     * @param p
+     *            Coordinates of the cell the player is standing on
+     */
+    public static Collection<Point> findBlockingLocations(Board board, Point p)
+    {
+        
+        ArrayList<Point> result = new ArrayList<Point>();
+        if (isBlocked(board, p)) {
+            // player is already in a tunnel
+            // we should return all cells inside this tunnel
+            for (int d = 0; d < 4; d++)
+            {
+                for (int i = 1; ; i++)
+                {
+                    Point p2 = new Point(p.x + i * dx[d], p.y + i * dy[d]);
+                    if (board.cellAt(p2).type.isWalkable())
+                        result.add(p2);
+                    else
+                        break;
+                }
+            }
+            return result;
+        }
+        for (int x = 0; x < board.width; x++)
+        {
+            for (int y = 0; y < board.height; y++)
+            {
+                Cell cell = board.cells[x][y];
+                if (cell.type == CellType.CELL_EMPTY)
+                {
+                    // simulate placing a crate and check if causes blockade
+                    board.cellAt(x, y, Cell.getInstance(CellType.CELL_WALL));
+                    if (isBlocked(board, p))
+                    {
+                        result.add(new Point(x, y));
+                    }
+                    board.cellAt(x, y, cell);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Determines whether a player standing on given board on given location
+     * is blocked inside a tunnel without turns.
+     */
+    public static boolean isBlocked(Board board, Point p)
+    {
+        final boolean [] directionBlocked = new boolean [4];
+        for (int d = 0; d < 4; d++)
+        {
+            for (int i = 0; ; i++)
+            {
+                Cell ahead = board.cells[p.x + (i + 1) * dx[d]]
+                                         [p.y + (i + 1) * dy[d]];
+                Cell side1 = board.cells[p.x + i * dx[d] + dx[(d + 1) % 4]]
+                                         [p.y + i * dy[d] + dy[(d + 1) % 4]];
+                Cell side2 = board.cells[p.x + i * dx[d] + dx[(d + 3) % 4]]
+                                         [p.y + i * dy[d] + dy[(d + 3) % 4]];
+                if (side1.type.isWalkable() || side2.type.isWalkable())
+                {
+                    // player can turn sideways, so this is not a closed tunnel
+                    break;
+                }
+                else if (!ahead.type.isWalkable())
+                {
+                    // player can't go ahead, so this is a closed tunnel
+                    directionBlocked[d] = true;
+                    break;
+                }
+            }
+        }
+        return (directionBlocked[0] && directionBlocked[2]) || (directionBlocked[1] && directionBlocked[3]);
     }
 }

@@ -1,13 +1,12 @@
 package org.jdyna.players.tyson.emulator.gamestate.bombs;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import org.jdyna.CellType;
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -27,17 +26,22 @@ import org.jdyna.players.tyson.emulator.gamestate.bombs.BombState.BombStatus;
  */
 public class Bombs implements IPlayersInformationListener
 {
+    // TODO: We rely on the default game setup here (Dyna Classic). 
     public final static int EXPLOSION_FRAMES = 14;
-    public final static int BOMB_LIFETIME = Globals.DEFAULT_FUSE_FRAMES
-        + EXPLOSION_FRAMES;
+    public final static int BOMB_LIFETIME = GameConfiguration._DEFAULT_FUSE_FRAMES + EXPLOSION_FRAMES;
+
     protected final Map<GridCoord, BombState> bombs = new HashMap<GridCoord, BombState>();
     private final ZoneSafetyUpdater zoneSafetyUpdater;
+
+    protected final GameConfiguration conf;
 
     /**
      * @param board Source of information about board.
      */
-    public Bombs(final Board board)
+    public Bombs(final Board board, GameConfiguration conf)
     {
+        this.conf = conf;
+
         for (int i = 0; i < board.getWidth(); i++)
         {
             for (int j = 0; j < board.getHeight(); j++)
@@ -45,13 +49,13 @@ public class Bombs implements IPlayersInformationListener
                 final CellType type = board.cellAt(i, j).getType();
                 if (type == CellType.CELL_BOMB)
                 {
-                    bombs.put(new GridCoord(i, j), new BombState(
-                        Globals.DEFAULT_FUSE_FRAMES, BombStatus.READY));
+                    bombs.put(new GridCoord(i, j), new BombState(conf,
+                        conf.DEFAULT_FUSE_FRAMES, BombStatus.READY));
                 }
                 else if (type == CellType.CELL_BOOM_XY)
                 {
-                    bombs.put(new GridCoord(i, j), new BombState(EXPLOSION_FRAMES,
-                        BombStatus.EXPLODED));
+                    bombs.put(new GridCoord(i, j), 
+                        new BombState(conf, EXPLOSION_FRAMES, BombStatus.EXPLODED));
                 }
             }
         }
@@ -114,7 +118,7 @@ public class Bombs implements IPlayersInformationListener
     }
 
     /**
-     * @param point To check its safety.
+     * @param grid To check its safety.
      * @param framesShift Describes future in number of frames.
      * @return
      *         <code>true<code> if cell will be ultimately safe (without any bombs in future), otherwise <code>false</code>
@@ -169,7 +173,7 @@ public class Bombs implements IPlayersInformationListener
     }
 
     /**
-     * @see ZoneSafetyUpdater#someBombZoneWillExploded(Point, int)
+     * @see ZoneSafetyUpdater#someBombZoneWillExploded
      */
     public boolean someBombZoneWillExploded(final GridCoord grid, final int framesShift)
     {
@@ -260,7 +264,7 @@ public class Bombs implements IPlayersInformationListener
         BombState bomb = bombs.get(grid);
         if (bomb == null || bomb.getStatus() != BombStatus.READY)
         {
-            bomb = new BombState(Globals.DEFAULT_FUSE_FRAMES, BombStatus.READY);
+            bomb = new BombState(conf, conf.DEFAULT_FUSE_FRAMES, BombStatus.READY);
             bombs.put(grid, bomb);
         }
         else
@@ -274,7 +278,7 @@ public class Bombs implements IPlayersInformationListener
         BombState bomb = bombs.get(grid);
         if (bomb == null)
         {
-            bombs.put(grid, new BombState(EXPLOSION_FRAMES, BombStatus.READY));
+            bombs.put(grid, new BombState(conf, EXPLOSION_FRAMES, BombStatus.READY));
         }
         else if (bomb.getStatus() == BombStatus.READY)
         {

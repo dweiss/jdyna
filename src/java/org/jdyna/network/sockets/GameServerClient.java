@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdyna.GameConfiguration;
 import org.jdyna.network.packetio.SerializablePacket;
 import org.jdyna.network.packetio.TCPPacketEmitter;
 import org.jdyna.network.packetio.UDPPacketListener;
@@ -136,12 +137,12 @@ public class GameServerClient
     /**
      * Create a new game on the server.
      */
-    public GameHandle createGame(String gameName, String boardName) throws IOException
+    public GameHandle createGame(GameConfiguration conf, String gameName, String boardName) throws IOException
     {
         checkConnected();
 
         final CreateGameResponse response = sendReceive(CreateGameResponse.class,
-            new CreateGameRequest(gameName, boardName));
+            new CreateGameRequest(conf, gameName, boardName));
         return response.handle;
     }
 

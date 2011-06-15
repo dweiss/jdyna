@@ -1,38 +1,93 @@
 package org.jdyna.frontend.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.jdyna.*;
+import org.jdyna.Board;
+import org.jdyna.BoardInfo;
+import org.jdyna.Boards;
+import org.jdyna.Constants;
+import org.jdyna.Game;
+import org.jdyna.GameConfiguration;
+import org.jdyna.GameResult;
+import org.jdyna.IGameEventListener;
+import org.jdyna.IGameEventListenerHolder;
+import org.jdyna.IPlayerController;
+import org.jdyna.IPlayerFactory;
+import org.jdyna.IPlayerSprite;
+import org.jdyna.IViewListener;
+import org.jdyna.Player;
+import org.jdyna.PlayerTeamName;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
 import org.jdyna.audio.openal.OpenALSFX;
+import org.jdyna.frontend.swing.Configuration.ViewType;
 import org.jdyna.network.packetio.UDPPacketEmitter;
-import org.jdyna.network.sockets.*;
+import org.jdyna.network.sockets.AsyncPlayerController;
+import org.jdyna.network.sockets.ControllerStateDispatch;
+import org.jdyna.network.sockets.GameClient;
+import org.jdyna.network.sockets.GameHandle;
+import org.jdyna.network.sockets.GameServer;
+import org.jdyna.network.sockets.GameServerClient;
+import org.jdyna.network.sockets.PlayerHandle;
 import org.jdyna.network.sockets.packets.ServerInfo;
-import org.jdyna.players.HumanPlayerFactory;
-import org.jdyna.players.RabbitFactory;
+import org.jdyna.players.CustomControllerPlayerFactory;
 import org.jdyna.players.n00b.NoobFactory;
+import org.jdyna.players.rabbit.RabbitFactory;
 import org.jdyna.players.stalker.StalkerFactory;
 import org.jdyna.players.tyson.TysonFactory;
 import org.jdyna.view.resources.ImageUtilities;
+import org.jdyna.view.swing.AWTKeyboardController;
 import org.jdyna.view.swing.BoardFrame;
 import org.jdyna.view.swing.SwingUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.Options;
 
 /**
@@ -59,6 +114,16 @@ public final class JDyna
      * Configuration settings.
      */
     private Configuration config = new Configuration();
+
+    /**
+     * Board used for the game.
+     */
+    private Board board;
+
+    /**
+     * Game configuration used for the game.
+     */
+    private GameConfiguration gameConfig;
 
     /**
      * Bots.
@@ -110,7 +175,7 @@ public final class JDyna
         /*
          * Initialize the main GUI.
          */
-        frame = new JFrame("JDyna");
+        frame = new JFrame("JDyna.com");
         frame.getContentPane().add(createMainPanelGUI());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
@@ -346,15 +411,35 @@ public final class JDyna
     {
         assert SwingUtilities.isEventDispatchThread();
 
-        final Board board = selectBoard();
-        if (board == null) return;
+        if (!selectGameConfig(
+            GameConfiguration.CLASSIC,
+            GameConfiguration.WITH_BONUSES,
+            GameConfiguration.MORE_BONUSES))
+            return;
 
         hideMainGUI();
         runLocalGame(
             board,
+            gameConfig,
             null,
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(0), "Player 1"),
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(1), "Player 2"));
+            getKeyboardController(0, config.viewType, "Player 1"),
+            getKeyboardController(1, config.viewType, "Player 2"));
+    }
+
+    /**
+     * Return the keyboard controller adequate to the attached view. 
+     */
+    private IPlayerFactory getKeyboardController(int playerNum, 
+        ViewType viewType, String playerName)
+    {
+        switch (viewType)
+        {
+            case SWING_VIEW:
+                return new CustomControllerPlayerFactory(
+                    AWTKeyboardController.getKeyboardController(playerNum, config), playerName);
+            default:
+                throw new RuntimeException("Unreachable code.");
+        }
     }
 
     /**
@@ -364,8 +449,10 @@ public final class JDyna
     {
         assert SwingUtilities.isEventDispatchThread();
 
-        final Board board = selectBoard();
-        if (board == null) return;
+        // TODO: restrict to CLASSIC only because bots were not designed to run with
+        // bonuses on board.
+        if (!selectGameConfig(GameConfiguration.CLASSIC))
+            return;
 
         final String bot = Dialogs.selectOneFromList(frame,
             "Select opponent", "Select opponent",
@@ -377,11 +464,64 @@ public final class JDyna
         final String playerName = "Player";
         runLocalGame(
             board,
+            GameConfiguration.CLASSIC,
             playerName,
-            new HumanPlayerFactory(Globals.getDefaultKeyboardController(0), playerName),
+            getKeyboardController(0, config.viewType, playerName),
             getBot(bot));        
     }
-    
+
+    /**
+     * Pick the board and game configuration if more than one is allowed.
+     */
+    private boolean selectGameConfig(GameConfiguration... configs)
+    {
+        final DefaultFormBuilder builder =
+            new DefaultFormBuilder(new FormLayout("right:pref, 3dlu, fill:pref:grow"));
+        builder.setDefaultDialogBorder();
+        
+        // Add board selection.
+        final Set<String> boardNames = boards.getBoardNames();
+        final JComboBox boardCombo = new JComboBox(
+            (String []) boardNames.toArray(new String [boardNames.size()]));
+        setComboDefault(boardCombo, config.mostRecentBoard);
+
+        // Add game config selection.
+        final String [] configNames = new String [configs.length];
+        for (int i = 0; i < configs.length; i++)
+            configNames[i] = configs[i].configName;
+
+        final JComboBox configCombo = new JComboBox(configNames);
+        setComboDefault(configCombo, config.mostRecentConfig);
+
+        builder.append("Board:", boardCombo);
+        builder.append("Bonuses:", configCombo);
+
+        final JComponent panel = builder.getPanel();
+        if (JOptionPane.OK_OPTION == JOptionPane.showOptionDialog(frame, panel,
+            "Game configuration", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
+            null, null, null))
+        {
+            this.board = boards.get((String) boardCombo.getSelectedItem());
+            this.gameConfig = configs[configCombo.getSelectedIndex()];
+
+            this.config.mostRecentBoard = board.name;
+            this.config.mostRecentConfig = gameConfig.configName;
+            
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set the default for a given combo or the first available option.
+     */
+    private void setComboDefault(JComboBox combo, String selected)
+    {
+        combo.setSelectedItem(selected);
+        if (combo.getSelectedIndex() < 0)
+            combo.setSelectedIndex(0);
+    }
+
     /**
      * Return the names of all bots.
      */
@@ -419,7 +559,7 @@ public final class JDyna
             protected List<GameListEntry> doInBackground() throws Exception
             {
                 List<ServerInfo> servers = GameServerClient.lookup(
-                    GameServer.DEFAULT_UDP_BROADCAST, 
+                    config.UDPBroadcastPort, 
                     /* Look for all servers. */ 0,
                     2 * GameServer.AUTO_DISCOVERY_INTERVAL);
 
@@ -493,8 +633,8 @@ public final class JDyna
             /*
              * Join the given game.
              */
-            final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                Globals.getDefaultKeyboardController(0), fullName.playerName);
+            final IPlayerFactory playerFactory = 
+                getKeyboardController(0, config.viewType, fullName.playerName);
 
             final GameServerClient client = new GameServerClient(gameEntry.server);
             client.connect();
@@ -568,8 +708,11 @@ public final class JDyna
     {
         assert SwingUtilities.isEventDispatchThread();
 
-        final Board board = selectBoard();
-        if (board == null) return;
+        if (!selectGameConfig(
+            GameConfiguration.CLASSIC,
+            GameConfiguration.WITH_BONUSES,
+            GameConfiguration.MORE_BONUSES))
+            return;
 
         final String name = promptForName();
         if (name == null) return;
@@ -580,13 +723,13 @@ public final class JDyna
         /*
          * Start local server, create the game and attach the player to the server.
          */
-        final GameServer server = new GameServer();
+        final GameServer server = new GameServer(config.UDPBroadcastPort, config.UDPport, config.TCPport);
         server.gameStateLogging = false;
 
         try
         {
-            final IPlayerFactory playerFactory = new HumanPlayerFactory(
-                Globals.getDefaultKeyboardController(0), fullName.playerName);
+            final IPlayerFactory playerFactory = 
+                getKeyboardController(0, config.viewType, fullName.playerName);
 
             /*
              * Start the server. 
@@ -598,7 +741,7 @@ public final class JDyna
             /*
              * Create a new game on the server. 
              */
-            final GameHandle gameHandle = client.createGame("Game: " + board.name, board.name);
+            final GameHandle gameHandle = client.createGame(gameConfig, "Game: " + board.name, board.name);
             final PlayerHandle playerHandle = client.joinGame(gameHandle, fullName.toString());
             client.disconnect();
 
@@ -688,18 +831,23 @@ public final class JDyna
     /**
      * Run a local game.
      */
-    private void runLocalGame(Board board, String highlightPlayer, IPlayerFactory... players)
+    private void runLocalGame(Board board, GameConfiguration conf, String highlightPlayer, IPlayerFactory... players)
     {
         final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
-    
-        final Game game = new Game(board, boardInfo);
-        game.setFrameRate(Globals.DEFAULT_FRAME_RATE);
+            new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
+
+        final Game game = new Game(conf, board, boardInfo);
+        ArrayList<IPlayerSprite> playerSprites = new ArrayList<IPlayerSprite>(1);
     
         for (IPlayerFactory pf : players)
         {
             final String name = pf.getDefaultPlayerName();
-            game.addPlayer(new Player(name, pf.getController(name)));
+            final IPlayerSprite player = game.addPlayer(new Player(name, pf.getController(name)));
+            if (StringUtils.isEmpty(highlightPlayer)
+                || StringUtils.equals(name, highlightPlayer))
+            {
+                playerSprites.add(player);
+            }
         }
 
         /*
@@ -728,7 +876,8 @@ public final class JDyna
                 game.interrupt();
                 try
                 {
-                    gameThread.join();
+                    if (Thread.currentThread() != gameThread)
+                        gameThread.join();
                 }
                 catch (InterruptedException e1)
                 {
@@ -739,7 +888,19 @@ public final class JDyna
                 showMainGUI();
             }
         };
-        game.addListener(createView(highlightPlayer, viewListener));
+        if (!StringUtils.isEmpty(highlightPlayer))
+        {
+            game.addListener(createView(highlightPlayer, viewListener));
+        }
+        else
+        {
+            IPlayerSprite [] playerSpritesArray = new IPlayerSprite [playerSprites.size()];
+            for (int i = 0; i < playerSprites.size(); i++)
+            {
+                playerSpritesArray[i] = playerSprites.get(i);
+            }
+            game.addListener(createView(highlightPlayer, viewListener, playerSpritesArray));
+        }
         gameThread.start();
     }
 
@@ -785,27 +946,42 @@ public final class JDyna
         }
     }
 
+    private IGameEventListener createView(String trackedPlayer, final IViewListener listener, IPlayerSprite... players) {
+        switch (config.viewType) {
+            case SWING_VIEW:
+                return createSwingView(trackedPlayer, listener, players);
+        }
+        throw new RuntimeException("Unknown view: " + config.viewType);
+    }
+    
     /**
      * Create a game view for the given player.
      */
-    private IGameEventListener createView(String playerName, final IViewListener listener)
+    private IGameEventListener createSwingView(String trackedPlayer,
+        final IViewListener listener, IPlayerSprite... players)
     {
         final BoardFrame boardFrame = new BoardFrame();
         boardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        if (!StringUtils.isEmpty(playerName))
+        if (!StringUtils.isEmpty(trackedPlayer))
         {
-            boardFrame.getGamePanel().trackPlayer(playerName);
+            boardFrame.trackPlayer(trackedPlayer);
+            boardFrame.showStatusFor(trackedPlayer);
+        }
+        else
+        {
+            boardFrame.showStatusFor(players);
         }
 
         boardFrame.addWindowListener(new WindowAdapter()
         {
             public void windowClosed(WindowEvent e)
             {
+                boardFrame.cleanup();
                 if (listener != null) listener.viewClosed();
             }
         });
-
+        
         boardFrame.setVisible(true);
         return boardFrame;
     }
@@ -816,24 +992,6 @@ public final class JDyna
     private IPlayerFactory getBot(String bot)
     {
         return bots.get(bot);
-    }
-
-    /**
-     * Prompt the user to select one of the boards.
-     */
-    private Board selectBoard()
-    {
-        final TreeSet<String> boardNames = 
-            new TreeSet<String>(boards.getBoardNames());
-
-        String boardName = Dialogs.selectOneFromList(frame,
-            "Select game board", "Select game board",
-            config.mostRecentBoard,
-            (String []) boardNames.toArray(new String [boardNames.size()]));
-
-        if (boardName == null) return null;
-        config.mostRecentBoard = boardName;
-        return boards.get(boardName);
     }
 
     /*

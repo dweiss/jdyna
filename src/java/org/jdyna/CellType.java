@@ -1,10 +1,8 @@
 package org.jdyna;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.*;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 /**
  * A cell type contains the cell's numeric code and exposes several properties, including 
@@ -36,8 +34,46 @@ public enum CellType
     CELL_BOOM_XY('+'),
 
     /* Bonuses */
+    /** Bonus that adds a bomb to the player's arsenal */
     CELL_BONUS_BOMB('@'),
-    CELL_BONUS_RANGE('*');
+    
+    /** Bonus that increases range of player's bombs by one tile */
+    CELL_BONUS_RANGE('*'),
+    
+    /** Disease that causes the player to drop bombs uncontrollably, as fast as possible */
+    CELL_BONUS_DIARRHEA('d'),
+    
+    /** Bonus that grants the player temporary immunity to explosions
+     * (and prevents him from picking up other bonuses) */
+    CELL_BONUS_IMMORTALITY('i'),
+    
+    /** Bonus that temporarily increases range of player's bombs to infinity */
+    CELL_BONUS_MAXRANGE('m'),
+    
+    /** Dissease that prevents the player from dropping bombs. */
+    CELL_BONUS_NO_BOMBS('n'),
+    
+    /** Bonus that temporarily increases the player's speed */
+    CELL_BONUS_SPEED_UP('u'),
+    
+    /** Disease that temporarily decreases the player's speed */
+    CELL_BONUS_SLOW_DOWN('s'),
+    
+    /** Bonus that gives the player temporal ability to walk through crates */
+    CELL_BONUS_CRATE_WALKING('c'),
+    
+    /** Bonus that gives the player temporal ability to walk through bombs */
+    CELL_BONUS_BOMB_WALKING('q'),
+    
+    /** Disease that reverses the player's movement direction */
+    CELL_BONUS_CONTROLLER_REVERSE('r'),
+    
+    /** Bonus that causes the next bomb dropped by the player to explode immediately,
+     *  killing only other players */
+    CELL_BONUS_AHMED('a'),
+    
+    /** A bonus that gives the player a randomly selected bonus or disease */
+    CELL_BONUS_SURPRISE('e');
 
     /**
      * Character code for the cell (16 bits).
@@ -72,7 +108,7 @@ public enum CellType
      */
     public boolean isWalkable()
     {
-        return WALKABLES.contains(this);
+    	return WALKABLES.contains(this);
     }
     
     /**
@@ -171,7 +207,12 @@ public enum CellType
     static
     {
         WALKABLES = EnumSet.of(CellType.CELL_EMPTY, CellType.CELL_BONUS_BOMB,
-            CellType.CELL_BONUS_RANGE);
+            CellType.CELL_BONUS_RANGE, CellType.CELL_BONUS_DIARRHEA, CellType.CELL_BONUS_NO_BOMBS,
+            CellType.CELL_BONUS_MAXRANGE, CellType.CELL_BONUS_IMMORTALITY,
+            CellType.CELL_BONUS_SPEED_UP, CellType.CELL_BONUS_SLOW_DOWN, 
+            CellType.CELL_BONUS_CRATE_WALKING, CellType.CELL_BONUS_BOMB_WALKING,
+            CellType.CELL_BONUS_CONTROLLER_REVERSE, CellType.CELL_BONUS_AHMED,
+            CELL_BONUS_SURPRISE);
         WALKABLES.addAll(EXPLOSION_CELLS);
     }
 
@@ -195,5 +236,14 @@ public enum CellType
             ANIMATING_CELLS.put(c, explosionFrameCount);
         }
         ANIMATING_CELLS.put(CellType.CELL_CRATE_OUT, crateFrameCount);
-    }    
+    }
+    
+    final static List<CellType> BONUSES_NO_SURPRISE;
+    
+    static
+    {
+        // Static, random-access view of all possible bonuses.
+        BONUSES_NO_SURPRISE = Lists.newArrayList(CellType.values());
+        BONUSES_NO_SURPRISE.remove(CellType.CELL_BONUS_SURPRISE);
+    }
 }

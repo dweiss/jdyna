@@ -3,6 +3,7 @@ package org.jdyna.view.swing;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import javax.swing.*;
 import org.jdyna.*;
 import org.jdyna.view.resources.*;
 
+import com.google.common.collect.Lists;
 
 /**
  * Swing board view.
@@ -17,7 +19,6 @@ import org.jdyna.view.resources.*;
 @SuppressWarnings("serial")
 public final class BoardFrame extends JFrame implements IGameEventListener
 {
-    private final GraphicsConfiguration conf;
     private BoardPanel gamePanel;
 
     /**
@@ -25,13 +26,20 @@ public final class BoardFrame extends JFrame implements IGameEventListener
      */
     private ScoreFrame scoreFrame;
 
-    /*
-     * 
+    /**
+     * Sub-listeners.
      */
-    private BoardFrame(GraphicsConfiguration conf)
-    {
-        this.conf = conf;
-    }
+    private final ArrayList<IGameEventListener> sublisteners = Lists.newArrayList();
+
+    /**
+     * Images used by this frame.
+     */
+    private final Images images;
+
+    /**
+     * South panel with player statuses.
+     */
+    private final JPanel statuses;
 
     /*
      * 
@@ -39,7 +47,14 @@ public final class BoardFrame extends JFrame implements IGameEventListener
     public BoardFrame()
     {
         this(ImageUtilities.getGraphicsConfiguration());
-        final Images images = ImagesFactory.DYNA_CLASSIC;
+    }
+
+    /*
+     * 
+     */
+    public BoardFrame(GraphicsConfiguration conf)
+    {
+        this.images = ImagesFactory.DYNA_CLASSIC;
 
         gamePanel = new BoardPanel(images, conf);
         gamePanel.addComponentListener(new ComponentAdapter() {
@@ -59,12 +74,15 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         this.scoreFrame = new ScoreFrame();
         scoreFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         scoreFrame.setSize(new Dimension(300, 500));
-        scoreFrame.setFocusable(false);
+        scoreFrame.setFocusable(false);      
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         getContentPane().add(panel);
         panel.add(gamePanel, BorderLayout.CENTER);
+
+        this.statuses = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panel.add(statuses, BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationByPlatform(true);
@@ -82,7 +100,7 @@ public final class BoardFrame extends JFrame implements IGameEventListener
         setTitle("Play responsibly.");
 
         /*
-         * Add a dependent frame. Whenever this frame is opened, the dependent frame is also opened.  
+         * Add the scoreboard frame.
          */
         addWindowListener(new WindowAdapter()
         {
@@ -92,30 +110,73 @@ public final class BoardFrame extends JFrame implements IGameEventListener
                 SwingUtils.glueTo(BoardFrame.this, scoreFrame, SwingUtils.SnapSide.RIGHT);
                 SwingUtils.snapFrame(BoardFrame.this, scoreFrame);
             }
-            
+
             public void windowClosed(WindowEvent e)
             {
                 scoreFrame.dispose();
             }
         });
 
+        sublisteners.add(gamePanel);
+        sublisteners.add(scoreFrame);
+
         pack();
     }
 
     /**
-     * React to on-frame events.
+     * React to on-frame events propagating to sub-views.
      */
     public void onFrame(int frame, List<? extends GameEvent> events)
     {
-        this.gamePanel.onFrame(frame, events);
-        this.scoreFrame.onFrame(frame, events);
+        for (IGameEventListener l : sublisteners)
+        {
+            l.onFrame(frame, events);
+        }
     }
 
     /**
-     * Return the game panel associated with this frame.
+     * Track the given player (only one).
      */
-    public BoardPanel getGamePanel()
+    public void trackPlayer(String playerName)
     {
-        return gamePanel;
+        gamePanel.trackPlayer(playerName);
+    }
+
+    /**
+     * Add status panels for these players. You should call this method
+     * once with all the players that require status information.
+     */
+    public void showStatusFor(IPlayerSprite... players)
+    {
+        for (IPlayerSprite player : players)
+        {
+            final PlayerStatusPanel p = new PlayerStatusPanel(
+                images, player.getName(), player.getType());
+
+            sublisteners.add(p);
+            statuses.add(p);
+        }
+    }
+    
+    public void showStatusFor(String playerName)
+    {
+        final PlayerStatusPanel p = new PlayerStatusPanel(
+                images, playerName, ISprite.Type.PLAYER_1);
+        sublisteners.add(p);
+        statuses.add(p);
+    }
+
+    /**
+     * Do the cleanup. Needed to stop running timers of statuses.
+     */
+    public void cleanup()
+    {
+        for (IGameEventListener l : sublisteners)
+        {
+            if (l instanceof PlayerStatusPanel)
+            {
+                ((PlayerStatusPanel) l).clearStatuses();
+            }
+        }
     }
 }

@@ -30,12 +30,12 @@ public final class GameServer
     /**
      * Default server port (TCP connections).
      */
-    private final static int DEFAULT_TCP_CONTROL_PORT = 50000;
+    public final static int DEFAULT_TCP_CONTROL_PORT = 50000;
 
     /**
      * Default feedback port (UDP).
      */
-    private final static int DEFAULT_UDP_FEEDBACK_PORT = 50000;
+    public final static int DEFAULT_UDP_FEEDBACK_PORT = 50000;
 
     /**
      * How frequently should auto-discovery messages be sent?
@@ -182,9 +182,18 @@ public final class GameServer
     }
 
     /**
+     * Constructor with ports settings.
+     */
+    public GameServer(int UDPBroadcastPort, int UDPport, int TCPport)
+    {
+        this();
+        this.TCPport = TCPport;
+        this.UDPBroadcastPort = UDPBroadcastPort;
+        this.UDPport = UDPport;
+    }
+
+    /**
      * Handle a controller update message.
-     * 
-     * @param inetAddress
      */
     protected void handle(SerializablePacket p) throws IOException
     {

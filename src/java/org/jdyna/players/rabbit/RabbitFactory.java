@@ -1,4 +1,4 @@
-package org.jdyna.players;
+package org.jdyna.players.rabbit;
 
 import org.jdyna.IPlayerController;
 import org.jdyna.IPlayerFactory;

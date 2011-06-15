@@ -11,7 +11,7 @@ import org.jdyna.players.tyson.emulator.gamestate.GameState;
  * To be implemented by players - bots.
  * </p>
  * <p>
- * Subclasses should implement: {@see IGameEventListener} and {@see IPlayerController}
+ * Subclasses should implement: {@link IGameEventListener} and {@link IPlayerController}
  * </p>
  * 
  * @author Michał Kozłowski
@@ -21,6 +21,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
 {
     protected final Player player;
     protected GameState state;
+    protected GameConfiguration conf;
 
     /**
      * @param name Player's name.
@@ -39,7 +40,11 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
     {
         for (GameEvent event : events)
         {
-            if (event instanceof GameStateEvent)
+            if (event instanceof GameStartEvent)
+            {
+                conf = ((GameStartEvent) event).getConfiguration();
+            }
+            else if (event instanceof GameStateEvent)
             {
                 if (state != null)
                 {
@@ -47,7 +52,7 @@ public abstract class AbstractPlayerEmulator implements IGameEventListener,
                 }
                 else
                 {
-                    state = new GameState(frame, (GameStateEvent) event, player.name);
+                    state = new GameState(conf, frame, (GameStateEvent) event, player.name);
                 }
             }
         }

@@ -182,7 +182,7 @@ public final class GameServerContext
     /*
      * 
      */
-    public GameHandle createNewGame(String gameName, String boardName)
+    public GameHandle createNewGame(GameConfiguration conf, String gameName, String boardName)
     {
         synchronized (this)
         {
@@ -206,12 +206,13 @@ public final class GameServerContext
             }
 
             final BoardInfo boardInfo = new BoardInfo(new Dimension(board.width,
-                board.height), Globals.DEFAULT_CELL_SIZE);
+                board.height), Constants.DEFAULT_CELL_SIZE);
 
             final GameHandle handle = new GameHandle(gameID.incrementAndGet(), gameName,
-                boardName, boardInfo);
-            final GameContext gameContext = new GameContext(handle, new Game(board,
-                boardInfo));
+                boardName, boardInfo, conf);
+
+            final GameContext gameContext = new GameContext(handle, 
+                new Game(conf, board, boardInfo));
 
             gameContext.addFrameDataListener(new FrameDataBroadcaster(gameContext,
                 udpBroadcaster));

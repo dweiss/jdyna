@@ -30,6 +30,16 @@ import com.google.common.collect.Maps;
 public final class BoardPanel extends JPanel implements IGameEventListener
 {
     /**
+     * Default view scaling.
+     */
+    public static final Magnification DEFAULT_VIEW_MAGNIFICATION = Magnification.TIMES_2;
+
+    /**
+     * Paint player labels by default.
+     */
+    public static final boolean PAINT_PLAYER_LABELS = true;
+
+    /**
      * Maximum width for the displayed player name.
      */
     private final static int MAX_PLAYER_NAME_WIDTH = 10;
@@ -71,7 +81,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /**
      * Should player labels be painted or not?
      */
-    private boolean paintPlayerLabels = Globals.SWING_VIEW_PAINT_PLAYER_LABELS;
+    private boolean paintPlayerLabels = PAINT_PLAYER_LABELS;
     
     /**
      * Magnification level. Zoom level are fixed to doubling because we're really
@@ -143,7 +153,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
          * out to be much slower under Linux. I don't see any sense in this...
          */
         this.setDoubleBuffered(false);
-        this.setMagnification(Globals.DEFAULT_VIEW_MAGNIFICATION);
+        this.setMagnification(DEFAULT_VIEW_MAGNIFICATION);
     }
 
     /**
@@ -312,8 +322,6 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             if (e.type == GameEvent.Type.GAME_START)
             {
                 initializeBoard((GameStartEvent) e);
-                fireSizeChanged();
-
                 globalFrameCounter = 0;
             }
 
@@ -338,7 +346,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             /*
              * Create the background image for the board.
              */
-            final Dimension size = getPreferredSize();
+            final Dimension size = getBoardSize();
             background = conf.createCompatibleImage(size.width, size.height);
     
             final Graphics2D g = (Graphics2D) background.getGraphics();
@@ -346,6 +354,8 @@ public final class BoardPanel extends JPanel implements IGameEventListener
             g.fillRect(0, 0, size.width, size.height);
             g.dispose();
         }
+
+        sizeChanged();
     }
 
     /**
@@ -401,8 +411,7 @@ public final class BoardPanel extends JPanel implements IGameEventListener
     /*
      * 
      */
-    @Override
-    public Dimension getPreferredSize()
+    public Dimension getBoardSize()
     {
         synchronized (exclusiveLock)
         {
@@ -438,30 +447,22 @@ public final class BoardPanel extends JPanel implements IGameEventListener
                     AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             }
         }
-        
-        fireSizeChanged();
+
+        sizeChanged();
     }
 
-    /*
-     * Fire size changed event.
+    /**
+     * Set new preferred component size and fire an event.
      */
-    private void fireSizeChanged()
+    private void sizeChanged()
     {
-        final Runnable r = new Runnable() {
-            public void run()
-            {
-                BoardPanel.super.setSize(getPreferredSize());
-            }
-        };
-
-        if (SwingUtilities.isEventDispatchThread())
-        {
-            r.run();
-        }
-        else
-        {
-            SwingUtilities.invokeLater(r);
-        }
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run()
+                {
+                    setPreferredSize(getBoardSize());
+                }
+            });
     }
 
     /**

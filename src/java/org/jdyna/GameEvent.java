@@ -65,7 +65,17 @@ public abstract class GameEvent implements Serializable
         /**
          * Wall time from the game (used for game-saves).
          */
-        GAME_WALL_TIME
+        GAME_WALL_TIME,
+        
+        /**
+         * Explosions metadata (for rendering even more spectacular wipeouts).   
+         */
+        EXPLOSION_METADATA,
+        
+        /**
+         * Highlight data (detected during the game).
+         */
+        HIGHLIGHT_DATA,
     }
 
     /**

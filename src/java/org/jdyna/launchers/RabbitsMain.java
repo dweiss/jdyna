@@ -10,8 +10,9 @@ import javax.swing.SwingUtilities;
 
 import org.jdyna.*;
 import org.jdyna.audio.jxsound.JavaSoundSFX;
-import org.jdyna.players.Rabbit;
+import org.jdyna.players.rabbit.Rabbit;
 import org.jdyna.serialization.GameWriter;
+import org.jdyna.view.swing.AWTKeyboardController;
 import org.jdyna.view.swing.BoardFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +37,20 @@ public final class RabbitsMain
         final Boards boards = Boards.read(new InputStreamReader(cl
             .getResourceAsStream("boards.conf"), "UTF-8"));
 
-        final Board board = boards.get("small");
+        final Board board = boards.get("classic-empty");
 
-        final IPlayerController c1 = Globals.getDefaultKeyboardController(0);
+        final IPlayerController c1 = AWTKeyboardController.getDefaultKeyboardController(0);
 
         final BoardInfo boardInfo = new BoardInfo(
-            new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+            new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
 
-        final Game game = new Game(board, boardInfo, 
+        final GameConfiguration conf = new GameConfiguration();
+        final Game game = new Game(conf, board, boardInfo, 
             new Player("Player 1", c1),
             Rabbit.createPlayer("Rabbit 1"),
             Rabbit.createPlayer("Rabbit 2"),
             Rabbit.createPlayer("Rabbit 3")
         );
-        game.setFrameRate(25);
 
         /*
          * Attach sounds view to the game.

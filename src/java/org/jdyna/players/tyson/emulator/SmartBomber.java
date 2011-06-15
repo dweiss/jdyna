@@ -173,5 +173,4 @@ public final class SmartBomber extends AbstractPlayerEmulator implements
     {
         return new ControllerState(getCurrent(), dropsBomb(), 3);
     }
-
 }

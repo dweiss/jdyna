@@ -24,7 +24,7 @@ public final class BoardInfo implements Serializable
      * X and Y dimensions of a single cell. This field exists only to support 
      * <i>possible</i> future changes of the baseline grid size. Such changes would have
      * to alter the game's controller as well, so they will not be trivial. You can
-     * most likely assume it equals {@link Globals#DEFAULT_CELL_SIZE}. 
+     * most likely assume it equals {@link Constants#DEFAULT_CELL_SIZE}. 
      */
     public final int cellSize;
 
@@ -40,13 +40,13 @@ public final class BoardInfo implements Serializable
      */
     BoardInfo(Board board)
     {
-        this(new Dimension(board.width, board.height), Globals.DEFAULT_CELL_SIZE);
+        this(new Dimension(board.width, board.height), Constants.DEFAULT_CELL_SIZE);
     }
 
     /**
      * Public board info constructor simply takes a grid size and default cell size.
      * 
-     * @see Globals#DEFAULT_CELL_SIZE
+     * @see Constants#DEFAULT_CELL_SIZE
      */
     public BoardInfo(Dimension gridSize, int defaultCellSize)
     {

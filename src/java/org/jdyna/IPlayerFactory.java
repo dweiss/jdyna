@@ -12,7 +12,7 @@ package org.jdyna;
  * </ol>
  * 
  * <p>
- * Students, please use the following vendor syntax in {@link #getVendor()}:
+ * Students, please use the following vendor syntax in {@link #getVendorName()}:
  * <pre>
  * First Last, First Last, [...]
  * </pre>

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdyna.CmdLine;
+import org.jdyna.GameConfiguration;
 import org.jdyna.network.sockets.packets.ServerInfo;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -107,7 +108,8 @@ public class Admin
                     if (StringUtils.isEmpty(gameName)) 
                         throw new CmdLineException("Game name is required.");
 
-                    GameHandle gh = client.createGame(gameName, boardName);
+                    // TODO: shouldn't game configuration be set up some way? 
+                    GameHandle gh = client.createGame(new GameConfiguration(), gameName, boardName);
                     logger.info("Game created [id=" + gh.gameID + "]");
 
                     break;

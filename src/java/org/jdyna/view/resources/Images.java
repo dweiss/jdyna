@@ -27,10 +27,17 @@ public final class Images
     /** Sprite data */
     private final EnumMap<ISprite.Type, SpriteData> sprites;
 
+    /** Player images for status panels. */
+    private final BufferedImage [] playerStatuses;
+
+    /** Offset in {@link #playerStatuses} depending on {@link ISprite.Type}. */
+    private final EnumMap<ISprite.Type, Integer> playerStatusOffsets;
+
     /*
      * 
      */
-    Images(int cellSize, Collection<CellData> cellData, Collection<SpriteData> spriteData)
+    Images(int cellSize, Collection<CellData> cellData, Collection<SpriteData> spriteData,
+        BufferedImage [] playerStatuses)
     {
         this.cellSize = cellSize;
 
@@ -39,7 +46,17 @@ public final class Images
 
         sprites = Maps.newEnumMap(ISprite.Type.class);
         for (SpriteData sd : spriteData) sprites.put(sd.spriteType, sd);
-        
+
+        this.playerStatuses = playerStatuses;
+
+        final ISprite.Type [] playerTypes = ISprite.Type.getPlayerSprites();
+        if (playerStatuses.length != playerTypes.length)
+            throw new RuntimeException("Player status data should match the number" +
+            		" of player sprites.");
+
+        playerStatusOffsets = Maps.newEnumMap(ISprite.Type.class);
+        for (int i = 0; i < playerStatuses.length; i++)
+            playerStatusOffsets.put(playerTypes[i], i);
     }
 
     /*
@@ -66,6 +83,14 @@ public final class Images
     public int getCellSize()
     {
         return cellSize;
+    }
+
+    /*
+     * 
+     */
+    public BufferedImage getPlayerStatusImage(ISprite.Type playerType)
+    {
+        return this.playerStatuses[playerStatusOffsets.get(playerType)];
     }
 
     /*
@@ -163,7 +188,11 @@ public final class Images
             spriteData.add(c);
         }
         
-        return new Images(cellSize, cellData, spriteData);
+        final BufferedImage [] pStatuses = new BufferedImage [playerStatuses.length];
+        for (int i = 0; i < pStatuses.length; i++)
+            pStatuses[i] = ImageUtilities.convert(playerStatuses[i], conf);
+
+        return new Images(cellSize, cellData, spriteData, pStatuses);
     }
 
     /**

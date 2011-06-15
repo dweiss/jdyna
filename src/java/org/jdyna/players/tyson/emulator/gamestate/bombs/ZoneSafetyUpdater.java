@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.jdyna.CellType;
-import org.jdyna.Globals;
+import org.jdyna.Constants;
 import org.jdyna.IPlayerController.Direction;
 
 import org.jdyna.players.tyson.emulator.gamestate.Board;
@@ -231,7 +231,7 @@ final class ZoneSafetyUpdater
         if (bs == null || bs.getStatus() != state)
         {
             logger.error("Unexpected bomb state inside cell");
-            return Globals.DEFAULT_CELL_SIZE;
+            return Constants.DEFAULT_CELL_SIZE;
         }
         else
         {
@@ -264,7 +264,7 @@ final class ZoneSafetyUpdater
     }
 
     /**
-     * @param pairs: location of bomb, and its timer.
+     * @param unchecked pairs: location of bomb, and its timer.
      * @return Location of bomb that will explode first.
      */
     private GridCoord getNearestExplosion(final Map<GridCoord, Integer> unchecked)

@@ -2,7 +2,7 @@ package org.jdyna.players.n00b.state;
 
 import java.util.List;
 
-import org.jdyna.Globals;
+import org.jdyna.GameConfiguration;
 
 /**
  * Represents a single bomb planted on the board.
@@ -34,7 +34,7 @@ class Bomb
      */
     private int timer;
 
-    Bomb(Player owner)
+    Bomb(Player owner, GameConfiguration conf)
     {
         this.owner = owner;
 
@@ -45,7 +45,7 @@ class Bomb
         }
         else
         {
-            range = Globals.DEFAULT_BOMB_RANGE;
+            range = conf.DEFAULT_BOMB_RANGE;
         }
     }
 
@@ -101,5 +101,4 @@ class Bomb
             owner.collectBomb();
         }
     }
-
 }
