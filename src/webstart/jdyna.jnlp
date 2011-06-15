@@ -1,16 +1,15 @@
 <?php
-	header("Content-Type: application/x-java-jnlp-file");
-
+    header("Content-Type: application/x-java-jnlp-file");
     header("Cache-Control: no-cache");
     header("Pragma: no-cache");
-	header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-?><?xml version="1.0" encoding="utf-8"?>
+    header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+?>
 
-<jnlp spec="1.0+" codebase="http://www.jdyna.com/play/">
+<jnlp spec="1.0+" codebase="http://www.dawidweiss.com/jdyna/play/">
         <information>
-                <title>jdyna.com</title>
-                <vendor>jdyna.com developers</vendor>
-                <homepage href="http://www.jdyna.com/" />
+                <title>JDyna</title>
+                <vendor>JDyna developers</vendor>
+                <homepage href="http://www.dawidweiss.com/jdyna/" />
 
                 <description>Dyna Blaster for your enjoyment.</description>
 		<description kind="tooltip">JDyna</description>
