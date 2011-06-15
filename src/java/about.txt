@@ -1,5 +1,5 @@
-JDyna.com
----------
+JDyna
+-----
 
 Java clone of the classic Dyna Blaster (Bomberman) game by Hudson Soft.
 

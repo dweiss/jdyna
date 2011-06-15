@@ -154,19 +154,4 @@
             <arg value="@${obfuscated.dir}/jdyna.pro" />
         </java>
 	</target>	
-	
-	<target name="publish" depends="webstart">
-		<property file="local.properties" />
-
-		<fail unless="ftp.server" />
-		<fail unless="ftp.user" />
-		<fail unless="ftp.pass" />
-		<fail unless="ftp.path" />
-
-		<ftp password="${ftp.pass}" server="${ftp.server}" userid="${ftp.user}" 
-			passive="true" verbose="true"
-			remotedir="${ftp.path}">
-			<fileset dir="${website.path}" />
-		</ftp>
-	</target>	
 </project>

@@ -110,7 +110,7 @@ public final class JDyna
         /*
          * Initialize the main GUI.
          */
-        frame = new JFrame("JDyna.com");
+        frame = new JFrame("JDyna");
         frame.getContentPane().add(createMainPanelGUI());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);

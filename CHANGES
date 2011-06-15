@@ -1,21 +1,26 @@
 
 VERSION <HEAD>
+    - 
+
+    - Cleanups removing jdyna.com (not renewed). Updated authors file.
+
+    - LWJGP upgrade. jinput upgrade. Included 64=bit DLLs for Windows.
 
 VERSION 0.94
 
-	- Corrected selection/ focus on score boards.
+    - Corrected selection/ focus on score boards.
 
-	- Added obfuscation/ trimming to the output JAR.
+    - Added obfuscation/ trimming to the output JAR.
 
 VERSION 0.93
 
-	- Added support for OpenAL audio engine.
+    - Added support for OpenAL audio engine.
 
 VERSION 0.92
 
-	- Added persistent (.jdyna.xml in home folder) configuration.
+    - Added persistent (.jdyna.xml in home folder) configuration.
 
-	- Added sound engine configuration switch and support for Java Audio.
+    - Added sound engine configuration switch and support for Java Audio.
 
 VERSION 0.91
 
